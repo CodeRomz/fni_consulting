@@ -31,9 +31,4 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="menu_hr_timesheet_task_type"
-              name="Task Types"
-              parent="hr_timesheet.menu_hr_timesheet"
-              action="action_hr_timesheet_task_type"
-              sequence="20"/>
 </odoo>
