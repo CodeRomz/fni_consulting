@@ -61,7 +61,6 @@ dist/
 *.~*
 *.~.xml
 *.log
-*.csv
 *.xlsx
 *.docx
 *.pdf

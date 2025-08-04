@@ -2,7 +2,7 @@
     'name': 'FNI Consulting Customizations',
     'version': '17.0.1.0.0',
     'summary': 'Custom patches and business logic for FNI Consulting',
-    'author': 'FNI IT Team',
+    'author': 'CodeROmz',
     'category': 'Custom',
     'depends': ['hr_timesheet', 'project'],
     'data': [
