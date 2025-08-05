@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <data>
     <record id="hr_timesheet_sheet_form_readonly_notebook" model="ir.ui.view">
@@ -6,7 +5,42 @@
       <field name="model">hr_timesheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
       <field name="arch" type="xml">
-        <!-- Replace the original timesheet_ids field on the Details tab with a fully read‑only version -->
+        <!-- SUMMARY: replace line_ids with a fully read‑only matrix -->
+        <xpath expr="//page[@string='Summary']/field[@name='line_ids']" position="replace">
+          <field name="line_ids"
+                 nolabel="1"
+                 widget="x2many_2d_matrix"
+                 field_x_axis="value_x"
+                 field_y_axis="value_y"
+                 field_value="unit_amount"
+                 x_axis_clickable="0"
+                 y_axis_clickable="1"
+                 readonly="True"
+                 create="false"
+                 edit="false"
+                 delete="false">
+            <!-- copy original columns but mark each one readonly -->
+            <tree limit="1000000">
+              <field name="value_x" readonly="True"/>
+              <field name="value_y" readonly="True"/>
+              <field name="unit_amount" widget="float_time" readonly="True"/>
+              <field name="sheet_id" readonly="True"/>
+              <field name="date" readonly="True"/>
+              <field name="project_id" readonly="True"/>
+              <field name="task_id" readonly="True"/>
+              <!-- company field stays readonly -->
+              <field name="company_id" groups="base.group_multi_company" readonly="True"/>
+              <field name="employee_id" readonly="True"/>
+              <field name="new_line_id" invisible="1" readonly="True"/>
+            </tree>
+          </field>
+        </xpath>
+        <!-- hide the add_line group entirely -->
+        <xpath expr="//page[@string='Summary']//group[contains(@class, 'oe_edit_only')]" position="attributes">
+          <attribute name="invisible">True</attribute>
+        </xpath>
+
+        <!-- DETAILS: replace timesheet_ids with a fully read‑only one2many -->
         <xpath expr="//page[@string='Details']/field[@name='timesheet_ids']" position="replace">
           <field name="timesheet_ids"
                  nolabel="1"
@@ -15,20 +49,22 @@
                  create="false"
                  edit="false"
                  delete="false">
-            <!-- Remove inline editing and disable add/delete by omitting the editable attribute and setting edit=false -->
-            <tree create="false" edit="false" delete="false">
+            <tree>
               <field name="date" readonly="True"/>
-              <field name="project_id" readonly="True"/>
+              <field name="project_id" required="1" readonly="True"/>
               <field name="task_id"
                      domain="[('project_id', '=', project_id)]"
                      context="{'default_project_id': project_id}"
                      readonly="True"/>
               <field name="name" readonly="True"/>
               <field name="unit_amount" widget="float_time" string="Hours" sum="Hours" readonly="True"/>
-              <field name="user_id" invisible="True" readonly="True"/>
+              <field name="user_id" invisible="1" readonly="True"/>
             </tree>
-            <!-- Provide a read‑only form view for record inspection; disable create/edit/delete -->
-            <form string="Timesheet Activities" create="false" edit="false" delete="false">
+            <!-- read‑only form view; disable create/edit/delete per documentation:contentReference[oaicite:2]{index=2} -->
+            <form string="Timesheet Activities"
+                  create="false"
+                  edit="false"
+                  delete="false">
               <group>
                 <field name="date" readonly="True"/>
                 <field name="name" readonly="True"/>
@@ -38,14 +74,10 @@
                        context="{'default_project_id': project_id}"
                        readonly="True"/>
                 <field name="unit_amount" widget="float_time" string="Hours" readonly="True"/>
-                <field name="user_id" invisible="True"/>
+                <field name="user_id" invisible="1" readonly="True"/>
               </group>
             </form>
           </field>
-        </xpath>
-        <!-- Optionally hide Add/New Line buttons elsewhere in the notebook (groups with oe_edit_only) -->
-        <xpath expr="//notebook//group[contains(@class, 'oe_edit_only')]" position="attributes">
-          <attribute name="invisible">True</attribute>
         </xpath>
       </field>
     </record>
