@@ -9,16 +9,28 @@
                 <xpath expr="//notebook//field" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
-                <!-- Disable create/edit from relational widgets (e.g. one2many, many2many) -->
+                <!-- Disable create/edit/delete on relational widgets globally -->
                 <xpath expr="//notebook//field" position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                     <attribute name="create">false</attribute>
                     <attribute name="edit">false</attribute>
                     <attribute name="delete">false</attribute>
                 </xpath>
-                <!-- Hide any edit-only groups (Add new line buttons, etc.) -->
+                <!-- Hide groups containing edit-only controls (Add new line, etc.) -->
                 <xpath expr="//notebook//group[contains(@class, 'oe_edit_only')]" position="attributes">
                     <attribute name="invisible">True</attribute>
+                </xpath>
+                <!-- Make the timesheet_ids field totally immutable -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                    <attribute name="delete">false</attribute>
+                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                </xpath>
+                <!-- Override the tree editable attribute so users cannot modify rows -->
+                <xpath expr="//page[@string='Details']//tree" position="attributes">
+                    <attribute name="editable">false</attribute>
                 </xpath>
             </field>
         </record>
