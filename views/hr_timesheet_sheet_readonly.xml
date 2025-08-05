@@ -29,6 +29,7 @@
         <xpath expr="//field[@name='timesheet_ids']/tree//field" position="attributes">
           <attribute name="readonly">True</attribute>
         </xpath>
+
         <!-- Disable editing in the pop-up form and mark its fields read-only -->
         <xpath expr="//field[@name='timesheet_ids']/form" position="attributes">
           <attribute name="create">false</attribute>
@@ -37,6 +38,14 @@
         </xpath>
         <xpath expr="//field[@name='timesheet_ids']/form//field" position="attributes">
           <attribute name="readonly">True</attribute>
+        </xpath>
+
+        <!-- NEW: Prevent project_id from offering Create or Create & Edit -->
+        <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='project_id']" position="attributes">
+          <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+        </xpath>
+        <xpath expr="//field[@name='timesheet_ids']/form//field[@name='project_id']" position="attributes">
+          <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
         </xpath>
       </field>
     </record>
