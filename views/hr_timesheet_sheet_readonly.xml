@@ -6,8 +6,8 @@
       <field name="model">hr_timesheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
       <field name="arch" type="xml">
-        <!-- Replace the one2many matrix on the Summary page -->
-        <xpath expr="//field[@name='line_ids']" position="replace">
+        <!-- Safely replace the summary matrix; no create/edit/delete on the field -->
+        <xpath expr="//notebook//field[@name='line_ids']" position="replace">
           <field name="line_ids"
                  nolabel="1"
                  widget="x2many_2d_matrix"
@@ -16,11 +16,9 @@
                  field_value="unit_amount"
                  x_axis_clickable="0"
                  y_axis_clickable="1"
-                 readonly="True"
-                 create="false"
-                 edit="false"
-                 delete="false">
-            <tree limit="1000000">
+                 readonly="True">
+            <!-- Only disable editing on the tree, not on the field -->
+            <tree limit="1000000" create="false" edit="false" delete="false">
               <field name="value_x" readonly="True"/>
               <field name="value_y" readonly="True"/>
               <field name="unit_amount" widget="float_time" readonly="True"/>
@@ -35,21 +33,19 @@
           </field>
         </xpath>
 
-        <!-- Hide the "Add new line" group (edit-only controls) -->
+        <!-- Hide edit-only controls -->
         <xpath expr="//group[contains(@class, 'oe_edit_only')]" position="attributes">
           <attribute name="invisible">True</attribute>
         </xpath>
 
-        <!-- Replace the timesheet_ids one2many on the Details page -->
-        <xpath expr="//field[@name='timesheet_ids']" position="replace">
+        <!-- Safely replace the details one2many; no create/edit/delete on the field -->
+        <xpath expr="//notebook//field[@name='timesheet_ids']" position="replace">
           <field name="timesheet_ids"
                  nolabel="1"
                  context="{'user_id': user_id}"
-                 readonly="True"
-                 create="false"
-                 edit="false"
-                 delete="false">
-            <tree>
+                 readonly="True">
+            <!-- Disable editing inside the list view only -->
+            <tree create="false" edit="false" delete="false">
               <field name="date" readonly="True"/>
               <field name="project_id" required="1" readonly="True"/>
               <field name="task_id"
@@ -60,10 +56,8 @@
               <field name="unit_amount" widget="float_time" string="Hours" sum="Hours" readonly="True"/>
               <field name="user_id" invisible="1" readonly="True"/>
             </tree>
-            <form string="Timesheet Activities"
-                  create="false"
-                  edit="false"
-                  delete="false">
+            <!-- And in the pop-up form -->
+            <form string="Timesheet Activities" create="false" edit="false" delete="false">
               <group>
                 <field name="date" readonly="True"/>
                 <field name="name" readonly="True"/>
