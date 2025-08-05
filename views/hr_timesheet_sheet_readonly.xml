@@ -48,7 +48,7 @@
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
 
-                <!-- NEW: Prevent project_id from offering Create or Create & Edit -->
+                <!-- NEW: Prevent task_id from offering Create or Create & Edit -->
                 <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='task_id']" position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
