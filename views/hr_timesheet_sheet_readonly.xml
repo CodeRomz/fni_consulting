@@ -6,48 +6,36 @@
       <field name="model">hr_timesheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
       <field name="arch" type="xml">
-        <!-- SUMMARY: make line_ids read-only without replacing the field -->
-        <xpath expr="//notebook//field[@name='line_ids']" position="attributes">
-          <attribute name="readonly">True</attribute>
-        </xpath>
-        <!-- Disable add/edit/delete in the matrix’s tree -->
-        <xpath expr="//notebook//field[@name='line_ids']/tree" position="attributes">
+        <!-- Summary matrix (line_ids): disable adding/deleting lines, make columns read-only -->
+        <xpath expr="//field[@name='line_ids']/tree" position="attributes">
           <attribute name="create">false</attribute>
-          <attribute name="edit">false</attribute>
           <attribute name="delete">false</attribute>
         </xpath>
-        <!-- Make every column in the matrix read-only -->
-        <xpath expr="//notebook//field[@name='line_ids']/tree//field" position="attributes">
+        <xpath expr="//field[@name='line_ids']/tree//field" position="attributes">
           <attribute name="readonly">True</attribute>
         </xpath>
 
-        <!-- Hide the 'Add new line' group -->
-        <xpath expr="//group[contains(@class, 'oe_edit_only')]" position="attributes">
+        <!-- Hide the Add New Line group -->
+        <xpath expr="//group[contains(@class,'oe_edit_only')]" position="attributes">
           <attribute name="invisible">True</attribute>
         </xpath>
 
-        <!-- DETAILS: mark timesheet_ids as read-only -->
-        <xpath expr="//notebook//field[@name='timesheet_ids']" position="attributes">
+        <!-- Details one2many (timesheet_ids): disable create/delete in list view -->
+        <xpath expr="//field[@name='timesheet_ids']/tree" position="attributes">
+          <attribute name="create">false</attribute>
+          <attribute name="delete">false</attribute>
+        </xpath>
+        <!-- Make every column read-only -->
+        <xpath expr="//field[@name='timesheet_ids']/tree//field" position="attributes">
           <attribute name="readonly">True</attribute>
         </xpath>
-        <!-- Disable create/edit/delete on the one2many list -->
-        <xpath expr="//notebook//field[@name='timesheet_ids']/tree" position="attributes">
+        <!-- Disable editing in the pop-up form and mark its fields read-only -->
+        <xpath expr="//field[@name='timesheet_ids']/form" position="attributes">
           <attribute name="create">false</attribute>
           <attribute name="edit">false</attribute>
           <attribute name="delete">false</attribute>
         </xpath>
-        <!-- Mark each column in the timesheet list read-only -->
-        <xpath expr="//notebook//field[@name='timesheet_ids']/tree//field" position="attributes">
-          <attribute name="readonly">True</attribute>
-        </xpath>
-        <!-- Disable editing on the pop-up form of the one2many -->
-        <xpath expr="//notebook//field[@name='timesheet_ids']/form" position="attributes">
-          <attribute name="create">false</attribute>
-          <attribute name="edit">false</attribute>
-          <attribute name="delete">false</attribute>
-        </xpath>
-        <!-- Mark every field in that form read-only -->
-        <xpath expr="//notebook//field[@name='timesheet_ids']/form//field" position="attributes">
+        <xpath expr="//field[@name='timesheet_ids']/form//field" position="attributes">
           <attribute name="readonly">True</attribute>
         </xpath>
       </field>
