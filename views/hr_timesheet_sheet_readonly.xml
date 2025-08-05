@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
         <record id="hr_timesheet_sheet_form_readonly_details" model="ir.ui.view">
@@ -6,12 +5,20 @@
             <field name="model">hr_timesheet.sheet</field>
             <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
             <field name="arch" type="xml">
-                <!-- Apply readonly and disable create/edit options to all fields inside the notebook -->
+                <!-- Make all fields under the notebook read-only -->
                 <xpath expr="//notebook//field" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
+                <!-- Disable create/edit from relational widgets (e.g. one2many, many2many) -->
                 <xpath expr="//notebook//field" position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                    <attribute name="delete">false</attribute>
+                </xpath>
+                <!-- Hide any edit-only groups (Add new line buttons, etc.) -->
+                <xpath expr="//notebook//group[contains(@class, 'oe_edit_only')]" position="attributes">
+                    <attribute name="invisible">True</attribute>
                 </xpath>
             </field>
         </record>
