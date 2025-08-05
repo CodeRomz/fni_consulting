@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <data>
     <record id="hr_timesheet_sheet_form_readonly_notebook" model="ir.ui.view">
@@ -5,28 +6,44 @@
       <field name="model">hr_timesheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
       <field name="arch" type="xml">
-        <!-- 1. Make all fields on every page of the notebook read-only -->
-        <xpath expr="//notebook//field" position="attributes">
-          <attribute name="readonly">True</attribute>
+        <!-- Replace the original timesheet_ids field on the Details tab with a fully read‑only version -->
+        <xpath expr="//page[@string='Details']/field[@name='timesheet_ids']" position="replace">
+          <field name="timesheet_ids"
+                 nolabel="1"
+                 context="{'user_id': user_id}"
+                 readonly="True"
+                 create="false"
+                 edit="false"
+                 delete="false">
+            <!-- Remove inline editing and disable add/delete by omitting the editable attribute and setting edit=false -->
+            <tree create="false" edit="false" delete="false">
+              <field name="date" readonly="True"/>
+              <field name="project_id" readonly="True"/>
+              <field name="task_id"
+                     domain="[('project_id', '=', project_id)]"
+                     context="{'default_project_id': project_id}"
+                     readonly="True"/>
+              <field name="name" readonly="True"/>
+              <field name="unit_amount" widget="float_time" string="Hours" sum="Hours" readonly="True"/>
+              <field name="user_id" invisible="True" readonly="True"/>
+            </tree>
+            <!-- Provide a read‑only form view for record inspection; disable create/edit/delete -->
+            <form string="Timesheet Activities" create="false" edit="false" delete="false">
+              <group>
+                <field name="date" readonly="True"/>
+                <field name="name" readonly="True"/>
+                <field name="project_id" required="1" readonly="True"/>
+                <field name="task_id"
+                       domain="[('project_id', '=', project_id)]"
+                       context="{'default_project_id': project_id}"
+                       readonly="True"/>
+                <field name="unit_amount" widget="float_time" string="Hours" readonly="True"/>
+                <field name="user_id" invisible="True"/>
+              </group>
+            </form>
+          </field>
         </xpath>
-
-        <!-- 2. Remove inline editing and creation/deletion on every tree inside the notebook -->
-        <xpath expr="//notebook//tree" position="attributes">
-          <!-- disable the Add (+) and Delete icons -->
-          <attribute name="create">false</attribute>
-          <attribute name="delete">false</attribute>
-          <!-- disable opening the inline editor; without edit=true Odoo ignores 'editable':contentReference[oaicite:4]{index=4} -->
-          <attribute name="edit">false</attribute>
-          <!-- optionally remove the editable attribute altogether by setting it empty -->
-          <attribute name="editable"></attribute>
-        </xpath>
-
-        <!-- 3. Make one2many fields themselves read-only and hide quick-create/edit options -->
-        <xpath expr="//notebook//field" position="attributes">
-          <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
-        </xpath>
-
-        <!-- 4. Hide groups that contain edit-only controls (e.g. “Add new line” buttons) -->
+        <!-- Optionally hide Add/New Line buttons elsewhere in the notebook (groups with oe_edit_only) -->
         <xpath expr="//notebook//group[contains(@class, 'oe_edit_only')]" position="attributes">
           <attribute name="invisible">True</attribute>
         </xpath>
