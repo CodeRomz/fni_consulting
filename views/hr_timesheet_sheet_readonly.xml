@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <data>
     <record id="hr_timesheet_sheet_form_readonly_notebook" model="ir.ui.view">
@@ -5,8 +6,8 @@
       <field name="model">hr_timesheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
       <field name="arch" type="xml">
-        <!-- SUMMARY: replace line_ids with a fully read‑only matrix -->
-        <xpath expr="//page[@string='Summary']/field[@name='line_ids']" position="replace">
+        <!-- Replace the one2many matrix on the Summary page -->
+        <xpath expr="//field[@name='line_ids']" position="replace">
           <field name="line_ids"
                  nolabel="1"
                  widget="x2many_2d_matrix"
@@ -19,7 +20,6 @@
                  create="false"
                  edit="false"
                  delete="false">
-            <!-- copy original columns but mark each one readonly -->
             <tree limit="1000000">
               <field name="value_x" readonly="True"/>
               <field name="value_y" readonly="True"/>
@@ -28,20 +28,20 @@
               <field name="date" readonly="True"/>
               <field name="project_id" readonly="True"/>
               <field name="task_id" readonly="True"/>
-              <!-- company field stays readonly -->
               <field name="company_id" groups="base.group_multi_company" readonly="True"/>
               <field name="employee_id" readonly="True"/>
               <field name="new_line_id" invisible="1" readonly="True"/>
             </tree>
           </field>
         </xpath>
-        <!-- hide the add_line group entirely -->
-        <xpath expr="//page[@string='Summary']//group[contains(@class, 'oe_edit_only')]" position="attributes">
+
+        <!-- Hide the "Add new line" group (edit-only controls) -->
+        <xpath expr="//group[contains(@class, 'oe_edit_only')]" position="attributes">
           <attribute name="invisible">True</attribute>
         </xpath>
 
-        <!-- DETAILS: replace timesheet_ids with a fully read‑only one2many -->
-        <xpath expr="//page[@string='Details']/field[@name='timesheet_ids']" position="replace">
+        <!-- Replace the timesheet_ids one2many on the Details page -->
+        <xpath expr="//field[@name='timesheet_ids']" position="replace">
           <field name="timesheet_ids"
                  nolabel="1"
                  context="{'user_id': user_id}"
@@ -60,7 +60,6 @@
               <field name="unit_amount" widget="float_time" string="Hours" sum="Hours" readonly="True"/>
               <field name="user_id" invisible="1" readonly="True"/>
             </tree>
-            <!-- read‑only form view; disable create/edit/delete per documentation:contentReference[oaicite:2]{index=2} -->
             <form string="Timesheet Activities"
                   create="false"
                   edit="false"
@@ -74,7 +73,7 @@
                        context="{'default_project_id': project_id}"
                        readonly="True"/>
                 <field name="unit_amount" widget="float_time" string="Hours" readonly="True"/>
-                <field name="user_id" invisible="1" readonly="True"/>
+                <field name="user_id" invisible="1"/>
               </group>
             </form>
           </field>
