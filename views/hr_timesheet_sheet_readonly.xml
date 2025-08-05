@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="hr_timesheet_sheet_form_readonly_details" model="ir.ui.view">
+            <field name="name">hr.timesheet.sheet.form.readonly.notebook</field>
+            <field name="model">hr_timesheet.sheet</field>
+            <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
+            <field name="arch" type="xml">
+                <!-- Apply readonly and disable create/edit options to all fields inside the notebook -->
+                <xpath expr="//notebook//field" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//notebook//field" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
