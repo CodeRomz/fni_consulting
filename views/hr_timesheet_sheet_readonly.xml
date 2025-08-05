@@ -25,17 +25,21 @@
           <attribute name="create">false</attribute>
           <attribute name="delete">false</attribute>
         </xpath>
-        <!-- Make every column read-only -->
-        <xpath expr="//field[@name='timesheet_ids']/tree//field" position="attributes">
+
+        <!-- Make project_id in the list read-only -->
+        <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='project_id']" position="attributes">
           <attribute name="readonly">True</attribute>
         </xpath>
-        <!-- Disable editing in the pop-up form and mark its fields read-only -->
+
+        <!-- Disable editing in the pop-up form -->
         <xpath expr="//field[@name='timesheet_ids']/form" position="attributes">
           <attribute name="create">false</attribute>
           <attribute name="edit">false</attribute>
           <attribute name="delete">false</attribute>
         </xpath>
-        <xpath expr="//field[@name='timesheet_ids']/form//field" position="attributes">
+
+        <!-- Make project_id read-only in the pop-up form -->
+        <xpath expr="//field[@name='timesheet_ids']/form//field[@name='project_id']" position="attributes">
           <attribute name="readonly">True</attribute>
         </xpath>
       </field>
