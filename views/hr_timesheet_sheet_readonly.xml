@@ -1,38 +1,36 @@
 <odoo>
-    <data>
-        <record id="hr_timesheet_sheet_form_readonly_details" model="ir.ui.view">
-            <field name="name">hr.timesheet.sheet.form.readonly.notebook</field>
-            <field name="model">hr_timesheet.sheet</field>
-            <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
-            <field name="arch" type="xml">
-                <!-- Make all fields under the notebook read-only -->
-                <xpath expr="//notebook//field" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                </xpath>
-                <!-- Disable create/edit/delete on relational widgets globally -->
-                <xpath expr="//notebook//field" position="attributes">
-                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
-                    <attribute name="create">false</attribute>
-                    <attribute name="edit">false</attribute>
-                    <attribute name="delete">false</attribute>
-                </xpath>
-                <!-- Hide groups containing edit-only controls (Add new line, etc.) -->
-                <xpath expr="//notebook//group[contains(@class, 'oe_edit_only')]" position="attributes">
-                    <attribute name="invisible">True</attribute>
-                </xpath>
-                <!-- Make the timesheet_ids field totally immutable -->
-                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']" position="attributes">
-                    <attribute name="readonly">True</attribute>
-                    <attribute name="create">false</attribute>
-                    <attribute name="edit">false</attribute>
-                    <attribute name="delete">false</attribute>
-                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
-                </xpath>
-                <!-- Override the tree editable attribute so users cannot modify rows -->
-                <xpath expr="//page[@string='Details']//tree" position="attributes">
-                    <attribute name="editable">false</attribute>
-                </xpath>
-            </field>
-        </record>
-    </data>
+  <data>
+    <record id="hr_timesheet_sheet_form_readonly_notebook" model="ir.ui.view">
+      <field name="name">hr.timesheet.sheet.form.readonly.notebook</field>
+      <field name="model">hr_timesheet.sheet</field>
+      <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
+      <field name="arch" type="xml">
+        <!-- 1. Make all fields on every page of the notebook read-only -->
+        <xpath expr="//notebook//field" position="attributes">
+          <attribute name="readonly">True</attribute>
+        </xpath>
+
+        <!-- 2. Remove inline editing and creation/deletion on every tree inside the notebook -->
+        <xpath expr="//notebook//tree" position="attributes">
+          <!-- disable the Add (+) and Delete icons -->
+          <attribute name="create">false</attribute>
+          <attribute name="delete">false</attribute>
+          <!-- disable opening the inline editor; without edit=true Odoo ignores 'editable':contentReference[oaicite:4]{index=4} -->
+          <attribute name="edit">false</attribute>
+          <!-- optionally remove the editable attribute altogether by setting it empty -->
+          <attribute name="editable"></attribute>
+        </xpath>
+
+        <!-- 3. Make one2many fields themselves read-only and hide quick-create/edit options -->
+        <xpath expr="//notebook//field" position="attributes">
+          <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+        </xpath>
+
+        <!-- 4. Hide groups that contain edit-only controls (e.g. “Add new line” buttons) -->
+        <xpath expr="//notebook//group[contains(@class, 'oe_edit_only')]" position="attributes">
+          <attribute name="invisible">True</attribute>
+        </xpath>
+      </field>
+    </record>
+  </data>
 </odoo>
