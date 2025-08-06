@@ -20,17 +20,18 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
 
-                <!-- Details one2many (timesheet_ids): disable create/delete in list view -->
+                <!-- Timesheet Details (timesheet_ids) tree view -->
                 <xpath expr="//field[@name='timesheet_ids']/tree" position="attributes">
                     <attribute name="create">false</attribute>
                     <attribute name="delete">false</attribute>
                 </xpath>
-                <!-- Make every column read-only -->
                 <xpath expr="//field[@name='timesheet_ids']/tree//field" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
+                <!-- REMOVE user_id field from tree -->
+                <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='user_id']" position="replace"/>
 
-                <!-- Disable editing in the pop-up form and mark its fields read-only -->
+                <!-- Timesheet form popup -->
                 <xpath expr="//field[@name='timesheet_ids']/form" position="attributes">
                     <attribute name="create">false</attribute>
                     <attribute name="edit">false</attribute>
@@ -39,8 +40,10 @@
                 <xpath expr="//field[@name='timesheet_ids']/form//field" position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
+                <!-- REMOVE user_id field from form -->
+                <xpath expr="//field[@name='timesheet_ids']/form//field[@name='user_id']" position="replace"/>
 
-                <!--Prevent project_id from offering Create or Create & Edit -->
+                <!-- Prevent project/task creation -->
                 <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='project_id']" position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
@@ -48,7 +51,6 @@
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
 
-                <!--Prevent task_id from offering Create or Create & Edit -->
                 <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='task_id']" position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
