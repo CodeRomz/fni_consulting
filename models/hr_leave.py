@@ -1,3 +1,24 @@
+"""
+Override time off and calendar leave models to force zero worked hours
+and populate date/time fields on generated timesheet lines.
+"""
+from datetime import datetime, time
+
+from odoo import models, fields, api, tools, _
+from odoo.exceptions import (
+    UserError,
+    ValidationError,
+    RedirectWarning,
+    AccessDenied,
+    AccessError,
+    CacheMiss,
+    MissingError,
+)
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
 # … imports remain the same …
 
 class HrLeave(models.Model):
