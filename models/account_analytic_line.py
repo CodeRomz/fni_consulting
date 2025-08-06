@@ -11,3 +11,16 @@ class AccountAnalyticLine(models.Model):
         string='Task Type',
         help='Type of task logged in the timesheet line.'
     )
+
+    @api.depends('employee_id', 'unit_amount', 'holiday_id', 'global_leave_id')
+    def _compute_show_time_control(self):
+        super()._compute_show_time_control()
+        for line in self:
+            try:
+                # Hide start/stop icon for timesheets linked to leaves
+                if getattr(line, 'holiday_id', False) or getattr(line, 'global_leave_id', False):
+                    line.show_time_control = False
+            except Exception as exc:
+                _logger.exception(
+                    "Error hiding time control for analytic line %s: %s", line.id, exc
+                )

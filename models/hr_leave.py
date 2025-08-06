@@ -2,7 +2,6 @@
 Override time off and calendar leave models to force zero worked hours
 and populate date/time fields on generated timesheet lines.
 """
-
 from datetime import datetime, time
 
 from odoo import models, fields, api, tools, _
@@ -26,18 +25,14 @@ class HrLeave(models.Model):
     def _timesheet_prepare_line_values(self, index, *args, **kwargs):
         vals = super()._timesheet_prepare_line_values(index, *args, **kwargs)
         try:
-            # Always set worked hours to zero
             vals['unit_amount'] = 0.0
-
-            # Descriptive label including the leave type name
             leave_type_name = ''
             if getattr(self, 'holiday_status_id', False):
                 leave_type_name = self.holiday_status_id.with_context(
                     lang=self.env.user.lang or 'en_US'
                 ).name or ''
             vals['name'] = _("Time Off – %s") % leave_type_name
-
-            # Populate date_time and date_time_end if using time-control module
+            # Set date_time and date_time_end so time-control module has values.
             date_str = vals.get('date')
             if date_str and not vals.get('date_time'):
                 dt_start = fields.Datetime.from_string(date_str)
@@ -66,8 +61,6 @@ class ResourceCalendarLeaves(models.Model):
                 lang=self.env.user.lang or 'en_US'
             ).name or _('Public Holiday')
             vals['name'] = _("Time Off – %s") % leave_name
-
-            # Populate date_time and date_time_end based on the date field
             date_str = vals.get('date')
             if date_str and not vals.get('date_time'):
                 dt_start = fields.Datetime.from_string(date_str)
