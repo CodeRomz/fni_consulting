@@ -19,8 +19,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-# … imports remain the same …
-
 class HrLeave(models.Model):
     _inherit = 'hr.leave'
 
@@ -47,7 +45,7 @@ class HrLeave(models.Model):
                     total_days = 1
 
             # Build descriptive name with counter, e.g. “Time Off – Paid Time Off 3/15”
-            vals['name'] = _("Time Off – %s %s/%s") % (
+            vals['name'] = _("Time Off – %s  [ %s/%s ]") % (
                 leave_type_name, current_day, total_days
             )
 
