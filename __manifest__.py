@@ -8,7 +8,7 @@
     'license': 'LGPL-3',
 
     'category': 'Custom',
-    'depends': ['hr_timesheet_sheet'],
+    'depends': ['hr_timesheet_sheet', 'project_timesheet_time_control'],
 
     'data': [
         'security/ir.model.access.csv',
