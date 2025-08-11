@@ -13,6 +13,13 @@ _logger = logging.getLogger(__name__)
 class AccountAnalyticLine(models.Model):
     _inherit = "account.analytic.line"
 
+    # Keep other customizations unchanged
+    task_type_id = fields.Many2one(
+        'hr.timesheet.task.type',
+        string='Task Type',
+        help='Type of task logged in the timesheet line.',
+    )
+
     # Use a domain that combines the native project filter with the open‑state filter
     # Note: In Odoo 17 CE, the closed states are '1_done' and '1_canceled'
     task_id = fields.Many2one(
@@ -58,12 +65,6 @@ class AccountAnalyticLine(models.Model):
             _logger.debug("Completed onchange project_id for account.analytic.line")
 
     # -------------------------------------------------------------------------
-    # Keep other customizations unchanged
-    task_type_id = fields.Many2one(
-        'hr.timesheet.task.type',
-        string='Task Type',
-        help='Type of task logged in the timesheet line.',
-    )
 
     @api.depends('employee_id', 'unit_amount', 'holiday_id', 'global_leave_id')
     def _compute_show_time_control(self):
