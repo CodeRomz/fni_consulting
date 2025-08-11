@@ -36,12 +36,7 @@ class AccountAnalyticLine(models.Model):
 
     @api.onchange('project_id')
     def _onchange_project_id_update_task(self):
-        """
-        Reset the task when its project doesn't match the selected project
-        or the task is closed.
-        Because the domain is set at the field level, there is no need to
-        return a domain here; we just clear mismatched or closed tasks.
-        """
+
         self.ensure_one()
         try:
             if self.task_id:
