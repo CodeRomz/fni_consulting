@@ -5,7 +5,6 @@ from odoo.exceptions import (
     UserError, ValidationError, RedirectWarning, AccessDenied,
     AccessError, CacheMiss, MissingError
 )
-from . import code_romz_ai  # project helper import (keep if required)
 import logging
 _logger = logging.getLogger(__name__)
 
