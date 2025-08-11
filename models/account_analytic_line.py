@@ -1,4 +1,4 @@
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Standard imports and logger setup (place near the top of the file)
 from odoo import models, fields, api, tools, _
 from odoo.exceptions import (
@@ -8,31 +8,32 @@ from odoo.exceptions import (
 import logging
 _logger = logging.getLogger(__name__)
 
-# -----------------------------------------------------------------------------
-# Extend account.analytic.line to filter task_id dropdown by project
+# -------------------------------------------------------------------------------
+# Extend account.analytic.line to filter task_id dropdown by project and status
 class AccountAnalyticLine(models.Model):
     _inherit = "account.analytic.line"
 
-    # Show only open tasks (stage not closed) at model level
+    # Use the correct closed-state values for Odoo 17 CE: '1_done' and '1_canceled'
     task_id = fields.Many2one(
         comodel_name='project.task',
         string='Task',
-        domain=[('stage_id.is_closed', '=', False)],
+        domain=[('state', 'not in', ['1_done', '1_canceled'])],
     )
 
     @api.onchange('project_id')
     def _onchange_project_id_update_task_domain(self):
         """
         Restrict task selection to open tasks within the selected project.
-        Resets task_id if the current task doesn't belong to the new project.
+        Reset task_id if it belongs to a different project.
         """
         self.ensure_one()
-        # Base domain: tasks whose stage is not closed
-        domain = [('stage_id.is_closed', '=', False)]
+        # Base domain for open tasks in Odoo 17 CE
+        domain = [('state', 'not in', ['1_done', '1_canceled'])]
         try:
             if self.project_id:
+                # Add project filter when a project is selected
                 domain.append(('project_id', '=', self.project_id.id))
-                # Clear task if it belongs to a different project
+                # Clear task if it does not belong to the selected project
                 if self.task_id and self.task_id.project_id.id != self.project_id.id:
                     _logger.debug(
                         "Resetting task_id %s as it doesn't belong to selected project %s",
@@ -43,33 +44,29 @@ class AccountAnalyticLine(models.Model):
             _logger.exception("Failed to compute task domain on project change: %s", exc)
         else:
             _logger.debug("Applying task_id domain: %s", domain)
-            # Return domain so the UI filters the dropdown
+            # Return the domain so the UI filters tasks correctly
             return {'domain': {'task_id': domain}}
         finally:
             _logger.debug("Completed onchange for project_id on account.analytic.line")
-        # Fallback return in case of exception
+        # Fallback return if an exception occurred
         return {}
 
-    # -------------------------------------------------------------------------
-    # Custom task type field
+    # ---------------------------------------------------------------------------
+    # Additional customizations (keep these unchanged)
     task_type_id = fields.Many2one(
         'hr.timesheet.task.type',
         string='Task Type',
         help='Type of task logged in the timesheet line.',
     )
 
-    # -------------------------------------------------------------------------
-    # Override show_time_control to hide start/stop icons on leave-linked lines
     @api.depends('employee_id', 'unit_amount', 'holiday_id', 'global_leave_id')
     def _compute_show_time_control(self):
         """
-        Preserve the original show_time_control logic,
-        then hide controls when linked to leaves or global leaves.
+        Preserve default time-control behavior,
+        then hide controls when the line is linked to a leave.
         """
         try:
-            # Invoke the parent computation
             super()._compute_show_time_control()
-            # Post-process: hide time controls if the line relates to a leave
             for line in self:
                 if getattr(line, 'holiday_id', False) or getattr(line, 'global_leave_id', False):
                     line.show_time_control = False
@@ -80,8 +77,6 @@ class AccountAnalyticLine(models.Model):
                 exc,
             )
         else:
-            # No additional success actions needed
             pass
         finally:
-            # Optional final cleanup or debug logging
             _logger.debug("Completed _compute_show_time_control in account.analytic.line")
