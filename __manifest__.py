@@ -4,7 +4,7 @@
 
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
-    'license': 'LGPL-3',
+    'license': 'AGLP-3',
     'version': '17.0.1.0.0',
 
     'category': 'Custom',

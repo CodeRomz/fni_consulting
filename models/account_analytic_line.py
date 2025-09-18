@@ -34,6 +34,17 @@ class AccountAnalyticLine(models.Model):
         ),
     )
 
+    @api.model
+    def _running_domain(self):
+        # get the base domain from OCA project_timesheet_time_control:contentReference[oaicite:0]{index=0}
+        domain = super()._running_domain()
+        # exclude timesheet lines linked to time off (holiday_id/global_leave_id):contentReference[oaicite:1]{index=1}
+        domain += [
+            ('holiday_id', '=', False),
+            ('global_leave_id', '=', False),
+        ]
+        return domain
+
     @api.onchange('project_id')
     def _onchange_project_id_update_task(self):
 
