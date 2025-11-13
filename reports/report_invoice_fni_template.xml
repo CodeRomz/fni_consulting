@@ -16,22 +16,6 @@
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page">
 
-                    <style>
-                        /* Left: local (company) currency summary */
-                        .fni-local-summary td {
-                        font-size: 9pt;
-                        }
-
-                        /* Right: main invoice totals (USD) */
-                        .fni-main-summary td {
-                        font-size: 10.5pt;
-                        }
-                        .fni-main-summary strong {
-                        font-size: 11pt;
-                        }
-                    </style>
-
-
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-4">
                         <div class="col-6">

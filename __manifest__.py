@@ -15,10 +15,17 @@
         'views/task_type_view.xml',
         'views/account_analytic_line_view.xml',
         'views/hr_timesheet_sheet_readonly.xml',
-        'reports/report_invoice_fni_template.xml',  # templates FIRST
-        'reports/invoice_report_action.xml',        # action AFTER
+        'reports/report_invoice_fni_template.xml',
+        'reports/invoice_report_action.xml',
 
     ],
+
+    'assets': {
+        'web.report_assets_pdf': [
+            'fni_consulting/static/src/scss/report_invoice_fni.scss',
+        ],
+    },
+
     'installable': True,
     'application': False,
 }
