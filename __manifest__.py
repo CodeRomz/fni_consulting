@@ -15,8 +15,8 @@
         'views/task_type_view.xml',
         'views/account_analytic_line_view.xml',
         'views/hr_timesheet_sheet_readonly.xml',
-        "reports/invoice_report_action.xml",
-        "reports/report_invoice_fni_template.xml",
+        'reports/invoice_report_action.xml',
+        'reports/report_invoice_fni_template.xml',
 
     ],
     'installable': True,
