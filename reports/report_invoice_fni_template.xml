@@ -4,7 +4,7 @@
 
         <!--
             MAIN REPORT TEMPLATE
-            external id: fni_account_invoice_format.report_invoice_fni
+            external id: fni_consulting.report_invoice_fni
             - used by ir.actions.report.report_name
             - docs: recordset of account.move (invoices) provided by Odoo
             - wraps content in web.html_container (standard report container)
@@ -14,14 +14,14 @@
                 <!-- docs: account.move records (invoices) -->
                 <t t-foreach="docs" t-as="o">
                     <!-- per-invoice document rendering -->
-                    <t t-call="fni_account_invoice_format.report_invoice_fni_document"/>
+                    <t t-call="fni_consulting.report_invoice_fni_document"/>
                 </t>
             </t>
         </template>
 
         <!--
     DOCUMENT TEMPLATE
-    external id: fni_account_invoice_format.report_invoice_fni_document
+    external id: fni_consulting.report_invoice_fni_document
 
     Available key variables (Odoo report context):
       - docs: recordset of account.move (invoices)
