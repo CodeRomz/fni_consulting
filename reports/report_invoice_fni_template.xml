@@ -136,9 +136,11 @@
                                         </t>
                                     </td>
                                     <td class="text-right">
-                                        <span t-field="line.amount_tax"
-                                              t-options='{"widget": "monetary",
-                                              "display_currency": o.currency_id}'/>
+                                        <span t-esc="formatLang(
+                                        line.price_total - line.price_subtotal,
+                                        monetary=True,
+                                        currency_obj=o.currency_id
+                                        )"/>
                                     </td>
                                     <td class="text-right">
                                         <span t-field="line.price_subtotal"
