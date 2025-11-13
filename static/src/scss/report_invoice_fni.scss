@@ -20,6 +20,11 @@
     page-break-inside: avoid;
 }
 
+
+.o_main_table th{
+    border-top: none !important;
+    }
+
 .o_main_table th,
 .o_main_table td {
     border-left: none !important;
