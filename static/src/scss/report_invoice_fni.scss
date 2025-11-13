@@ -1,15 +1,18 @@
 .table-local-summary {
     font-size: 14px !important;
-    color: #6e6e6e !important;
 }
 
 .table-main-summary {
     font-size: 16.5px !important;
-    color: #333333 !important;
 }
 
 .table-main-summary .highlight-total {
     font-size: 17.5px !important;
     font-weight: 700 !important;
-    color: #333333 !important;
+}
+
+
+.fni-report-invoice .table-local-summary td:first-child,
+.fni-report-invoice .table-main-summary td:first-child {
+    color: #6e6e6e !important;
 }
