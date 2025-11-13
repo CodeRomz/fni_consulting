@@ -135,13 +135,12 @@
                                             <br/>
                                         </t>
                                     </td>
+
                                     <td class="text-right">
-                                        <span t-esc="formatLang(
-                                        line.price_total - line.price_subtotal,
-                                        monetary=True,
-                                        currency_obj=o.currency_id
-                                        )"/>
+                                        <t t-set="vat_amount" t-value="line.price_total - line.price_subtotal"/>
+                                        <span t-esc="'%s %s' % ( o.currency_id.symbol or '', '{0:,.2f}'.format(vat_amount) )"/>
                                     </td>
+
                                     <td class="text-right">
                                         <span t-field="line.price_subtotal"
                                               t-options='{"widget": "monetary",
