@@ -19,3 +19,9 @@
 .bank-details-block, .bank-details-block p {
     page-break-inside: avoid;
 }
+
+.o_main_table th,
+.o_main_table td {
+    border-left: none !important;
+    border-right: none !important;
+}
