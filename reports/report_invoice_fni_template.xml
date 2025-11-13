@@ -291,9 +291,8 @@
                                     <strong>Account Number :</strong>
                                     <span t-esc="bank.acc_number or ''"/>
                                     <br/>
-                                    <!-- If you store IBAN separately, replace acc_number with bank.iban -->
                                     <strong>IBAN Number :</strong>
-                                    <span t-esc="bank.acc_number or ''"/>
+                                    <span t-esc="bank.iban or ''"/>
                                     <br/>
                                     <strong>Swift Code :</strong>
                                     <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>

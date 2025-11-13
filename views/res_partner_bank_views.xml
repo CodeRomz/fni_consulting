@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit the standard Bank Accounts form -->
+        <record id="view_res_partner_bank_form_inherit_iban" model="ir.ui.view">
+            <field name="name">res.partner.bank.form.inherit.iban</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="account.view_partner_bank_form_inherit_account"/>
+            <field name="arch" type="xml">
+
+                <!-- Insert IBAN after the existing account number field -->
+                <xpath expr="//field[@name='acc_number']" position="after">
+                    <field name="iban"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
