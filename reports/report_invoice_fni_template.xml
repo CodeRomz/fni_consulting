@@ -155,7 +155,7 @@
                         <t t-set="exchange_rate"
                            t-value="o.amount_total and abs(o.amount_total_signed / o.amount_total) or 0.0"/>
 
-                        <div class="row mt-3">
+                        <div class="row mt-5">
                             <!-- LEFT: Local (company) currency summary -->
                             <div class="col-4">
                                 <table class="table table-sm table-local-summary">
@@ -209,8 +209,6 @@
 
                             <!-- SPACER -->
                             <div class="col-3"></div>
-
-
                             <!-- RIGHT: Original invoice-currency totals (USD) -->
                             <div class="col-5">
                                 <table class="table table-sm table-main-summary">
@@ -243,6 +241,48 @@
                                                 <span t-field="o.amount_total"
                                                       t-options='{"widget": "monetary",
                                               "display_currency": o.currency_id}'  style="color: #333333 !important"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+
+                    <t t-if="o.company_id.currency_id == o.currency_id" >
+                        <div class="row mt-5">
+                            <div class="col-7"></div>
+                            <div class="col-5">
+                                <table class="table table-sm table-main-summary">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Untaxed Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.amount_tax">
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Taxes</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right highlight-total">
+                                                <strong style="color: #333333 !important">Total</strong>
+                                            </td>
+                                            <td class="text-right highlight-total">
+                                                <span t-field="o.amount_total"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}' style="color: #333333 !important"/>
                                             </td>
                                         </tr>
                                     </tbody>
