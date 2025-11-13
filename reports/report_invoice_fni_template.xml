@@ -164,7 +164,7 @@
                                     <tbody>
                                         <!-- Exchange Rate -->
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e">
+                                            <td class="text-right" style="color: #6e6e6e!important">
                                                 <strong>Exchange Rate</strong>
                                             </td>
                                             <td class="text-right">
@@ -174,7 +174,7 @@
 
                                         <!-- Subtotal in company currency (AED) -->
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e">
+                                            <td class="text-right" style="color: #6e6e6e!important">
                                                 <strong>Subtotal</strong>
                                             </td>
                                             <td class="text-right">
@@ -185,7 +185,7 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e">
+                                            <td class="text-right" style="color: #6e6e6e!important">
                                                 <strong>VAT Amount</strong>
                                             </td>
                                             <td class="text-right">
@@ -196,7 +196,7 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e">
+                                            <td class="text-right" style="color: #6e6e6e!important">
                                                 <strong>Total</strong>
                                             </td>
                                             <td class="text-right">
@@ -218,7 +218,7 @@
                                 <table class="table table-sm table-main-summary">
                                     <tbody>
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e">
+                                            <td class="text-right" style="color: #6e6e6e!important">
                                                 <strong>Untaxed Amount</strong>
                                             </td>
                                             <td class="text-right">
@@ -228,7 +228,7 @@
                                             </td>
                                         </tr>
                                         <tr t-if="o.amount_tax">
-                                            <td class="text-right" style="color: #6e6e6e">
+                                            <td class="text-right" style="color: #6e6e6e!important">
                                                 <strong>Taxes</strong>
                                             </td>
                                             <td class="text-right">
@@ -238,10 +238,10 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right highlight-total" style="color: #333333">
+                                            <td class="text-right highlight-total" style="color: #333333 !important">
                                                 <strong>Total</strong>
                                             </td>
-                                            <td class="text-right highlight-total" style="color: #333333">
+                                            <td class="text-right highlight-total" style="color: #333333 !important">
                                                 <span t-field="o.amount_total"
                                                       t-options='{"widget": "monetary",
                                               "display_currency": o.currency_id}'/>
