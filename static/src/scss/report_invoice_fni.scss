@@ -21,25 +21,12 @@
 }
 
 
-/* Remove outer border of main invoice table */
-.o_main_table {
-    border: none !important;          /* remove box border */
-    border-collapse: collapse;
-}
+.o_main_table th{
+    border-top: none !important;
+    }
 
-/* already removed verticals earlier – keep it here if needed */
 .o_main_table th,
 .o_main_table td {
     border-left: none !important;
     border-right: none !important;
-}
-
-/* remove top border (first row) */
-.o_main_table thead tr:first-child th {
-    border-top: none !important;
-}
-
-/* remove bottom border (last row) */
-.o_main_table tbody tr:last-child td {
-    border-bottom: none !important;
 }
