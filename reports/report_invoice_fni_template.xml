@@ -59,6 +59,14 @@
                         </div>
                     </div>
 
+
+                    <div class="row mb-4">
+                        <h3>
+                            TAX Invoice <span t-field="o.name"/>
+                        </h3>
+                    </div>
+
+
                     <div class="row mb-4">
                         <div class="col-3 text-right">
                             <strong>Invoice Date:</strong>
@@ -79,13 +87,6 @@
                             <!-- fill in your custom holder logic here -->
                         </div>
                     </div>
-
-                    <div class="row mb-4">
-                        <h3>
-                            <span t-field="o.name"/>
-                        </h3>
-                    </div>
-
 
                     <!-- INVOICE LINES TABLE -->
                     <table class="table table-sm o_main_table">
