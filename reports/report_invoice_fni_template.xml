@@ -16,6 +16,21 @@
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page">
 
+                    <style>
+                        /* Left: local (company) currency summary */
+                        .fni-local-summary td {
+                        font-size: 9pt;
+                        }
+
+                        /* Right: main invoice totals (USD) */
+                        .fni-main-summary td {
+                        font-size: 10.5pt;
+                        }
+                        .fni-main-summary strong {
+                        font-size: 11pt;
+                        }
+                    </style>
+
 
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-4">
@@ -162,8 +177,8 @@
 
                         <div class="row mt-3">
                             <!-- LEFT: Local (company) currency summary -->
-                            <div class="col-4">
-                                <table class="table table-sm">
+                            <div class="col-5">
+                                <table class="table table-sm table-local-summary">
                                     <tbody>
                                         <!-- Exchange Rate -->
                                         <tr>
@@ -171,7 +186,6 @@
                                                 <strong>Exchange Rate</strong>
                                             </td>
                                             <td class="text-right">
-                                                <!-- e.g. 3.67250 -->
                                                 <span t-esc="'{0:.5f}'.format(exchange_rate)"/>
                                             </td>
                                         </tr>
@@ -180,9 +194,7 @@
                                         <tr>
                                             <td class="text-right">
                                                 <strong>
-                                                    Subtotal (
-                                                    <t t-esc="company_currency.name"/>
-                                                    )
+                                                    Subtotal
                                                 </strong>
                                             </td>
                                             <td class="text-right">
@@ -192,13 +204,10 @@
                                             </td>
                                         </tr>
 
-                                        <!-- VAT in company currency (AED) -->
                                         <tr>
                                             <td class="text-right">
                                                 <strong>
-                                                    VAT Amount (
-                                                    <t t-esc="company_currency.name"/>
-                                                    )
+                                                    VAT Amount
                                                 </strong>
                                             </td>
                                             <td class="text-right">
@@ -208,13 +217,10 @@
                                             </td>
                                         </tr>
 
-                                        <!-- Total in company currency (AED) -->
                                         <tr>
                                             <td class="text-right">
                                                 <strong>
-                                                    Total (
-                                                    <t t-esc="company_currency.name"/>
-                                                    )
+                                                    Total
                                                 </strong>
                                             </td>
                                             <td class="text-right">
@@ -227,12 +233,9 @@
                                 </table>
                             </div>
 
-                            <!-- MIDDLE spacer -->
-                            <div class="col-4"></div>
-
                             <!-- RIGHT: Original invoice-currency totals (USD) -->
-                            <div class="col-4">
-                                <table class="table table-sm">
+                            <div class="col-7">
+                                <table class="table table-sm table-main-summary">
                                     <tbody>
                                         <tr>
                                             <td class="text-right">
@@ -258,7 +261,7 @@
                                             <td class="text-right">
                                                 <strong>Total</strong>
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-right highlight-total">
                                                 <span t-field="o.amount_total"
                                                       t-options='{"widget": "monetary",
                                               "display_currency": o.currency_id}'/>
