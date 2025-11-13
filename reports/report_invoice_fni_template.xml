@@ -74,7 +74,7 @@
                                 <th class="text-right">Unit Price</th>
                                 <th class="text-right">Vat</th>
                                 <th class="text-right">Vat Amount</th>
-                                <th class="text-right">Ammount</th>
+                                <th class="text-right">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,7 +152,7 @@
                         <div class="col-6">
                             <!-- Optional notes / terms -->
                             <t t-if="o.narration">
-                                <strong>Notes</strong>
+                                <strong>Notes:</strong>
                                 <p t-field="o.narration"/>
                             </t>
                         </div>
