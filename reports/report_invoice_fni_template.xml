@@ -62,7 +62,8 @@
 
                     <div class="row mb-4">
                         <h3>
-                            TAX Invoice <span t-field="o.name"/>
+                            TAX Invoice
+                            <span t-field="o.name"/>
                         </h3>
                     </div>
 
@@ -118,17 +119,20 @@
                                     <!-- ANALYTIC DISTRIBUTION COLUMN -->
                                     <td class="text-right">
                                         <t t-if="line.analytic_distribution">
-                                            <t t-set="distribution"
-                                               t-value="line.analytic_distribution or {}"/>
+                                            <t t-set="distribution" t-value="line.analytic_distribution or {}"/>
                                             <t t-foreach="distribution.items()" t-as="item">
-                                                <!-- item[0] = analytic_account_id (string/int), item[1] = percentage -->
-                                                <t t-set="account_id"
-                                                   t-value="int(item[0]) if isinstance(item[0], str) else item[0]"/>
-                                                <!--<t t-set="analytic_account"
-                                                   t-value="env['account.analytic.account'].browse(account_id)"/>-->
-                                                <t t-if="analytic_account">
-                                                    <span t-esc="analytic_account.name"/>
-                                                    <br/>
+                                                <t t-set="key_str" t-value="str(item[0])"/>
+                                                <t t-set="key_parts" t-value="[p.strip() for p in key_str.split(',')]"/>
+                                                <t t-foreach="key_parts" t-as="key_part">
+                                                    <t t-if="key_part and key_part.isdigit()">
+                                                        <t t-set="analytic_account"
+                                                           t-value="env['account.analytic.account'].browse(int(key_part))"/>
+                                                        <t t-if="analytic_account">
+                                                            <span t-esc="analytic_account.name"/>
+                                                            (<span t-esc="item[1]"/>%)
+                                                            <br/>
+                                                        </t>
+                                                    </t>
                                                 </t>
                                             </t>
                                         </t>
