@@ -10,3 +10,12 @@
     font-size: 18px !important;
     font-weight: 700 !important;
 }
+
+.bank-details-block {
+    page-break-inside: avoid;
+    display: block;
+}
+
+.bank-details-block, .bank-details-block p {
+    page-break-inside: avoid;
+}

@@ -280,23 +280,25 @@
                            t-value="o.partner_bank_id or (o.company_id.bank_ids and o.company_id.bank_ids[0])"/>
 
                         <t t-if="bank">
-                            <p>
-                                <strong>Business Account Name :</strong>
-                                <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
-                                <br/>
-                                <strong>Bank Name :</strong>
-                                <span t-esc="bank.bank_id and bank.bank_id.name or ''"/>
-                                <br/>
-                                <strong>Account Number :</strong>
-                                <span t-esc="bank.acc_number or ''"/>
-                                <br/>
-                                <!-- If you store IBAN separately, replace acc_number with bank.iban -->
-                                <strong>IBAN Number :</strong>
-                                <span t-esc="bank.acc_number or ''"/>
-                                <br/>
-                                <strong>Swift Code :</strong>
-                                <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
-                            </p>
+                            <div class="bank-details-block">
+                                <p>
+                                    <strong>Business Account Name :</strong>
+                                    <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
+                                    <br/>
+                                    <strong>Bank Name :</strong>
+                                    <span t-esc="bank.bank_id and bank.bank_id.name or ''"/>
+                                    <br/>
+                                    <strong>Account Number :</strong>
+                                    <span t-esc="bank.acc_number or ''"/>
+                                    <br/>
+                                    <!-- If you store IBAN separately, replace acc_number with bank.iban -->
+                                    <strong>IBAN Number :</strong>
+                                    <span t-esc="bank.acc_number or ''"/>
+                                    <br/>
+                                    <strong>Swift Code :</strong>
+                                    <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
+                                </p>
+                            </div>
                         </t>
                     </div>
                 </div>
