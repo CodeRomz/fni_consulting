@@ -111,11 +111,33 @@
                         </div>
                     </div>
 
+                    <div class="row mb-4">
+                        <div class="col-3 text-right" >
+                                <strong>Invoice Date:</strong>
+                                <span t-field="o.invoice_date"/>
+                        </div>
+                        <div class="col-3 text-right" >
+                                <strong>Due Date:</strong>
+                                <span t-field="o.invoice_date_due"/>
+                        </div>
+                        <div class="col-3 text-right" >
+                                <strong>HODLER:</strong>
+
+                        </div>
+                        <div class="col-3 text-right" >
+                                <strong>HOLDER:</strong>
+
+                        </div>
+                    </div>
+
+
+
                     <!-- INVOICE LINES TABLE -->
                     <table class="table table-sm o_main_table">
                         <thead>
                             <tr>
                                 <th>Description</th>
+                                <th class="text-right">Analytic Distribution</th>
                                 <th class="text-right">Quantity</th>
                                 <th class="text-right">Unit Price</th>
                                 <th class="text-right">Taxes</th>
@@ -133,6 +155,12 @@
                                             <span class="text-muted">
                                                 <t t-esc="line.product_id.default_code or ''"/>
                                             </span>
+                                        </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="line.analytic_distribution"/>
+                                        <t t-if="line.analytic_distribution_id">
+                                            <span t-field="line.analytic_distribution.name"/>
                                         </t>
                                     </td>
                                     <td class="text-right">
