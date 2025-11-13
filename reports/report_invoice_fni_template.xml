@@ -200,6 +200,8 @@
 
                     <!-- FOOTER AREA: PAYMENT TERMS, BANK INFO, ETC. -->
                     <div class="mt-3">
+
+                        <!-- Payment terms -->
                         <t t-if="o.invoice_payment_term_id">
                             <p>
                                 <strong>Payment Terms:</strong>
@@ -207,19 +209,36 @@
                             </p>
                         </t>
 
-                        <t t-if="o.company_id.bank_ids">
+                        <!-- Bank details: prefer invoice's bank, fallback to company first bank -->
+                        <t t-set="bank"
+                           t-value="o.partner_bank_id or (o.company_id.bank_ids and o.company_id.bank_ids[0])"/>
+
+                        <t t-if="bank">
                             <p>
-                                <strong>Bank Account:</strong>
-                                <t t-foreach="o.company_id.bank_ids" t-as="bank">
-                                    <br/>
-                                    <t t-esc="bank.acc_number or ''"/>
-                                    <t t-if="bank.bank_id">
-                                        (<t t-esc="bank.bank_id.name"/>)
-                                    </t>
-                                </t>
+                                <strong>Business Account Name :</strong>
+                                <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
+                                <br/>
+
+                                <strong>Bank Name :</strong>
+                                <span t-esc="bank.bank_id and bank.bank_id.name or ''"/>
+                                <br/>
+
+                                <strong>Account Number :</strong>
+                                <span t-esc="bank.acc_number or ''"/>
+                                <br/>
+
+                                <!-- If you store IBAN separately, replace acc_number with bank.iban -->
+                                <strong>IBAN Number :</strong>
+                                <span t-esc="bank.acc_number or ''"/>
+                                <br/>
+
+                                <strong>Swift Code :</strong>
+                                <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
                             </p>
                         </t>
+
                     </div>
+
 
                 </div>
             </t>
