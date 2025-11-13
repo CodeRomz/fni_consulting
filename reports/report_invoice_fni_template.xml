@@ -164,8 +164,8 @@
                                     <tbody>
                                         <!-- Exchange Rate -->
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e!important">
-                                                <strong>Exchange Rate</strong>
+                                            <td class="text-right" >
+                                                <strong style="color: #6e6e6e !important">Exchange Rate</strong>
                                             </td>
                                             <td class="text-right">
                                                 <span t-esc="'{0:.5f}'.format(exchange_rate)"/>
@@ -174,8 +174,8 @@
 
                                         <!-- Subtotal in company currency (AED) -->
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e!important">
-                                                <strong>Subtotal</strong>
+                                            <td class="text-right" >
+                                                <strong style="color: #6e6e6e !important">Subtotal</strong>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="o.amount_untaxed_signed"
@@ -185,8 +185,8 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e!important">
-                                                <strong>VAT Amount</strong>
+                                            <td class="text-right" >
+                                                <strong style="color: #6e6e6e !important">VAT Amount</strong>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="o.amount_tax_signed"
@@ -196,8 +196,8 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e!important">
-                                                <strong>Total</strong>
+                                            <td class="text-right" >
+                                                <strong style="color: #6e6e6e !important">Total</strong>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="o.amount_total_signed"
@@ -218,8 +218,8 @@
                                 <table class="table table-sm table-main-summary">
                                     <tbody>
                                         <tr>
-                                            <td class="text-right" style="color: #6e6e6e!important">
-                                                <strong>Untaxed Amount</strong>
+                                            <td class="text-right" >
+                                                <strong style="color: #6e6e6e !important">Untaxed Amount</strong>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="o.amount_untaxed"
@@ -228,8 +228,8 @@
                                             </td>
                                         </tr>
                                         <tr t-if="o.amount_tax">
-                                            <td class="text-right" style="color: #6e6e6e!important">
-                                                <strong>Taxes</strong>
+                                            <td class="text-right" >
+                                                <strong style="color: #6e6e6e !important">Taxes</strong>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="o.amount_tax"
@@ -238,13 +238,13 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right highlight-total" style="color: #333333 !important">
-                                                <strong>Total</strong>
+                                            <td class="text-right highlight-total" >
+                                                <strong style="color: #333333 !important">Total</strong>
                                             </td>
-                                            <td class="text-right highlight-total" style="color: #333333 !important">
+                                            <td class="text-right highlight-total">
                                                 <span t-field="o.amount_total"
                                                       t-options='{"widget": "monetary",
-                                              "display_currency": o.currency_id}'/>
+                                              "display_currency": o.currency_id}'  style="color: #333333 !important"/>
                                             </td>
                                         </tr>
                                     </tbody>
