@@ -93,10 +93,12 @@
                     <div class="row mb-4">
                         <div class="col-3 text-right">
                             <strong>Invoice Date:</strong>
+                        <br/>
                             <span t-field="o.invoice_date"/>
                         </div>
                         <div class="col-3 text-right">
                             <strong>Due Date:</strong>
+                            <br/>
                             <span t-field="o.invoice_date_due"/>
                         </div>
                         <div class="col-3 text-right">
@@ -114,7 +116,7 @@
                         <thead>
                             <tr>
                                 <th>Description</th>
-                                <th class="text-right">Analytic Distribution</th>
+                                <th class="text-right">Project/Department</th>
                                 <th class="text-right">Quantity</th>
                                 <th class="text-right">Unit Price</th>
                                 <th class="text-right">Taxes</th>
