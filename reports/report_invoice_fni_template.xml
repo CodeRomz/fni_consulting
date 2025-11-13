@@ -121,6 +121,12 @@
                                             <t t-set="distribution"
                                                t-value="line.analytic_distribution or {}"/>
                                             <t t-foreach="distribution.items()" t-as="item">
+                                                <!-- item[0] = analytic_account_id (string/int), item[1] = percentage -->
+                                                <!--<t t-set="account_id"
+                                                   t-value="int(item[0]) if isinstance(item[0], str) else item[0]"/>
+                                                <t t-set="analytic_account"
+                                                   t-value="env['account.analytic.account'].browse(account_id)"/>-->
+
                                                 <t t-if="analytic_account">
                                                     <span t-esc="analytic_account.name"/>
                                                     <br/>
