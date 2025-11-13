@@ -8,7 +8,7 @@
     'version': '17.0.2.0.0',
 
     'category': 'Custom',
-    'depends': ['hr_timesheet_sheet', 'project_timesheet_time_control'],
+    'depends': ['hr_timesheet_sheet', 'project_timesheet_time_control', 'hr_holidays'],
 
     'data': [
         'security/ir.model.access.csv',

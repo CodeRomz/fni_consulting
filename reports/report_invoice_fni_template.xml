@@ -20,30 +20,9 @@
         </template>
 
         <!--
-    DOCUMENT TEMPLATE
-    external id: fni_consulting.report_invoice_fni_document
-
-    Available key variables (Odoo report context):
-      - docs: recordset of account.move (invoices)
-      - o: current invoice from docs (see t-foreach above)
-      - doc_ids: list of ids (optional, via _get_report_values)
-      - doc_model: "account.move"
-      - user: current res.users
-      - res_company: company of current user
-      - website, web_base_url, time, context_timestamp, ...
-
-    Common fields used on account.move (o):
-      - o.name              : Invoice number
-      - o.invoice_date      : Invoice date
-      - o.partner_id        : Customer (res.partner)
-      - o.company_id        : Company (res.company)
-      - o.invoice_line_ids  : One2many of lines (account.move.line)
-      - o.tax_line_ids      : Tax line summary
-      - o.currency_id       : Currency
-      - o.amount_untaxed    : Untaxed amount
-      - o.amount_tax        : Total tax
-      - o.amount_total      : Grand total
--->
+            DOCUMENT TEMPLATE
+            external id: fni_consulting.report_invoice_fni_document
+        -->
         <template id="report_invoice_fni_document">
 
             <!-- You can set language using partner or company -->
@@ -112,25 +91,23 @@
                     </div>
 
                     <div class="row mb-4">
-                        <div class="col-3 text-right" >
-                                <strong>Invoice Date:</strong>
-                                <span t-field="o.invoice_date"/>
+                        <div class="col-3 text-right">
+                            <strong>Invoice Date:</strong>
+                            <span t-field="o.invoice_date"/>
                         </div>
-                        <div class="col-3 text-right" >
-                                <strong>Due Date:</strong>
-                                <span t-field="o.invoice_date_due"/>
+                        <div class="col-3 text-right">
+                            <strong>Due Date:</strong>
+                            <span t-field="o.invoice_date_due"/>
                         </div>
-                        <div class="col-3 text-right" >
-                                <strong>HODLER:</strong>
-
+                        <div class="col-3 text-right">
+                            <strong>HOLDER:</strong>
+                            <!-- fill in your custom holder logic here -->
                         </div>
-                        <div class="col-3 text-right" >
-                                <strong>HOLDER:</strong>
-
+                        <div class="col-3 text-right">
+                            <strong>HOLDER:</strong>
+                            <!-- fill in your custom holder logic here -->
                         </div>
                     </div>
-
-
 
                     <!-- INVOICE LINES TABLE -->
                     <table class="table table-sm o_main_table">
@@ -157,12 +134,28 @@
                                             </span>
                                         </t>
                                     </td>
+
+                                    <!-- ANALYTIC DISTRIBUTION COLUMN -->
                                     <td class="text-right">
-                                        <span t-field="line.analytic_distribution"/>
-                                        <t t-if="line.analytic_distribution_id">
-                                            <span t-field="line.analytic_distribution.name"/>
+                                        <t t-if="line.analytic_distribution">
+                                            <t t-set="distribution"
+                                               t-value="line.analytic_distribution or {}"/>
+                                            <t t-foreach="distribution.items()" t-as="item">
+                                                <!-- item[0] = analytic_account_id (string/int), item[1] = percentage -->
+                                                <t t-set="account_id"
+                                                   t-value="int(item[0]) if isinstance(item[0], str) else item[0]"/>
+                                                <t t-set="analytic_account"
+                                                   t-value="env['account.analytic.account'].browse(account_id)"/>
+
+                                                <t t-if="analytic_account">
+                                                    <span t-esc="analytic_account.name"/>
+                                                    (<span t-esc="item[1]"/> %)
+                                                    <br/>
+                                                </t>
+                                            </t>
                                         </t>
                                     </td>
+
                                     <td class="text-right">
                                         <span t-field="line.quantity"/>
                                         <t t-if="line.product_uom_id">
@@ -194,7 +187,7 @@
                     <!-- TOTALS / TAX SUMMARY -->
                     <div class="row mt-4">
                         <div class="col-6">
-                            <!-- Optional notes / terms; you can adapt field -->
+                            <!-- Optional notes / terms -->
                             <t t-if="o.narration">
                                 <strong>Notes</strong>
                                 <p t-field="o.narration"/>
