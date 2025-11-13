@@ -1,41 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-
-        <!--
-            MAIN REPORT TEMPLATE
-            external id: fni_consulting.report_invoice_fni
-            - used by ir.actions.report.report_name
-            - docs: recordset of account.move (invoices) provided by Odoo
-            - wraps content in web.html_container (standard report container)
-        -->
         <template id="report_invoice_fni">
             <t t-call="web.html_container">
-                <!-- docs: account.move records (invoices) -->
                 <t t-foreach="docs" t-as="o">
-                    <!-- per-invoice document rendering -->
                     <t t-call="fni_consulting.report_invoice_fni_document"/>
                 </t>
             </t>
         </template>
 
-        <!--
-            DOCUMENT TEMPLATE
-            external id: fni_consulting.report_invoice_fni_document
-        -->
         <template id="report_invoice_fni_document">
 
-            <!-- You can set language using partner or company -->
             <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
 
-            <!-- Standard header + footer wrapper -->
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page">
-
-                    <!-- HEADER ROW: COMPANY / INVOICE META -->
-
-
-                    <!-- CUSTOMER BLOCK -->
+                    <!--CUSTOMER BLOCK-->
                     <div class="row mb-4">
                         <div class="col-6">
                             <span t-field="o.partner_id.name"/>
@@ -58,15 +38,13 @@
                             </t>
                         </div>
                     </div>
-
-
+                    <!--INVOICE HEADER-->
                     <div class="row mb-4">
                         <h3>
                             TAX Invoice
                             <span t-field="o.name"/>
                         </h3>
                     </div>
-
 
                     <div class="row mb-4">
                         <div class="col-3 text-right">
@@ -98,7 +76,8 @@
                                 <th class="text-right">Project/Dept</th>
                                 <th class="text-right">Quantity</th>
                                 <th class="text-right">Unit Price</th>
-                                <th class="text-right">Taxes</th>
+                                <th class="text-right">Vat</th>
+                                <th class="text-right">Vat Amount</th>
                                 <th class="text-right">Subtotal</th>
                             </tr>
                         </thead>
@@ -129,7 +108,7 @@
                                                            t-value="env['account.analytic.account'].browse(int(key_part))"/>
                                                         <t t-if="analytic_account">
                                                             <span t-esc="analytic_account.name"/>
-                                                            (<span t-esc="item[1]"/>%)
+                                                            <!--(<span t-esc="item[1]"/>%)-->
                                                             <br/>
                                                         </t>
                                                     </t>
@@ -155,6 +134,11 @@
                                             <span t-esc="tax.name"/>
                                             <br/>
                                         </t>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="line.amount_tax"
+                                              t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
                                     </td>
                                     <td class="text-right">
                                         <span t-field="line.price_subtotal"
