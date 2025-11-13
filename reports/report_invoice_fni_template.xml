@@ -152,9 +152,9 @@
                         </tbody>
                     </table>
 
-                    <!-- TOTALS / TAX SUMMARY -->
+                    <!-- LOCAL TAX SUMMARY-->
                     <div class="row mt-3">
-                        <div class="col-6">
+                        <div class="col-4">
                             <table class="table table-sm">
                                 <tbody>
                                     <tr>
@@ -165,7 +165,7 @@
 
                                         </td>
                                     </tr>
-                                    <tr t-if="o.amount_tax">
+                                    <tr>
                                         <td class="text-right">
                                             <strong>Subtotal (Currency Local)</strong>
                                         </td>
@@ -192,8 +192,9 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <div class="col-6">
+                        <div class="col-4"> </div>
+                        <!--SPACER -->
+                        <div class="col-4">
                             <table class="table table-sm">
                                 <tbody>
                                     <tr>
@@ -231,6 +232,7 @@
                         </div>
                     </div>
 
+                        <!-- NARRATION -->
                     <div class="row mt-3">
                         <div class="col-12">
                             <t t-if="o.narration">
