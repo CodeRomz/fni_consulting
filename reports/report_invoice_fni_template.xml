@@ -155,7 +155,7 @@
                         <t t-set="exchange_rate"
                            t-value="o.amount_total and abs(o.amount_total_signed / o.amount_total) or 0.0"/>
 
-                        <div class="row mt-5">
+                        <div class="row mt-4">
                             <!-- LEFT: Local (company) currency summary -->
                             <div class="col-4">
                                 <table class="table table-sm table-local-summary">
@@ -250,7 +250,7 @@
                     </t>
 
                     <t t-if="o.company_id.currency_id == o.currency_id" >
-                        <div class="row mt-5">
+                        <div class="row mt-4">
                             <div class="col-7"></div>
                             <div class="col-5">
                                 <table class="table table-sm table-main-summary">
