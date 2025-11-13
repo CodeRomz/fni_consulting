@@ -17,7 +17,6 @@
                 <div class="page">
 
 
-
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-4">
                         <div class="col-6">
@@ -28,7 +27,8 @@
                                               "fields": ["address"],
                                               "no_marker": True}'/>
                             <br/>
-                            VAT: <span t-field="o.partner_id.vat"/>
+                            VAT:
+                            <span t-field="o.partner_id.vat"/>
                         </div>
                         <div class="col-6 text-right">
                             <t t-if="o.partner_shipping_id and o.partner_shipping_id != o.partner_id">
@@ -152,87 +152,126 @@
                         </tbody>
                     </table>
 
-                    <!-- LOCAL TAX SUMMARY-->
-                    <div class="row mt-3">
-                        <div class="col-4">
-                            <table class="table table-sm">
-                                <tbody>
-                                    <tr>
-                                        <td class="text-right">
-                                            <strong>Exchage Rate</strong>
-                                        </td>
-                                        <td class="text-right">
 
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">
-                                            <strong>Subtotal (Currency Local)</strong>
-                                        </td>
-                                        <td class="text-right">
+                    <!-- LOCAL TAX SUMMARY -->
+                    <t t-if="o.company_id.currency_id != o.currency_id">
+                        <!-- Prepare helper vars: company currency (AED) and FX rate -->
+                        <t t-set="company_currency" t-value="o.company_id.currency_id"/>
+                        <t t-set="exchange_rate"
+                           t-value="o.amount_total and abs(o.amount_total_signed / o.amount_total) or 0.0"/>
 
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">
-                                            <strong>Vat Amount (Currency Local)</strong>
-                                        </td>
-                                        <td class="text-right">
+                        <div class="row mt-3">
+                            <!-- LEFT: Local (company) currency summary -->
+                            <div class="col-4">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <!-- Exchange Rate -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>Exchange Rate</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <!-- e.g. 3.67250 -->
+                                                <span t-esc="'{0:.5f}'.format(exchange_rate)"/>
+                                            </td>
+                                        </tr>
 
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">
-                                            <strong>Total (Currency Local)</strong>
-                                        </td>
-                                        <td class="text-right">
+                                        <!-- Subtotal in company currency (AED) -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>
+                                                    Subtotal (
+                                                    <t t-esc="company_currency.name"/>
+                                                    )
+                                                </strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
 
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                        <!-- VAT in company currency (AED) -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>
+                                                    VAT Amount (
+                                                    <t t-esc="company_currency.name"/>
+                                                    )
+                                                </strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Total in company currency (AED) -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>
+                                                    Total (
+                                                    <t t-esc="company_currency.name"/>
+                                                    )
+                                                </strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_total_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- MIDDLE spacer -->
+                            <div class="col-4"></div>
+
+                            <!-- RIGHT: Original invoice-currency totals (USD) -->
+                            <div class="col-4">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>Untaxed Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.amount_tax">
+                                            <td class="text-right">
+                                                <strong>Taxes</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong>Total</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_total"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-4"> </div>
-                        <!--SPACER -->
-                        <div class="col-4">
-                            <table class="table table-sm">
-                                <tbody>
-                                    <tr>
-                                        <td class="text-right">
-                                            <strong>Untaxed Amount</strong>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-field="o.amount_untaxed"
-                                                  t-options='{"widget": "monetary",
-                                                              "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <tr t-if="o.amount_tax">
-                                        <td class="text-right">
-                                            <strong>Taxes</strong>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-field="o.amount_tax"
-                                                  t-options='{"widget": "monetary",
-                                                              "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-right">
-                                            <strong>Total</strong>
-                                        </td>
-                                        <td class="text-right">
-                                            <span t-field="o.amount_total"
-                                                  t-options='{"widget": "monetary",
-                                                              "display_currency": o.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    </t>
 
-                        <!-- NARRATION -->
+
+                    <!-- NARRATION -->
                     <div class="row mt-3">
                         <div class="col-12">
                             <t t-if="o.narration">
