@@ -1,0 +1,22 @@
+<template id="fni_external_layout_striped"
+          inherit_id="web.external_layout_striped">
+
+    <!-- 1. Add VAT line (same as above) -->
+    <xpath expr="//div[@name='company_address']//span[@t-field='company.partner_id']"
+           position="after">
+        <br/>
+        <t t-if="company.vat or company.partner_id.vat">
+            <span t-esc="company.country_id.vat_label or 'VAT'"/>:
+            <span t-esc="company.vat or company.partner_id.vat"/>
+        </t>
+    </xpath>
+
+    <!-- 2. Move the address block to the right -->
+    <xpath expr="//div[@name='company_address']"
+           position="attributes">
+        <!-- Bootstrap helper for right alignment + a bit of spacing -->
+        <attribute name="class" add="text-right" separator=" "/>
+        <attribute name="style" add="padding-left: 20px;" separator="; "/>
+    </xpath>
+
+</template>
