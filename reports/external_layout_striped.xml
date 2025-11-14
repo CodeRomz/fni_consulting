@@ -21,7 +21,7 @@
                            add="text-right fni-header-company-address"
                            separator=" "/>
                 <attribute name="style"
-                           add="padding-left: 200px;"
+                           add="padding-left: 400px;"
                            separator="; "/>
             </xpath>
 
