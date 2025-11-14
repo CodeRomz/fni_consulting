@@ -74,17 +74,17 @@
                                 <th>Description</th>
                                 <th class="text-right">Project/Dept</th>
                                 <th class="text-right">Quantity</th>
-                                <th class="text-right">Unit Price</th>
-                                <th class="text-right">Vat</th>
-                                <th class="text-right">Vat Amount</th>
-                                <th class="text-right">Amount</th>
+                                <th>Unit Price</th>
+                                <th>Vat</th>
+                                <th>Vat Amount</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
                             <!-- invoice_line_ids: account.move.line -->
                             <t t-foreach="o.invoice_line_ids" t-as="line">
                                 <tr>
-                                    <td>
+                                    <td class="text-right">
                                         <span t-field="line.name"/>
                                         <t t-if="line.product_id">
                                             <br/>
@@ -116,18 +116,18 @@
                                         </t>
                                     </td>
 
-                                    <td class="text-right">
+                                    <td>
                                         <span t-field="line.quantity"/>
                                         <t t-if="line.product_uom_id">
                                             <span t-field="line.product_uom_id.name"/>
                                         </t>
                                     </td>
-                                    <td class="text-right">
+                                    <td>
                                         <span t-field="line.price_unit"
                                               t-options='{"widget": "monetary",
                                                           "display_currency": o.currency_id}'/>
                                     </td>
-                                    <td class="text-right">
+                                    <td>
                                         <!-- Show tax names in a compact way -->
                                         <t t-foreach="line.tax_ids" t-as="tax">
                                             <span t-esc="tax.name"/>
@@ -135,12 +135,12 @@
                                         </t>
                                     </td>
 
-                                    <td class="text-right">
+                                    <td>
                                         <t t-set="vat_amount" t-value="line.price_total - line.price_subtotal"/>
                                         <span t-esc="'%s %s' % ( o.currency_id.symbol or '', '{0:,.2f}'.format(vat_amount) )"/>
                                     </td>
 
-                                    <td class="text-right">
+                                    <td>
                                         <span t-field="line.price_subtotal"
                                               t-options='{"widget": "monetary",
                                                           "display_currency": o.currency_id}'/>
