@@ -8,7 +8,6 @@
 
             <xpath expr="//span[@t-field='company.partner_id']"
                    position="after">
-                <br/>
                 <t t-if="company.vat or company.partner_id.vat">
                     <span t-esc="company.country_id.vat_label or 'VAT'"/>:
                     <span t-esc="company.vat or company.partner_id.vat"/>
@@ -22,7 +21,7 @@
                            add="text-right fni-header-company-address"
                            separator=" "/>
                 <attribute name="style"
-                           add="padding-left: 30px;"
+                           add="padding-left: 200px;"
                            separator="; "/>
             </xpath>
 
