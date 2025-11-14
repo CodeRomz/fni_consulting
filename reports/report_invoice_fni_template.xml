@@ -25,7 +25,8 @@
                                   t-options='{"widget": "contact",
                                               "fields": ["address"],
                                               "no_marker": True}'/>
-                            VAT: <span t-field="o.partner_id.vat"/>
+                            VAT:
+                            <span t-field="o.partner_id.vat"/>
                         </div>
                         <div class="col-6 text-right">
                             <t t-if="o.partner_shipping_id and o.partner_shipping_id != o.partner_id">
@@ -155,14 +156,14 @@
                         <t t-set="exchange_rate"
                            t-value="o.amount_total and abs(o.amount_total_signed / o.amount_total) or 0.0"/>
 
-                        <div class="row mt-4">
+                        <div class="row mt-4 nopage-break-block">
                             <!-- LEFT: Local (company) currency summary -->
                             <div class="col-4">
                                 <table class="table table-sm table-local-summary">
                                     <tbody>
                                         <!-- Exchange Rate -->
                                         <tr>
-                                            <td class="text-right" >
+                                            <td class="text-right">
                                                 <strong style="color: #6e6e6e !important">Exchange Rate</strong>
                                             </td>
                                             <td class="text-right">
@@ -172,7 +173,7 @@
 
                                         <!-- Subtotal in company currency (AED) -->
                                         <tr>
-                                            <td class="text-right" >
+                                            <td class="text-right">
                                                 <strong style="color: #6e6e6e !important">Subtotal</strong>
                                             </td>
                                             <td class="text-right">
@@ -183,7 +184,7 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="text-right" >
+                                            <td class="text-right">
                                                 <strong style="color: #6e6e6e !important">VAT Amount</strong>
                                             </td>
                                             <td class="text-right">
@@ -194,7 +195,7 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="text-right" >
+                                            <td class="text-right">
                                                 <strong style="color: #6e6e6e !important">Total</strong>
                                             </td>
                                             <td class="text-right">
@@ -214,7 +215,7 @@
                                 <table class="table table-sm table-main-summary">
                                     <tbody>
                                         <tr>
-                                            <td class="text-right" >
+                                            <td class="text-right">
                                                 <strong style="color: #6e6e6e !important">Untaxed Amount</strong>
                                             </td>
                                             <td class="text-right">
@@ -224,7 +225,7 @@
                                             </td>
                                         </tr>
                                         <tr t-if="o.amount_tax">
-                                            <td class="text-right" >
+                                            <td class="text-right">
                                                 <strong style="color: #6e6e6e !important">Taxes</strong>
                                             </td>
                                             <td class="text-right">
@@ -234,13 +235,13 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="text-right highlight-total" >
+                                            <td class="text-right highlight-total">
                                                 <strong style="color: #333333 !important">Total</strong>
                                             </td>
                                             <td class="text-right highlight-total">
                                                 <span t-field="o.amount_total"
                                                       t-options='{"widget": "monetary",
-                                              "display_currency": o.currency_id}'  style="color: #333333 !important"/>
+                                              "display_currency": o.currency_id}' style="color: #333333 !important"/>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -249,8 +250,8 @@
                         </div>
                     </t>
 
-                    <t t-if="o.company_id.currency_id == o.currency_id" >
-                        <div class="row mt-4">
+                    <t t-if="o.company_id.currency_id == o.currency_id">
+                        <div class="row mt-4 nopage-break-block">
                             <div class="col-7"></div>
                             <div class="col-5">
                                 <table class="table table-sm table-main-summary">
@@ -291,22 +292,18 @@
                         </div>
                     </t>
 
-                    <!-- LOCAL TAX SUMMARY -->
-
-
-                    <!-- NARRATION -->
-                    <div class="row mt-5">
-                        <div class="col-12">
-                            <t t-if="o.narration">
-                                <strong>Notes:</strong>
-                                <p t-field="o.narration"/>
-                            </t>
-                        </div>
-                    </div>
 
                     <!-- BOTTOM AREA: PAYMENT TERMS, BANK INFO, ETC. -->
-                    <div class="mt-5">
-
+                    <div class="mt-5 details-block">
+                        <!-- NARRATION -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <t t-if="o.narration">
+                                    <strong>Notes:</strong>
+                                    <p t-field="o.narration"/>
+                                </t>
+                            </div>
+                        </div>
                         <!-- Payment terms -->
                         <t t-if="o.invoice_payment_term_id">
                             <p>
@@ -320,24 +317,23 @@
                            t-value="o.partner_bank_id or (o.company_id.bank_ids and o.company_id.bank_ids[0])"/>
 
                         <t t-if="bank">
-                            <div class="bank-details-block">
-                                <p>
-                                    <strong>Business Account Name :</strong>
-                                    <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
-                                    <br/>
-                                    <strong>Bank Name :</strong>
-                                    <span t-esc="bank.bank_id and bank.bank_id.name or ''"/>
-                                    <br/>
-                                    <strong>Account Number :</strong>
-                                    <span t-esc="bank.acc_number or ''"/>
-                                    <br/>
-                                    <strong>IBAN Number :</strong>
-                                    <span t-esc="bank.iban or ''"/>
-                                    <br/>
-                                    <strong>Swift Code :</strong>
-                                    <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
-                                </p>
-                            </div>
+
+                            <p>
+                                <strong>Business Account Name :</strong>
+                                <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
+                                <br/>
+                                <strong>Bank Name :</strong>
+                                <span t-esc="bank.bank_id and bank.bank_id.name or ''"/>
+                                <br/>
+                                <strong>Account Number :</strong>
+                                <span t-esc="bank.acc_number or ''"/>
+                                <br/>
+                                <strong>IBAN Number :</strong>
+                                <span t-esc="bank.iban or ''"/>
+                                <br/>
+                                <strong>Swift Code :</strong>
+                                <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
+                            </p>
                         </t>
                     </div>
                 </div>

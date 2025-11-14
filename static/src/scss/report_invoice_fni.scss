@@ -11,12 +11,17 @@
     font-weight: 700 !important;
 }
 
-.bank-details-block {
+.nopage-break-block {
     page-break-inside: avoid;
     display: block;
 }
 
-.bank-details-block, .bank-details-block p {
+.details-block {
+    page-break-inside: avoid;
+    display: block;
+}
+
+.details-block, .details-block p {
     page-break-inside: avoid;
 }
 
