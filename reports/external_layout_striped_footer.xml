@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Layout override for FNI – header + footer -->
+        <template id="external_layout_striped_fni_footer"
+                  inherit_id="web.external_layout_striped"
+                  priority="50">
+
+            <xpath expr="//div[contains(@t-attf-class, 'footer o_background_footer')]"
+                   position="replace">
+
+                <!-- Removed o_background_footer to get rid of the native striped footer lines -->
+                <div t-attf-class="o_company_#{company.id}_layout footer">
+                    <div class="row mt8">
+                        <div class="col-12 text-center" style="font-size: 9px;">
+                            <t t-if="report_type == 'pdf'">
+                                <div style="border-top: 1px solid #6e6e6e; margin-top: 3px;"></div>
+                                <span class="text-muted">
+                                    Page:
+                                    <span class="page"/>
+                                    of
+                                    <span class="topage"/>
+                                </span>
+
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+
+        </template>
+
+    </data>
+</odoo>

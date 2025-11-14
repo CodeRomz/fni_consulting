@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <template id="external_layout_striped_fni"
+        <template id="external_layout_striped_fni_header"
                   name="FNI External Layout Striped"
                   inherit_id="web.external_layout_striped">
 

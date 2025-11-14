@@ -18,7 +18,8 @@
         'views/res_partner_bank.xml',
         'reports/report_invoice_fni_template.xml',
         'reports/invoice_report_action.xml',
-        'reports/external_layout_striped.xml',
+        'reports/external_layout_striped_header.xml',
+        'reports/external_layout_striped_footer.xml',
 
     ],
 
