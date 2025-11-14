@@ -72,8 +72,8 @@
                         <thead>
                             <tr>
                                 <th>Description</th>
-                                <th class="text-right">Project/Dept</th>
-                                <th class="text-right">Quantity</th>
+                                <th>Project/Dept</th>
+                                <th>Quantity</th>
                                 <th>Unit Price</th>
                                 <th>Vat</th>
                                 <th>Vat Amount</th>
@@ -84,7 +84,7 @@
                             <!-- invoice_line_ids: account.move.line -->
                             <t t-foreach="o.invoice_line_ids" t-as="line">
                                 <tr>
-                                    <td class="text-right">
+                                    <td>
                                         <span t-field="line.name"/>
                                         <t t-if="line.product_id">
                                             <br/>
@@ -95,7 +95,7 @@
                                     </td>
 
                                     <!-- ANALYTIC DISTRIBUTION COLUMN -->
-                                    <td class="text-right">
+                                    <td>
                                         <t t-if="line.analytic_distribution">
                                             <t t-set="distribution" t-value="line.analytic_distribution or {}"/>
                                             <t t-foreach="distribution.items()" t-as="item">
