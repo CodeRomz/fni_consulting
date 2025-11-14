@@ -296,7 +296,7 @@
                     <!-- BOTTOM AREA: PAYMENT TERMS, BANK INFO, ETC. -->
                     <div class="mt-5 details-block">
                         <!-- NARRATION -->
-                        <div class="row mt-5">
+                        <div class="row my-5">
                             <div class="col-12">
                                 <t t-if="o.narration">
                                     <strong>Notes:</strong>
@@ -318,7 +318,7 @@
 
                         <t t-if="bank">
 
-                            <p>
+                            <p class="my-5">
                                 <strong>Business Account Name :</strong>
                                 <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
                                 <br/>
