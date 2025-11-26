@@ -1,0 +1,189 @@
+//
+@font-face {
+    font-family: 'Square721BT';
+    src: url('/fni_consulting/static/fonts/square_721_bt.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, p, h1, h2, h3, h4, h5, h6, .o_web_client, .o_website_theme, .o_website_theme * {
+    font-family: 'Square721BT', sans-serif !important;
+}
+
+a{
+    color: #333333;
+    }
+//
+
+
+
+//
+.bg-primary {
+    --background-color: RGBA(71, 165, 174, var(--bg-opacity, 1));
+    background-color: #47a5ae !important;
+}
+//
+
+
+
+//Navigation Bar
+header .o_main_navbar {
+  background-color: #47a5ae;
+  border-color: #47a5ae;
+}
+
+.o_main_navbar .o_menu_sections .o_nav_entry, .o_main_navbar .o_menu_sections .dropdown-toggle {
+  background: var(--NavBar-entry-backgroundColor, #47a5ae);
+  border: 1px solid transparent;
+}
+//
+
+
+
+//Main Buttons
+.btn-primary {
+    color: #FFFFFF;
+    background-color: #47a5ae !important;
+    border-color: #47a5ae !important;
+}
+
+.btn-outline-primary {
+    color: #47a5ae !important;
+    border-color: #47a5ae !important;
+}
+
+.btn-outline-primary:hover {
+    color: white !important;
+    border-color: #47a5ae !important;
+    background-color: #47a5ae !important;
+}
+
+.btn-info {
+    color: white !important;
+    background-color: #6e6e6e;
+    border-color: #6e6e6e;
+}
+
+.btn-info:hover {
+    color: white !important;
+    background-color: #6e6e6e;
+    border-color: #6e6e6e;
+}
+//
+
+
+
+//Calendar
+.o_calendar_renderer .o_calendar_widget .fc-timeGridDay-view .fc-day-header.fc-today, .o_calendar_renderer .o_calendar_widget .fc-timeGridWeek-view .fc-day-header.fc-today {
+  --o-cw-bg: #47a5ae !important;
+}
+
+.o_calendar_renderer .o_calendar_widget .fc-dayGridMonth-view .fc-content-skeleton .fc-day-top.fc-today {
+  --o-cw-bg: #47a5ae !important;
+}
+//
+
+
+
+// User List
+.badge.text-bg-default, .badge.bg-light, .badge.text-bg-light, .badge.bg-default, .badge.text-primary {
+    outline: 1px solid #47a5ae !important;
+    color: #47a5ae !important;
+}
+
+.badge.text-bg-default, .badge.bg-light, .badge.text-bg-light, .badge.bg-default, .badge.text-primary:hover {
+    outline: 1px solid #47a5ae !important;
+    color: #333333 !important;
+}
+//
+
+
+
+//Notebook Tabs
+.o_notebook {
+  --notebook-link-border-color-hover: #47a5ae !important;
+  --notebook-link-border-color-active: var(--border-color, #47a5ae ) !important;
+  --notebook-link-border-color-active-accent: var(--border-color, #47a5ae ) !important;
+}
+
+.o_notebook .nav-link {
+    border-color: var(--notebook-link-border-color, transparent);
+    color: #47a5ae;
+}
+//
+
+
+
+//Settings Checkbox
+.form-check-input:checked {
+    background-color: #47a5ae;
+    border-color: #47a5ae;
+}
+//
+
+
+
+// Switch Logo Icon frontend/backend
+.o_frontend_to_backend_nav .o_frontend_to_backend_apps_btn {
+    background-color: #47a5ae;
+}
+
+.o_frontend_to_backend_nav .o_frontend_to_backend_apps_btn:hover {
+    color: #333333;
+    background-color: #47a5ae;
+}
+
+.o_frontend_to_backend_nav::before {
+    border-top: 20px solid #47a5ae;
+    border-left: 20px solid #47a5ae;
+}
+//
+
+
+
+
+// Small Icon Tree, kanban, etc View
+.btn-secondary.active {
+    border-color: #47a5ae;
+}
+//
+
+
+
+// Button links
+.btn-link {
+    color: #47a5ae;
+}
+.btn-link:hover {
+    color: #333333;
+}
+//
+
+
+
+//
+.bg-action, .text-bg-action {
+    --background-color: #47a5ae;
+    background-color: var(--background-color) !important;
+}
+//
+
+
+
+// Icons Top bar
+.o-form-buttonbox .oe_stat_button .o_button_icon {
+    color: var(--o-stat-button-color, #47a5ae);
+}
+
+.o_field_percent_pie .o_pie {
+    --PercentPieField-color-active: #47a5ae;
+}
+//
+
+
+
+// Text Primary
+.text-primary {
+    --color: #47a5ae;
+    color: var(--color) !important;
+}

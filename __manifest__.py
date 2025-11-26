@@ -22,6 +22,9 @@
     ],
 
     'assets': {
+        'web.assets_backend': [
+            'fni_consulting/static/src/scss/firenor_style_backend.scss',
+        ],
         'web.report_assets_pdf': [
             'fni_consulting/static/src/scss/invoice_report_fni.scss',
             'fni_consulting/static/src/scss/fni_style.scss',
