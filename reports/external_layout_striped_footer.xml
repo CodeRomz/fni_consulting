@@ -7,7 +7,7 @@
                   inherit_id="web.external_layout_striped"
                   priority="50">
 
-            <xpath expr="//div[contains(@t-attf-class, 'footer o_background_footer')]"
+            <xpath expr="//div[contains(@t-attf-class, 'o_footer_content border-top pt-2 text-center')]"
                    position="replace">
 
                 <!-- Removed o_background_footer to get rid of the native striped footer lines -->
