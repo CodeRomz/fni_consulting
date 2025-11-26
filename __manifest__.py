@@ -5,18 +5,16 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '17.0.2.0.0',
+    'version': '18.0.1.0.0',
 
     'category': 'Custom',
-    'depends': ['hr_timesheet_sheet', 'project_timesheet_time_control', 'hr_holidays'],
+    'depends': ['hr_timesheet_sheet', 'project_timesheet_time_control', 'hr_holidays', 'survey'],
 
     'data': [
         'security/ir.model.access.csv',
-        'views/task_type_view.xml',
-        'views/account_analytic_line_view.xml',
         'views/hr_timesheet_sheet_readonly.xml',
         'views/res_partner_bank.xml',
-        'reports/report_invoice_fni_template.xml',
+        'reports/invoice_report_fni_template.xml',
         'reports/invoice_report_action.xml',
         'reports/external_layout_striped_header.xml',
         'reports/external_layout_striped_footer.xml',
@@ -25,7 +23,8 @@
 
     'assets': {
         'web.report_assets_pdf': [
-            'fni_consulting/static/src/scss/report_invoice_fni.scss',
+            'fni_consulting/static/src/scss/invoice_report_fni.scss',
+            'fni_consulting/static/src/scss/fni_style.scss',
         ],
     },
 

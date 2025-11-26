@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="hr_emp_ack_report_view" priority="20">
+            <t t-foreach="docs" t-as="user_input">
+                <t t-call="web.html_container">
+                    <t t-call="web.basic_layout">
+                        <style>
+                            h6 {
+                            color: #47a5ae !important;
+                            }
+                            p{
+                            text-align: justify;
+                            }
+                            .td-width-110 {
+                            width: 110px !important;
+                            max-width: 110px !important;
+                            }
+                            .ack-page{
+                            margin-top: 0px !important;
+                            }
+                            .header-row{
+                            display: table;
+                            width: 100%;
+                            }
+                            .header-row > .header-left,
+                            .header-row > .header-right {
+                            display: table-cell;
+                            vertical-align: middle;
+                            }
+                            .header-left {
+                            border-left: 1px solid #47a5ae;
+                            padding-left: 8px;
+                            width: 70%;
+                            }
+                            .header-left > table {
+                            margin-top: 13px;
+                            }
+                            .header-right {
+                            border-left: 1px solid #47a5ae;
+                            text-align: right;
+                            width: 30%;
+                            }
+                        </style>
+
+                        <div class="page container fn_font ack-page">
+                            <div class="header-row mb-5">
+                                <div class="header-left">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="td-width-110">Doc. Title:</td>
+                                            <td>
+                                                Employee Handbook
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Doc No.:</td>
+                                            <td>
+                                                FAE-HRE-PL-0037
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Revision:</td>
+                                            <td>
+                                                R1
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="header-right">
+                                    <img src="/fni_consulting/static/img/Logo-RGB-VI-Margin.png"
+                                         style="max-height: 150px; max-width: 100%;"/>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <h6>
+                                        Employee Receipt and Acceptance
+                                    </h6>
+                                    <p class="mb-4">
+                                        I hereby acknowledge that I have received a copy of the FNI Consulting
+                                        LLC Employee Handbook. I understand that it is my ongoing responsibility
+                                        to read, familiarize myself with, and comply with its contents.
+                                    </p>
+                                    <p class="mb-4">
+                                        I acknowledge that the Employee Handbook is provided for guidance only
+                                        and does not constitute an employment contract for any specific period
+                                        or guarantee of continued employment.
+                                    </p>
+                                    <p class="mb-4">
+                                        I confirm that I have read, understood, and agree to abide by the
+                                        policies and procedures outlined in the Handbook. I further agree to
+                                        return the Handbook upon termination of my employment with the Company.
+                                    </p>
+                                    <h6>
+                                        Confidentiality Agreement
+                                    </h6>
+                                    <p class="mb-4">
+                                        I understand that during my employment with FNI Consulting LLC (“the
+                                        Company”), I may have access to non-public, proprietary, or confidential
+                                        information relating to the Company, its clients, suppliers, or business
+                                        partners (“Confidential Information”).
+                                    </p>
+                                    <p class="mb-4">
+                                        I agree that I will not, during or after my employment, disclose, use,
+                                        copy, or transmit any Confidential Information to any unauthorized
+                                        person or entity, except as required in the proper performance of my
+                                        duties. I will take all reasonable steps to safeguard such information
+                                        and will return all materials containing Confidential Information upon
+                                        termination of employment or upon request.
+                                    </p>
+                                    <p class="mb-4">
+                                        I acknowledge that unauthorized disclosure or misuse of Confidential
+                                        Information may result in disciplinary action, including termination,
+                                        and may also lead to civil or criminal liability. The Company may seek
+                                        injunctive relief and other legal remedies for any breach.
+                                    </p>
+                                    <p class="mb-5">
+                                        By signing below, I confirm that I have read, understood, and agree to
+                                        abide by the terms of this Confidentiality Agreement.
+                                    </p>
+                                    <h6 class="mb-3">
+                                        Employee Acknowledgement
+                                    </h6>
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="td-width-110">Name:</td>
+                                            <td class="text-uppercase">
+                                                <t t-esc="user_input.partner_id.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Designation:</td>
+                                            <td>_____________________________
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Date:</td>
+                                            <td>
+                                                <t t-esc="user_input.create_date.strftime('%d-%b-%Y')"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Signature:</td>
+                                            <td>_____________________________
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                </div>
+                            </div>
+                        </div>
+
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
