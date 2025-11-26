@@ -12,7 +12,6 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'views/hr_timesheet_sheet_readonly.xml',
         'views/res_partner_bank.xml',
         'reports/invoice_report_fni_template.xml',
         'reports/invoice_report_action.xml',
