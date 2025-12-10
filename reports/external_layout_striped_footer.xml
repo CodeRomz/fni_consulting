@@ -2,31 +2,42 @@
 <odoo>
     <data>
 
-        <!-- Layout override for FNI – header + footer -->
+        <!-- FNI: Custom footer for external_layout_striped -->
         <template id="external_layout_striped_fni_footer"
+                  name="FNI External Layout Striped Footer"
                   inherit_id="web.external_layout_striped"
                   priority="50">
 
-            <xpath expr="//div[contains(@class, 'o_footer_content')]"
+            <!-- Replace the striped footer wrapper (with o_background_footer) -->
+            <xpath expr="//div[hasclass('o_background_footer')]"
                    position="replace">
 
-                <!-- Removed o_background_footer to get rid of the native striped footer lines -->
                 <div t-attf-class="o_company_#{company.id}_layout footer">
                     <div class="row mt8">
                         <div class="col-12 text-center" style="font-size: 13px;">
-                            <t t-if="report_type == 'pdf'">
-                                <div style="border-top: 1px solid  rgba(110, 110, 110, 0.20); margin-top: 2px;"></div>
-                                <span class="text-muted">
-                                    Page:
+
+                            <!-- Company footer text (same semantics as standard layout) -->
+                            <t t-if="company.report_footer">
+                                <span t-field="company.report_footer"/>
+                            </t>
+
+                            <!-- Optional extra footer text / branding -->
+                            <!-- <t>Put any custom line(s) you want here.</t> -->
+
+                            <!-- Page numbers for PDF output -->
+                            <div t-if="report_type == 'pdf'" class="text-muted mt4">
+                                <span>
+                                    Page
                                     <span class="page"/>
                                     of
                                     <span class="topage"/>
                                 </span>
+                            </div>
 
-                            </t>
                         </div>
                     </div>
                 </div>
+
             </xpath>
 
         </template>
