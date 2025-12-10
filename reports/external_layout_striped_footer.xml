@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <data>
+    <data>
 
-    <template id="external_layout_striped_fni_footer"
-              inherit_id="web.external_layout_striped"
-              priority="50">
+        <template id="external_layout_striped_fni_footer"
+                  inherit_id="web.external_layout_striped"
+                  priority="50">
 
-      <!-- Replace the striped footer (o_background_footer) -->
-      <xpath expr="//div[hasclass('o_background_footer')]"
-             position="replace">
-        <div t-attf-class="o_company_#{company.id}_layout footer">
-          <div class="row mt8">
-            <div class="col-12 text-center" style="font-size: 13px;">
-              <t t-if="report_type == 'pdf'">
-                <div style="border-top: 1px solid rgba(110, 110, 110, 0.20); margin-top: 2px;"/>
-                <span class="text-muted">
-                  Page:
-                  <span class="page"/>
-                  of
-                  <span class="topage"/>
-                </span>
-              </t>
-            </div>
-          </div>
-        </div>
-      </xpath>
+            <!-- Replace the striped footer (o_background_footer) -->
+            <xpath expr="//div[hasclass('o_background_footer')]"
+                   position="replace">
+                <div t-attf-class="o_company_#{company.id}_layout footer">
+                    <div class="row mt8">
+                        <div class="col-12 text-center" style="font-size: 13px;">
+                            <t t-if="report_type == 'pdf'">
+                                <div style="border-top: 1px solid rgba(110, 110, 110, 0.20); margin-top: 2px;"/>
+                                <span class="text-muted">
+                                    Page:
+                                    <span class="page"/>
+                                    of
+                                    <span class="topage"/>
+                                </span>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
 
-    </template>
+        </template>
 
-  </data>
+    </data>
 </odoo>
