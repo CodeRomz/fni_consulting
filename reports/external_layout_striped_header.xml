@@ -4,11 +4,10 @@
 
         <template id="external_layout_striped_fni_header"
                   name="FNI External Layout Striped"
-                  inherit_id="web.external_layout_striped"
-                  priority="50">
+                  inherit_id="web.external_layout_striped">
 
-            <!-- Add VAT information below the company address in the header -->
-            <xpath expr="//span[@t-field='company.partner_id']"
+            <!-- Add company VAT line after the company address block -->
+            <xpath expr="//*[@t-field='company.partner_id']"
                    position="after">
                 <t t-if="company.vat or company.partner_id.vat">
                     <span t-esc="company.country_id.vat_label or 'VAT'"/>:
@@ -16,8 +15,8 @@
                 </t>
             </xpath>
 
-            <!-- Align the company address block to the right -->
-            <xpath expr="//span[@t-field='company.partner_id']/.."
+            <!-- Align the company address block -->
+            <xpath expr="//*[@t-field='company.partner_id']/.."
                    position="attributes">
                 <attribute name="class"
                            add="text-right fni-header-company-address"
