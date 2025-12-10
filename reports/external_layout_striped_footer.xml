@@ -2,18 +2,21 @@
 <odoo>
     <data>
 
+        <!-- Layout override for FNI – footer only -->
         <template id="external_layout_striped_fni_footer"
                   inherit_id="web.external_layout_striped"
                   priority="50">
 
-            <!-- Replace the striped footer (o_background_footer) -->
-            <xpath expr="//div[hasclass('o_background_footer')]"
+            <!-- Replace the default footer container of the striped layout -->
+            <xpath expr="//div[contains(@t-attf-class, 'footer') or contains(@t-att-class, 'footer') or contains(@class, 'footer')]"
                    position="replace">
+
+                <!-- Custom footer without the native striped footer lines -->
                 <div t-attf-class="o_company_#{company.id}_layout footer">
                     <div class="row mt8">
                         <div class="col-12 text-center" style="font-size: 13px;">
                             <t t-if="report_type == 'pdf'">
-                                <div style="border-top: 1px solid rgba(110, 110, 110, 0.20); margin-top: 2px;"/>
+                                <div style="border-top: 1px solid rgba(110, 110, 110, 0.20); margin-top: 2px;"></div>
                                 <span class="text-muted">
                                     Page:
                                     <span class="page"/>
