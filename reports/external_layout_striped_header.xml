@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
+  <data>
 
-        <template id="external_layout_striped_fni_header"
-                  name="FNI External Layout Striped Header"
-                  inherit_id="web.external_layout_striped"
-                  priority="40">
+    <template id="external_layout_striped_fni_header"
+              name="FNI External Layout Striped"
+              inherit_id="web.external_layout_striped"
+              priority="40">
 
-            <!-- Add VAT below the company address block -->
-            <xpath expr="//span[@t-field='company.partner_id']"
-                   position="after">
-                <t t-if="company.vat or company.partner_id.vat">
-                    <br/>
-                    <span t-esc="company.country_id.vat_label or _('VAT')"/>:
-                    <span t-esc="company.vat or company.partner_id.vat"/>
-                </t>
-            </xpath>
+      <!-- Insert VAT line after the company address block -->
+      <xpath expr="//*[@t-field='company.partner_id']"
+             position="after">
+        <t t-if="company.vat or company.partner_id.vat">
+          <br/>
+          <span t-esc="(company.account_fiscal_country_id and company.account_fiscal_country_id.vat_label)
+                       or (company.country_id and company.country_id.vat_label)
+                       or 'Tax ID'"/>
+          :
+          <span t-esc="company.vat or company.partner_id.vat"/>
+        </t>
+      </xpath>
 
-            <!-- Tweak address container alignment/spacing -->
-            <xpath expr="//span[@t-field='company.partner_id']/.."
-                   position="attributes">
-                <attribute name="class"
-                           add="text-right fni-header-company-address"
-                           separator=" "/>
-                <!-- If needed, keep or adjust this padding -->
-                <attribute name="style"
-                           add="padding-left: 500px;"
-                           separator="; "/>
-            </xpath>
+      <!-- Adjust alignment/spacing of the company address container -->
+      <xpath expr="//*[@t-field='company.partner_id']/.."
+             position="attributes">
+        <attribute name="class"
+                   add="text-right fni-header-company-address"
+                   separator=" "/>
+        <!-- Tweak/remove this inline style as needed -->
+        <attribute name="style"
+                   add="padding-left: 500px;"
+                   separator="; "/>
+      </xpath>
 
-        </template>
+    </template>
 
-    </data>
+  </data>
 </odoo>
