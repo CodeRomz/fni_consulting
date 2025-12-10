@@ -67,8 +67,8 @@
                         </div>
                     </div>
 
-                    <!-- INVOICE LINES TABLE -->
-                    <table class="table table-sm o_main_table">
+                    <!-- INVOICE LINES TABLE  class="table table-sm o_main_table"-->
+                    <table>
                         <thead>
                             <tr>
                                 <th>Description</th>
@@ -252,7 +252,51 @@
 
                     <t t-if="o.company_id.currency_id == o.currency_id">
                         <div class="row mt-4 nopage-break-block">
-                            <div class="col-7"></div>
+                            <!-- LEFT: Local (company) currency vat summary -->
+                            <div class="col-4">
+                                <table class="table table-sm table-local-summary">
+                                    <tbody>
+                                        <!-- Subtotal in company currency (AED) -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Subtotal</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">VAT Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Total</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_total_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- SPACER -->
+                            <div class="col-3"></div>
+
+                            <!-- RIGHT: Original invoice-currency totals-->
                             <div class="col-5">
                                 <table class="table table-sm table-main-summary">
                                     <tbody>
