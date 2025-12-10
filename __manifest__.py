@@ -14,6 +14,7 @@
         'security/ir.model.access.csv',
         'views/res_partner_bank.xml',
         'reports/invoice_report_fni_template.xml',
+        'reports/survey_report_fni_acknowledgement_template.xml',
         'reports/invoice_report_action.xml',
         'reports/external_layout_striped_header.xml',
         'reports/external_layout_striped_footer.xml',
