@@ -8,10 +8,6 @@
                   inherit_id="web.external_layout_striped"
                   priority="60">
 
-            <!--
-                In external_layout_striped the first <div> is the header.
-                We replace that whole block.
-            -->
             <xpath expr="//div[1]" position="replace">
                 <div t-attf-class="o_company_#{company.id}_layout header"
                      t-att-style="report_header_style">
@@ -24,7 +20,7 @@
                                 <img t-if="company.logo"
                                      t-att-src="image_data_uri(company.logo)"
                                      alt="Logo"
-                                     style="max-height: 70x; max-width: 100%;"/>
+                                     style="max-height: 65x; max-width: 100%;"/>
                             </div>
 
                             <!-- RIGHT: tagline + address/details + Tax ID -->
