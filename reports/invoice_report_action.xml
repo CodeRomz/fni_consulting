@@ -9,11 +9,11 @@
             - binding_model_id: account.model_account_move
             - binding_type: "report" => shows under Print menu
             - report_name/report_file must match the QWeb template id
-              with module prefix: fni_consulting.report_invoice_fni
+              with module prefix: fni_consulting.report_vat_invoice_fni
         -->
         <record id="action_report_fni_invoice" model="ir.actions.report">
             <!-- Label in the Print dropdown -->
-            <field name="name">FNI Invoice Format</field>
+            <field name="name">Tax Invoice (FAE)</field>
 
             <!-- Technical model name: account.move (Odoo 17 invoices) -->
             <field name="model">account.move</field>
@@ -22,8 +22,33 @@
             <field name="report_type">qweb-pdf</field>
 
             <!-- QWeb template external id (module.template_id) -->
-            <field name="report_name">fni_consulting.report_invoice_fni</field>
-            <field name="report_file">fni_consulting.report_invoice_fni</field>
+            <field name="report_name">fni_consulting.report_vat_invoice_fni</field>
+            <field name="report_file">fni_consulting.report_vat_invoice_fni</field>
+
+            <!-- Bind to invoice form Print menu -->
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+
+            <!-- Optional: control the generated PDF file name -->
+            <!-- 'object' here is the current account.move record -->
+            <field name="print_report_name">
+                (object.name or 'INV').replace('/', '_') + '_FNI'
+            </field>
+        </record>
+
+        <record id="action_report_fni_invoice" model="ir.actions.report">
+            <!-- Label in the Print dropdown -->
+            <field name="name">Invoice (FAE)</field>
+
+            <!-- Technical model name: account.move (Odoo 17 invoices) -->
+            <field name="model">account.move</field>
+
+            <!-- QWeb PDF report -->
+            <field name="report_type">qweb-pdf</field>
+
+            <!-- QWeb template external id (module.template_id) -->
+            <field name="report_name">fni_consulting.report_vat_invoice_fni</field>
+            <field name="report_file">fni_consulting.report_vat_invoice_fni</field>
 
             <!-- Bind to invoice form Print menu -->
             <field name="binding_model_id" ref="account.model_account_move"/>

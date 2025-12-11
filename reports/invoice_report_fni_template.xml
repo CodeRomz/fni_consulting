@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <template id="report_invoice_fni">
+        <template id="report_vat_invoice_fni">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
-                    <t t-call="fni_consulting.report_invoice_fni_document"/>
+                    <t t-call="fni_consulting.report_vat_invoice_fni_document"/>
                 </t>
             </t>
         </template>
 
-        <template id="report_invoice_fni_document">
+        <template id="report_vat_invoice_fni_document">
 
             <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
 
