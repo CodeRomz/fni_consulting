@@ -24,19 +24,14 @@
                                 <img t-if="company.logo"
                                      t-att-src="image_data_uri(company.logo)"
                                      alt="Logo"
-                                     style="max-height: 75x; max-width: 100%;"/>
+                                     style="max-height: 70x; max-width: 100%;"/>
                             </div>
 
                             <!-- RIGHT: tagline + address/details + Tax ID -->
                             <div class="col-6">
 
-                                <!-- Tagline (Document Layout “Tagline”) -->
-                                <div t-if="company.report_header" class="mb-1">
-                                    <span t-field="company.report_header"/>
-                                </div>
-
                                 <!-- Address (Document Layout “Address”) -->
-                                <div class="mb-1">
+                                <div>
                                     <!-- New 18.0 field company.company_details from layout wizard -->
                                     <t t-if="company.company_details">
                                         <span t-field="company.company_details"/>
