@@ -1,62 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
+        <!-- Read-only overlay for hr_timesheet_sheet.hr_timesheet_sheet_form -->
         <record id="hr_timesheet_sheet_form_readonly_notebook" model="ir.ui.view">
             <field name="name">hr.timesheet.sheet.form.readonly.notebook</field>
             <field name="model">hr_timesheet.sheet</field>
             <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_form"/>
             <field name="arch" type="xml">
-                <!-- Summary matrix (line_ids): disable adding/deleting lines, make columns read-only -->
-                <xpath expr="//field[@name='line_ids']/tree" position="attributes">
-                    <attribute name="create">false</attribute>
-                    <attribute name="delete">false</attribute>
-                </xpath>
-                <xpath expr="//field[@name='line_ids']/tree//field" position="attributes">
+
+                <!-- SUMMARY TAB: force summary matrix read-only, hide Add new line controls -->
+                <xpath expr="//page[@string='Summary']//field[@name='line_ids']"
+                       position="attributes">
+                    <!-- Always readonly, regardless of state -->
                     <attribute name="readonly">True</attribute>
                 </xpath>
 
-                <!-- Hide the Add New Line group -->
-                <xpath expr="//group[contains(@class,'oe_edit_only')]" position="attributes">
+                <!-- Hide the Add new line group (project/task + button) -->
+                <xpath expr="//page[@string='Summary']//group[hasclass('oe_edit_only')]"
+                       position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
 
-                <!-- Timesheet Details (timesheet_ids) tree view -->
-                <xpath expr="//field[@name='timesheet_ids']/tree" position="attributes">
+                <!-- DETAILS TAB: make timesheet lines fully read-only -->
+
+                <!-- Field itself readonly: kills inline editing even if list says editable="bottom" -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']"
+                       position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+
+                <!-- Details list: no create/delete; fields readonly -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/list"
+                       position="attributes">
                     <attribute name="create">false</attribute>
                     <attribute name="delete">false</attribute>
                 </xpath>
-                <xpath expr="//field[@name='timesheet_ids']/tree//field" position="attributes">
+
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/list//field"
+                       position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
-                <!-- REMOVE user_id field from tree -->
-                <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='user_id']" position="replace"/>
 
-                <!-- Timesheet form popup -->
-                <xpath expr="//field[@name='timesheet_ids']/form" position="attributes">
+                <!-- Remove user_id column from the list -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/list//field[@name='user_id']"
+                       position="replace"/>
+
+                <!-- Details form popup: no create/edit/delete; fields readonly -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/form"
+                       position="attributes">
                     <attribute name="create">false</attribute>
                     <attribute name="edit">false</attribute>
                     <attribute name="delete">false</attribute>
                 </xpath>
-                <xpath expr="//field[@name='timesheet_ids']/form//field" position="attributes">
+
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/form//field"
+                       position="attributes">
                     <attribute name="readonly">True</attribute>
                 </xpath>
-                <!-- REMOVE user_id field from form -->
-                <xpath expr="//field[@name='timesheet_ids']/form//field[@name='user_id']" position="replace"/>
 
-                <!-- Prevent project/task creation -->
-                <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='project_id']" position="attributes">
-                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
-                </xpath>
-                <xpath expr="//field[@name='timesheet_ids']/form//field[@name='project_id']" position="attributes">
+                <!-- Remove user_id field from the form -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/form//field[@name='user_id']"
+                       position="replace"/>
+
+                <!-- Prevent project/task creation from Details (list + form) -->
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/list//field[@name='project_id']"
+                       position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
 
-                <xpath expr="//field[@name='timesheet_ids']/tree//field[@name='task_id']" position="attributes">
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/form//field[@name='project_id']"
+                       position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
-                <xpath expr="//field[@name='timesheet_ids']/form//field[@name='task_id']" position="attributes">
+
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/list//field[@name='task_id']"
+                       position="attributes">
                     <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
                 </xpath>
+
+                <xpath expr="//page[@string='Details']//field[@name='timesheet_ids']/form//field[@name='task_id']"
+                       position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+                </xpath>
+
             </field>
         </record>
     </data>
