@@ -2,64 +2,76 @@
 <odoo>
     <data>
 
-        <!-- FNI – Striped layout: custom header -->
+        <!-- FNI – override STRIPED header -->
         <template id="external_layout_striped_fni_header"
-                  name="FNI External Layout Striped Header"
+                  name="Striped layout header (FNI)"
                   inherit_id="web.external_layout_striped"
                   priority="60">
 
-            <xpath expr="//div[hasclass('o_background_header')]"
-                   position="replace">
+            <!-- Replace the whole header wrapper of the striped layout -->
+            <xpath expr="//div[hasclass('header')]" position="replace">
+                <div t-attf-class="o_company_#{company.id}_layout header"
+                     t-att-style="report_header_style">
 
-                <div class="o_background_header">
-                    <div class="row">
+                    <div class="o_background_header">
+                        <div class="row align-items-start">
 
-                        <!-- LEFT: logo -->
-                        <div class="col-6">
-                            <img t-if="company.logo"
-                                 t-att-src="image_data_uri(company.logo)"
-                                 style="max-width:260px; max-height:89px;"
-                                 alt="Logo"/>
+                            <!-- LEFT: logo -->
+                            <div class="col-6">
+                                <img t-if="company.logo"
+                                     t-att-src="image_data_uri(company.logo)"
+                                     alt="Logo"
+                                     style="max-height: 65px; max-width: 100%;"/>
+                            </div>
+
+                            <!-- RIGHT: tagline + address/details + Tax ID -->
+                            <div class="col-6 text-end">
+
+                                <!-- Tagline (Document Layout “Tagline”) -->
+                                <div t-if="company.report_header" class="mb-1">
+                                    <span t-field="company.report_header"/>
+                                </div>
+
+                                <!-- Address / Details block (Document Layout “Address”) -->
+                                <div class="mb-1">
+                                    <!-- If company_details is set (new Document Layout), use it -->
+                                    <t t-if="company.company_details">
+                                        <span t-field="company.company_details"/>
+                                    </t>
+                                    <!-- Fallback: classic partner contact block -->
+                                    <t t-else="">
+                                        <span t-field="company.partner_id"
+                                              t-options="{
+                                                  'widget': 'contact',
+                                                  'fields': ['address', 'name'],
+                                                  'no_marker': True
+                                              }"/>
+                                    </t>
+                                </div>
+
+                                <!-- Tax ID line (Document Layout “Tax ID”) -->
+                                <div t-if="company.vat" class="mt-1">
+                                    <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
+                                    <span t-field="company.vat"/>
+                                </div>
+
+                                <!-- Optional Bank account (from company) if you want it in header -->
+                                <div t-if="company.account_no" class="mt-1">
+                                    <t t-esc="'Bank Account'"/>:
+                                    <span t-field="company.account_no"/>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- RIGHT: tagline + address + Tax ID -->
-                        <div class="col-6 text-right fni-header-company-address">
-
-                            <!-- Company tagline (Document Layout → Tagline) -->
-                            <div t-if="company.report_header" class="mb2">
-                                <span t-field="company.report_header"/>
+                        <!-- Report title line (e.g. “Invoice INV/2023/0003”) -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h2 t-if="title" t-esc="title"/>
                             </div>
-
-                            <!-- Company address / details -->
-                            <div class="mb1">
-                                <!-- Prefer company.company_details if filled -->
-                                <t t-if="company.company_details">
-                                    <t t-esc="company.company_details"/>
-                                </t>
-                                <t t-else="">
-                                    <div t-field="company.partner_id"
-                                         t-options="{
-                                             'widget': 'contact',
-                                             'fields': ['address', 'name'],
-                                             'no_marker': True
-                                         }"/>
-                                </t>
-                            </div>
-
-                            <!-- Tax ID / VAT line -->
-                            <t t-if="company.vat or company.partner_id.vat">
-                                <div>
-                                    <span t-esc="company.country_id.vat_label or 'Tax ID'"/>:
-                                    <span t-esc="company.vat or company.partner_id.vat"/>
-                                </div>
-                            </t>
-
                         </div>
                     </div>
                 </div>
-
             </xpath>
-
         </template>
 
     </data>
