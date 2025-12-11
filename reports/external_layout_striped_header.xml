@@ -8,14 +8,6 @@
                   inherit_id="web.external_layout_striped"
                   priority="60">
 
-            <!--
-                In the base striped layout, the main header content is inside
-                <div class="o_background_header">…</div>.
-
-                We replace that block completely so we don't depend on
-                internal classes like "company_address" that may not exist
-                in your 18.0 OCB.
-            -->
             <xpath expr="//div[hasclass('o_background_header')]"
                    position="replace">
 
