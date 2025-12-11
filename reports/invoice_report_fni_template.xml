@@ -51,7 +51,7 @@
                             </t>
                         </div>
                     </div>
-                    <!--INVOICE HEADER-->
+                    <!--INVOICE NUMBER-->
                     <div class="row mb-4">
                         <h3>
                             TAX Invoice
@@ -78,7 +78,7 @@
                     </div>
 
                     <!-- INVOICE LINES TABLE  class="table table-borderless o_main_table"-->
-                    <table class="table table-borderless">
+                    <table class="table table-borderless table-sm">
                         <thead>
                             <tr>
                                 <th>Description</th>
@@ -385,7 +385,7 @@
                             </t>
                         </div>
                     </div>
-                    <!--INVOICE HEADER-->
+                    <!--INVOICE NUMBER-->
                     <div class="row mb-4">
                         <h3>
                             Invoice
@@ -411,7 +411,7 @@
                         </div>
                     </div>
 
-                    <!-- INVOICE LINES TABLE  class="table table-borderless o_main_table"-->
+                    <!-- INVOICE LINES TABLE -->
                     <table class="table table-borderless table-sm">
                         <thead>
                             <tr>
