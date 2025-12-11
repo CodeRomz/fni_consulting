@@ -9,6 +9,16 @@
             </t>
         </template>
 
+        <template id="report_invoice_fni">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="fni_consulting.report_invoice_fni_document"/>
+                </t>
+            </t>
+        </template>
+
+        <!--VAT REPORT-->
+
         <template id="report_vat_invoice_fni_document">
 
             <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
@@ -45,6 +55,340 @@
                     <div class="row mb-4">
                         <h3>
                             TAX Invoice
+                            <span t-field="o.name"/>
+                        </h3>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-3 text-right">
+                            <strong>Invoice Date:</strong>
+                            <br/>
+                            <span t-field="o.invoice_date"/>
+                        </div>
+                        <div class="col-3 text-right">
+                            <strong>Due Date:</strong>
+                            <br/>
+                            <span t-field="o.invoice_date_due"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <strong>Reference:</strong>
+                            <br/>
+                            <span t-field="o.payment_reference"/>
+                        </div>
+                    </div>
+
+                    <!-- INVOICE LINES TABLE  class="table table-borderless o_main_table"-->
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Project/Dept</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Vat</th>
+                                <th>Vat Amount</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- invoice_line_ids: account.move.line -->
+                            <t t-foreach="o.invoice_line_ids" t-as="line">
+                                <tr>
+                                    <td>
+                                        <span t-field="line.name"/>
+                                        <t t-if="line.product_id">
+                                            <br/>
+                                            <span class="text-muted">
+                                                <t t-esc="line.product_id.default_code or ''"/>
+                                            </span>
+                                        </t>
+                                    </td>
+
+                                    <!-- ANALYTIC DISTRIBUTION COLUMN -->
+                                    <td>
+                                        <t t-if="line.analytic_distribution">
+                                            <t t-set="distribution" t-value="line.analytic_distribution or {}"/>
+                                            <t t-foreach="distribution.items()" t-as="item">
+                                                <t t-set="key_str" t-value="str(item[0])"/>
+                                                <t t-set="key_parts" t-value="[p.strip() for p in key_str.split(',')]"/>
+                                                <t t-foreach="key_parts" t-as="key_part">
+                                                    <t t-if="key_part and key_part.isdigit()">
+                                                        <t t-set="analytic_account"
+                                                           t-value="env['account.analytic.account'].browse(int(key_part))"/>
+                                                        <t t-if="analytic_account">
+                                                            <span t-esc="analytic_account.name"/>
+                                                            <!--(<span t-esc="item[1]"/>%)-->
+                                                            <br/>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </td>
+
+                                    <td>
+                                        <span t-field="line.quantity"/>
+                                        <t t-if="line.product_uom_id">
+                                            <span t-field="line.product_uom_id.name"/>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <span t-field="line.price_unit"
+                                              t-options='{"widget": "monetary",
+                                                          "display_currency": o.currency_id}'/>
+                                    </td>
+                                    <td>
+                                        <!-- Show tax names in a compact way -->
+                                        <t t-foreach="line.tax_ids" t-as="tax">
+                                            <span t-esc="tax.name"/>
+                                            <br/>
+                                        </t>
+                                    </td>
+
+                                    <td>
+                                        <t t-set="vat_amount" t-value="line.price_total - line.price_subtotal"/>
+                                        <span t-esc="'%s %s' % ( o.currency_id.symbol or '', '{0:,.2f}'.format(vat_amount) )"/>
+                                    </td>
+
+                                    <td>
+                                        <span t-field="line.price_subtotal"
+                                              t-options='{"widget": "monetary",
+                                                          "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <!-- AMOUNT SUMMARY AREA: VAT, GRAD TOTAL. -->
+                    <t t-if="o.company_id.currency_id != o.currency_id">
+                        <!-- Prepare helper vars: company currency (AED) and FX rate -->
+                        <t t-set="company_currency" t-value="o.company_id.currency_id"/>
+                        <t t-set="exchange_rate"
+                           t-value="o.amount_total and abs(o.amount_total_signed / o.amount_total) or 0.0"/>
+
+                        <div class="row mt-4 nopage-break-block">
+                            <!-- LEFT: Local (company) currency summary -->
+                            <div class="col-4">
+                                <table class="table table-borderless table-local-summary">
+                                    <tbody>
+                                        <!-- Exchange Rate -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Exchange Rate</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="'{0:.5f}'.format(exchange_rate)"/>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Subtotal in company currency (AED) -->
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Subtotal</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">VAT Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Total</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_total_signed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": company_currency}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- SPACER -->
+                            <div class="col-3"></div>
+                            <!-- RIGHT: Original invoice-currency totals (USD) -->
+                            <div class="col-5">
+                                <table class="table table-borderless table-main-summary">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Untaxed Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.amount_tax">
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Taxes</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right highlight-total">
+                                                <strong style="color: #333333 !important">Total</strong>
+                                            </td>
+                                            <td class="text-right highlight-total">
+                                                <span t-field="o.amount_total"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}' style="color: #333333 !important"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-if="o.company_id.currency_id == o.currency_id">
+                        <div class="row mt-4 nopage-break-block">
+                            <!-- SPACER -->
+                            <div class="col-7"></div>
+                            <!-- RIGHT: Original invoice-currency totals-->
+                            <div class="col-5">
+                                <table class="table table-borderless table-main-summary">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Untaxed Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_untaxed"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.amount_tax">
+                                            <td class="text-right">
+                                                <strong style="color: #6e6e6e !important">Taxes</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="o.amount_tax"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-right highlight-total">
+                                                <strong style="color: #333333 !important">Total</strong>
+                                            </td>
+                                            <td class="text-right highlight-total">
+                                                <span t-field="o.amount_total"
+                                                      t-options='{"widget": "monetary",
+                                              "display_currency": o.currency_id}' style="color: #333333 !important"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- BOTTOM AREA: PAYMENT TERMS, BANK INFO, ETC. -->
+                    <div class="mt-5 details-block">
+                        <!-- NARRATION -->
+                        <div class="row my-5">
+                            <div class="col-12">
+                                <t t-if="o.narration">
+                                    <strong>Notes:</strong>
+                                    <p t-field="o.narration"/>
+                                </t>
+                            </div>
+                        </div>
+                        <!-- Payment terms -->
+                        <t t-if="o.invoice_payment_term_id">
+                            <p>
+                                <strong>Payment Terms:</strong>
+                                <span t-field="o.invoice_payment_term_id.name"/>
+                            </p>
+                        </t>
+
+                        <!-- Bank details: prefer invoice's bank, fallback to company first bank -->
+                        <t t-set="bank"
+                           t-value="o.partner_bank_id or (o.company_id.bank_ids and o.company_id.bank_ids[0])"/>
+
+                        <t t-if="bank">
+
+                            <p class="my-5">
+                                <strong>Business Account Name :</strong>
+                                <span t-esc="bank.acc_holder_name or o.company_id.partner_id.name"/>
+                                <br/>
+                                <strong>Bank Name :</strong>
+                                <span t-esc="bank.bank_id and bank.bank_id.name or ''"/>
+                                <br/>
+                                <strong>Account Number :</strong>
+                                <span t-esc="bank.acc_number or ''"/>
+                                <br/>
+                                <strong>IBAN Number :</strong>
+                                <span t-esc="bank.iban or ''"/>
+                                <br/>
+                                <strong>Swift Code :</strong>
+                                <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
+                            </p>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!--NON VAT REPORT-->
+
+        <template id="report_invoice_fni_document">
+
+            <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
+
+            <t t-call="web.external_layout" t-lang="lang">
+                <div class="page fn_font">
+
+                    <!--CUSTOMER BLOCK-->
+                    <div class="row mb-5">
+                        <div class="col-6">
+                            <span t-field="o.partner_id.name"/>
+                            <br/>
+                            <span t-field="o.partner_id"
+                                  t-options='{"widget": "contact",
+                                              "fields": ["address"],
+                                              "no_marker": True}'/>
+                            VAT:
+                            <span t-field="o.partner_id.vat"/>
+                        </div>
+                        <div class="col-6 text-right">
+                            <t t-if="o.partner_shipping_id and o.partner_shipping_id != o.partner_id">
+                                <strong>Ship To:</strong>
+                                <br/>
+                                <span t-field="o.partner_shipping_id.name"/>
+                                <br/>
+                                <span t-field="o.partner_shipping_id"
+                                      t-options='{"widget": "contact",
+                                                  "fields": ["address"],
+                                                  "no_marker": True}'/>
+                            </t>
+                        </div>
+                    </div>
+                    <!--INVOICE HEADER-->
+                    <div class="row mb-4">
+                        <h3>
+                            Invoice
                             <span t-field="o.name"/>
                         </h3>
                     </div>

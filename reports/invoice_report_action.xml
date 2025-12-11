@@ -11,7 +11,7 @@
             - report_name/report_file must match the QWeb template id
               with module prefix: fni_consulting.report_vat_invoice_fni
         -->
-        <record id="action_report_fni_invoice" model="ir.actions.report">
+        <record id="action_report_fni_vat_invoice" model="ir.actions.report">
             <!-- Label in the Print dropdown -->
             <field name="name">Tax Invoice (FAE)</field>
 
@@ -47,8 +47,8 @@
             <field name="report_type">qweb-pdf</field>
 
             <!-- QWeb template external id (module.template_id) -->
-            <field name="report_name">fni_consulting.report_vat_invoice_fni</field>
-            <field name="report_file">fni_consulting.report_vat_invoice_fni</field>
+            <field name="report_name">fni_consulting.report_invoice_fni</field>
+            <field name="report_file">fni_consulting.report_invoice_fni</field>
 
             <!-- Bind to invoice form Print menu -->
             <field name="binding_model_id" ref="account.model_account_move"/>
