@@ -60,12 +60,6 @@
                             </div>
                         </div>
 
-                        <!-- Document title line (e.g. Invoice INV/2023/00003) -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h2 t-if="title" t-esc="title"/>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </xpath>
