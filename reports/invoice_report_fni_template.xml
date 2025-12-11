@@ -68,7 +68,7 @@
                     </div>
 
                     <!-- INVOICE LINES TABLE  class="table table-sm o_main_table"-->
-                    <table class="table">
+                    <table class="table o_main_table">
                         <thead>
                             <tr>
                                 <th>Description</th>
