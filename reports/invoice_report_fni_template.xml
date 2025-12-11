@@ -68,7 +68,7 @@
                     </div>
 
                     <!-- INVOICE LINES TABLE  class="table table-sm o_main_table"-->
-                    <table class="table o_main_table">
+                    <table class="table table-borderless">
                         <thead>
                             <tr>
                                 <th>Description</th>
@@ -150,6 +150,7 @@
                         </tbody>
                     </table>
 
+                    <!-- AMOUNT SUMMARY AREA: VAT, GRAD TOTAL. -->
                     <t t-if="o.company_id.currency_id != o.currency_id">
                         <!-- Prepare helper vars: company currency (AED) and FX rate -->
                         <t t-set="company_currency" t-value="o.company_id.currency_id"/>
@@ -249,7 +250,6 @@
                             </div>
                         </div>
                     </t>
-
                     <t t-if="o.company_id.currency_id == o.currency_id">
                         <div class="row mt-4 nopage-break-block">
                             <!-- SPACER -->
@@ -293,7 +293,6 @@
                             </div>
                         </div>
                     </t>
-
 
                     <!-- BOTTOM AREA: PAYMENT TERMS, BANK INFO, ETC. -->
                     <div class="mt-5 details-block">
