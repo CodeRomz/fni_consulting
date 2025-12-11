@@ -67,7 +67,7 @@
                         </div>
                     </div>
 
-                    <!-- INVOICE LINES TABLE  class="table table-sm o_main_table"-->
+                    <!-- INVOICE LINES TABLE  class="table table-borderless o_main_table"-->
                     <table class="table table-borderless">
                         <thead>
                             <tr>
@@ -160,7 +160,7 @@
                         <div class="row mt-4 nopage-break-block">
                             <!-- LEFT: Local (company) currency summary -->
                             <div class="col-4">
-                                <table class="table table-sm table-local-summary">
+                                <table class="table table-borderless table-local-summary">
                                     <tbody>
                                         <!-- Exchange Rate -->
                                         <tr>
@@ -213,7 +213,7 @@
                             <div class="col-3"></div>
                             <!-- RIGHT: Original invoice-currency totals (USD) -->
                             <div class="col-5">
-                                <table class="table table-sm table-main-summary">
+                                <table class="table table-borderless table-main-summary">
                                     <tbody>
                                         <tr>
                                             <td class="text-right">
@@ -256,7 +256,7 @@
                             <div class="col-7"></div>
                             <!-- RIGHT: Original invoice-currency totals-->
                             <div class="col-5">
-                                <table class="table table-sm table-main-summary">
+                                <table class="table table-borderless table-main-summary">
                                     <tbody>
                                         <tr>
                                             <td class="text-right">
