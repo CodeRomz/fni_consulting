@@ -13,6 +13,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_bank.xml',
+        'views/hr_timesheet_sheet_readonly.xml',
         'reports/invoice_report_fni_template.xml',
         'reports/survey_report_fni_acknowledgement_template.xml',
         'reports/survey_report_action.xml',
