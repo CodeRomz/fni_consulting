@@ -17,7 +17,7 @@
             </t>
         </template>
 
-        <!--VAT REPORT-->
+        <!--VAT PRINT-->
 
         <template id="report_vat_invoice_fni_document">
 
@@ -266,7 +266,7 @@
                             <div class="col-7"></div>
                             <!-- RIGHT: Original invoice-currency totals-->
                             <div class="col-5">
-                                <table class="table table-borderless table-main-summary">
+                                <table class="table table-borderless table-sm table-main-summary">
                                     <tbody>
                                         <tr>
                                             <td class="text-right">
