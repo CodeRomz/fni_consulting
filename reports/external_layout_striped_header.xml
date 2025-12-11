@@ -2,21 +2,24 @@
 <odoo>
     <data>
 
-        <!-- FNI – override STRIPED header -->
+        <!-- FNI – customize STRIPED header (works in Odoo 18 / OCB) -->
         <template id="external_layout_striped_fni_header"
                   name="Striped layout header (FNI)"
                   inherit_id="web.external_layout_striped"
                   priority="60">
 
-            <!-- Replace the whole header wrapper of the striped layout -->
-            <xpath expr="//div[hasclass('header')]" position="replace">
+            <!--
+                In external_layout_striped the first <div> is the header.
+                We replace that whole block.
+            -->
+            <xpath expr="//div[1]" position="replace">
                 <div t-attf-class="o_company_#{company.id}_layout header"
                      t-att-style="report_header_style">
 
                     <div class="o_background_header">
                         <div class="row align-items-start">
 
-                            <!-- LEFT: logo -->
+                            <!-- LEFT: company logo -->
                             <div class="col-6">
                                 <img t-if="company.logo"
                                      t-att-src="image_data_uri(company.logo)"
@@ -32,13 +35,13 @@
                                     <span t-field="company.report_header"/>
                                 </div>
 
-                                <!-- Address / Details block (Document Layout “Address”) -->
+                                <!-- Address (Document Layout “Address”) -->
                                 <div class="mb-1">
-                                    <!-- If company_details is set (new Document Layout), use it -->
+                                    <!-- New 18.0 field company.company_details from layout wizard -->
                                     <t t-if="company.company_details">
                                         <span t-field="company.company_details"/>
                                     </t>
-                                    <!-- Fallback: classic partner contact block -->
+                                    <!-- Fallback: classic partner contact -->
                                     <t t-else="">
                                         <span t-field="company.partner_id"
                                               t-options="{
@@ -49,21 +52,15 @@
                                     </t>
                                 </div>
 
-                                <!-- Tax ID line (Document Layout “Tax ID”) -->
-                                <div t-if="company.vat" class="mt-1">
+                                <!-- Tax ID / VAT line (Document Layout “Tax ID”) -->
+                                <div t-if="company.vat or company.partner_id.vat" class="mt-1">
                                     <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
-                                    <span t-field="company.vat"/>
-                                </div>
-
-                                <!-- Optional Bank account (from company) if you want it in header -->
-                                <div t-if="company.account_no" class="mt-1">
-                                    <t t-esc="'Bank Account'"/>:
-                                    <span t-field="company.account_no"/>
+                                    <span t-esc="company.vat or company.partner_id.vat"/>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Report title line (e.g. “Invoice INV/2023/0003”) -->
+                        <!-- Document title line (e.g. Invoice INV/2023/00003) -->
                         <div class="row mt-3">
                             <div class="col-12">
                                 <h2 t-if="title" t-esc="title"/>
@@ -72,6 +69,7 @@
                     </div>
                 </div>
             </xpath>
+
         </template>
 
     </data>
