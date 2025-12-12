@@ -13,7 +13,7 @@
                 to be used whenever the company uses the "Striped" layout.
             -->
             <xpath expr="//div[1]" position="replace">
-                <div t-attf-class="o_company_#{company.id}_layout header mb-3" style="border-bottom: 1px solid  #6e6e6e33;">
+                <div t-attf-class="o_company_#{company.id}_layout header" style="border-bottom: 1px solid  #6e6e6e33;">
                     <div class="container">
                         <div class="row">
                             <!-- LEFT: Logo-->
