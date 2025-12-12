@@ -14,7 +14,7 @@
                         <div class="col-6 mb-2">
                             <img t-if="company.logo"
                                  t-att-src="image_data_uri(company.logo)"
-                                 style="max-height: 45px;"
+                                 style="max-height: 65px; max-width: 100%;"
                                  alt="Logo"/>
                         </div>
 
