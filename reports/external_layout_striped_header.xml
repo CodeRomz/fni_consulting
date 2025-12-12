@@ -2,57 +2,27 @@
 <odoo>
     <data>
 
-        <!-- FNI – customize STRIPED header (works in Odoo 18 / OCB) -->
         <template id="external_layout_striped_fni_header"
-                  name="Striped layout header (FNI)"
-                  inherit_id="web.external_layout_striped"
-                  priority="60">
+                  name="FNI External Layout Striped"
+                  inherit_id="web.external_layout_striped">
 
-            <xpath expr="//div[1]" position="replace">
-                <div t-attf-class="o_company_#{company.id}_layout header"
-                     t-att-style="report_header_style">
+            <xpath expr="//span[@t-field='company.partner_id']"
+                   position="after">
+                <t t-if="company.vat or company.partner_id.vat">
+                    <span t-esc="company.country_id.vat_label or 'VAT'"/>:
+                    <span t-esc="company.vat or company.partner_id.vat"/>
+                </t>
+            </xpath>
 
-                    <div class="o_background_header">
-                        <div class="row align-items-start">
 
-                            <!-- LEFT: company logo -->
-                            <div class="col-6">
-                                <img t-if="company.logo"
-                                     t-att-src="image_data_uri(company.logo)"
-                                     alt="Logo"
-                                     style="max-height: 65x; max-width: 100%;"/>
-                            </div>
-
-                            <!-- RIGHT: tagline + address/details + Tax ID -->
-                            <div class="col-6">
-
-                                <!-- Address (Document Layout “Address”) -->
-                                <div>
-                                    <!-- New 18.0 field company.company_details from layout wizard -->
-                                    <t t-if="company.company_details">
-                                        <span t-field="company.company_details"/>
-                                    </t>
-                                    <!-- Fallback: classic partner contact -->
-                                    <t t-else="">
-                                        <span t-field="company.partner_id"
-                                              t-options="{
-                                                  'widget': 'contact',
-                                                  'fields': ['address', 'name'],
-                                                  'no_marker': True
-                                              }"/>
-                                    </t>
-                                </div>
-
-                                <!-- Tax ID / VAT line (Document Layout “Tax ID”) -->
-                                <div t-if="company.vat or company.partner_id.vat">
-                                    <t t-esc="company.country_id.vat_label or 'Tax ID'"/>:
-                                    <span t-esc="company.vat or company.partner_id.vat"/>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+            <xpath expr="//span[@t-field='company.partner_id']/.."
+                   position="attributes">
+                <attribute name="class"
+                           add="text-right fni-header-company-address"
+                           separator=" "/>
+                <attribute name="style"
+                           add="padding-left: 500px;"
+                           separator="; "/>
             </xpath>
 
         </template>
