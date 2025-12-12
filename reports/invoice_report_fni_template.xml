@@ -94,7 +94,7 @@
                     </div>
 
                     <!-- INVOICE LINES TABLE  -->
-                    <table class="table table-borderless table-sm table-main-vat">
+                    <table class="table table-borderless table-sm table-main">
                         <thead>
                             <tr>
                                 <th>Description</th>
@@ -428,7 +428,7 @@
                     </div>
 
                     <!-- INVOICE LINES TABLE -->
-                    <table class="table table-borderless table-sm">
+                    <table class="table table-borderless table-sm table-main ">
                         <thead>
                             <tr>
                                 <th>Description</th>
