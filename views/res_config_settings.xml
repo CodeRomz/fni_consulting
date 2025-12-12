@@ -24,6 +24,17 @@
                             </div>
                         </div>
                     </setting>
+
+                    <!-- New field: allow selection of a custom paper format for FNI invoices -->
+                    <setting string="FNI Invoice Paper Format"
+                             help="Select the paper format used for FNI invoice PDFs.  This choice will be propagated to the company’s default paper format and the FNI invoice report action when you save the settings.">
+                        <div class="content-group mt16">
+                            <field name="fni_invoice_paperformat_id" options="{'no_create_edit': True}"/>
+                            <div class="text-muted">
+                                When set, both the company’s default paper format and the FNI invoice report will use this format.
+                            </div>
+                        </div>
+                    </setting>
                 </block>
             </xpath>
         </field>

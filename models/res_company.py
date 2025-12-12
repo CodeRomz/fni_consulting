@@ -13,3 +13,31 @@ class ResCompany(models.Model):
         domain="[('model', '=', 'account.move'), ('report_type', '=', 'qweb-pdf')]",
         help="If set, this report replaces the standard invoice report for printing, sending and downloading.",
     )
+
+    # -------------------------------------------------------------------------
+    # FNI Invoice Paper Format Configuration
+    # -------------------------------------------------------------------------
+    #
+    # Odoo allows companies to choose a default paper format for all reports
+    # (see Settings → Technical → Reports → Paper Format).  However, the
+    # built‑in UI does not expose an easy way to choose a paper format as part
+    # of custom module settings.  To support user‑selectable paper formats for
+    # FNI invoices, we store the chosen paper format on the company and use
+    # it when generating FNI reports.
+    #
+    # This field points to ``report.paperformat`` records.  It is optional; if
+    # unset, the standard company paper format (or the report’s own
+    # ``paperformat_id``) will be used.  When this field is set via
+    # ``res.config.settings``, it can be propagated to the company’s
+    # ``paperformat_id`` or the FNI report actions during ``set_values``.
+
+    fni_invoice_paperformat_id = fields.Many2one(
+        comodel_name="report.paperformat",
+        string="FNI Invoice Paper Format",
+        help=(
+            "Custom paper format to use for FNI invoice PDFs.  If set, the"
+            " default invoice report and FNI invoice report actions may be"
+            " updated to use this format when saving settings.  Leave empty to"
+            " use the company default paper format."
+        ),
+    )
