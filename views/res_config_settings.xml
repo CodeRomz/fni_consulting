@@ -8,7 +8,7 @@
         <field name="priority" eval="30"/>
         <field name="arch" type="xml">
             <!-- Target the Invoicing app by its name ('account') -->
-            <xpath expr="//app[@name='account']" position="inside">
+            <xpath expr="//app[@name='general_settings']" position="inside">
                 <!-- Add our FNI block inside the existing Invoicing section -->
                 <block title="FNI Invoice Configuration"
                        name="fni_invoice_configuration"
