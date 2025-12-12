@@ -93,8 +93,8 @@
                         </div>
                     </div>
 
-                    <!-- INVOICE LINES TABLE  class="table table-borderless o_main_table"-->
-                    <table class="table table-borderless table-sm">
+                    <!-- INVOICE LINES TABLE  -->
+                    <table class="table table-borderless table-sm table-main-vat">
                         <thead>
                             <tr>
                                 <th>Description</th>
