@@ -9,7 +9,14 @@
     'version': '18.0.1.0.0',
 
     'category': 'Custom',
-    'depends': ['hr_timesheet_sheet', 'project_timesheet_time_control', 'hr_holidays', 'survey'],
+    'depends': ['hr_timesheet_sheet',
+                'project_timesheet_time_control',
+                'hr_holidays', 'survey', 'account',
+                'hr_timesheet_task_domain',
+                'hr_timesheet_task_required',
+                'hr_timesheet_time_type',
+                'project_timesheet_holidays',
+                ],
 
     'data': [
         'security/ir.model.access.csv',
