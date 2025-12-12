@@ -7,11 +7,6 @@
                   name="FNI External Layout Striped"
                   inherit_id="web.external_layout_striped">
 
-            <!--
-                In external_layout_striped the header is the FIRST <div>.
-                We replace that entire block, so our layout is guaranteed
-                to be used whenever the company uses the "Striped" layout.
-            -->
             <xpath expr="//div[1]" position="replace">
                 <div t-attf-class="o_company_#{company.id}_layout header">
                     <div class="container">

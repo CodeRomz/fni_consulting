@@ -355,7 +355,6 @@
 
         <template id="report_invoice_fni_document">
 
-
             <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
 
             <t t-call="web.external_layout" t-lang="lang">
