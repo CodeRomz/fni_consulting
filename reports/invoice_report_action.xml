@@ -28,6 +28,7 @@
             <!-- Bind to invoice form Print menu -->
             <field name="binding_model_id" ref="account.model_account_move"/>
             <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="fni_A4_portrait"/>
 
             <!-- Optional: control the generated PDF file name -->
             <!-- 'object' here is the current account.move record -->
@@ -53,6 +54,7 @@
             <!-- Bind to invoice form Print menu -->
             <field name="binding_model_id" ref="account.model_account_move"/>
             <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="fni_A4_portrait"/>
 
             <!-- Optional: control the generated PDF file name -->
             <!-- 'object' here is the current account.move record -->
