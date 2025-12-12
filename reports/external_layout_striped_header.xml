@@ -14,11 +14,12 @@
                         <div class="col-6 mb-2">
                             <img t-if="company.logo"
                                  t-att-src="image_data_uri(company.logo)"
+                                 style="max-height: 45px;"
                                  alt="Logo"/>
                         </div>
 
                         <!-- Company address + VAT -->
-                        <div class="col-6 mb-2 text-end fni-header-company-address">
+                        <div class="col-6 mb-2 fni-header-company-address">
                             <div>
                                 <span t-field="company.partner_id"
                                       t-options="{
@@ -30,7 +31,6 @@
 
                             <!-- VAT line (company VAT or partner VAT) -->
                             <t t-if="company.vat or company.partner_id.vat">
-                                <br/>
                                 <span t-esc="company.country_id.vat_label or 'VAT'"/>:
                                 <span t-esc="company.vat or company.partner_id.vat"/>
                             </t>
