@@ -38,7 +38,7 @@
 
                                     <!-- VAT line: explicit, 17.0-style behaviour -->
                                     <li t-if="company.vat or company.partner_id.vat">
-                                        <span t-esc="company.country_id.vat_label or 'VAT '"/>:
+                                        <span t-esc="company.country_id.vat_label or 'VAT'"/>:
                                         <span t-esc="company.vat or company.partner_id.vat"/>
                                     </li>
 
