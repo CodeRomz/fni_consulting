@@ -1,0 +1,27 @@
+<!-- views/res_config_settings.xml -->
+<odoo>
+    <record id="fni_res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.fni.invoice.report</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Place the new field in the Accounting settings section -->
+            <xpath expr="//div[@id='accounting']" position="inside">
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="fni_default_invoice_report_id"/>
+                            <div class="text-muted">
+                                Choose your FNI invoice report; it will replace Odoo’s
+                                standard invoice report for printing, sending and
+                                portal downloads.
+                            </div>
+                            <field name="fni_default_invoice_report_id"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
