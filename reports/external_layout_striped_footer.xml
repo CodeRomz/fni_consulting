@@ -16,7 +16,7 @@
                     <div class="row mt8">
                         <div class="col-12 text-center" style="font-size: 13px;">
                             <t t-if="report_type == 'pdf'">
-                                <div style="border-top: 1px solid rgba(110, 110, 110, 0.20); margin-top: 2px;"></div>
+                                <div class="fni-margin-border"></div>
                                 <span class="text-muted">
                                     Page:
                                     <span class="page"/>
