@@ -25,9 +25,9 @@
 
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
-                    <div class="my-2" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
+                    <div style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
                     <!--CUSTOMER BLOCK-->
-                    <div class="row mb-5">
+                    <div class="row my-5">
                         <div class="col-6">
                             <span t-field="o.partner_id.name"/>
                             <br/>
@@ -360,9 +360,9 @@
 
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
-                    <div class="my-2" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
+                    <div style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
                     <!--CUSTOMER BLOCK-->
-                    <div class="row mb-5">
+                    <div class="row my-5">
                         <div class="col-6">
                             <span t-field="o.partner_id.name"/>
                             <br/>
