@@ -15,7 +15,6 @@
         'security/ir.model.access.csv',
         'views/res_partner_bank.xml',
         'views/hr_timesheet_sheet_readonly.xml',
-        'reports/report_invoice_fni_override.xml',
         'reports/fni_paperformat.xml',
         'reports/invoice_report_fni_template.xml',
         'reports/survey_report_fni_acknowledgement_template.xml',
