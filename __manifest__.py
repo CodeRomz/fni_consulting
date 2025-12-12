@@ -1,7 +1,7 @@
 {
     'name': 'FNI Consulting Customizations',
     'summary': 'Custom patches and business logic for FNI Consulting',
-    'Description': '',
+    'description': '',
 
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
