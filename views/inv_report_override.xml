@@ -2,10 +2,10 @@
 <odoo>
     <data>
         <!-- Override the HTML preview -->
+        <!-- Match any t tag with a t-call and redirect it to our unified FNI wrapper -->
         <template id="report_invoice_document_preview"
                   inherit_id="account.report_invoice_document_preview">
-            <xpath expr="//t[@t-call='account.report_invoice_document']" position="attributes">
-                <!-- Call your wrapper template instead -->
+            <xpath expr="//t[@t-call]" position="attributes">
                 <attribute name="t-call">fni_consulting.report_invoice_fni_auto</attribute>
             </xpath>
         </template>
