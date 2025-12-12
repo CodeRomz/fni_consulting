@@ -2,66 +2,48 @@
 <odoo>
     <data>
 
-        <!-- FNI custom header for Striped layout (Odoo 18.0) -->
         <template id="external_layout_striped_fni_header"
                   name="FNI External Layout Striped"
                   inherit_id="web.external_layout_striped">
 
-            <!--
-                ACCURATE 18.0 XPATH:
-                external_layout_striped wraps the header content in
-                <div class="o_background_header"> ... </div>
-
-                We target that block using hasclass(), which is used in
-                production modules to customize these layouts.
-            -->
-            <xpath expr="//div[hasclass('o_background_header')]"
-                   position="replace">
-
-                <div class="o_background_header">
-                    <div class="row align-items-start">
-
-                        <!-- Left: Logo -->
-                        <div class="col-6">
+            <!-- Replace the first div = header of external_layout_striped -->
+            <xpath expr="//div[1]" position="replace">
+                <div t-attf-class="header o_company_#{company.id}_layout">
+                    <div class="row mb-2">
+                        <!-- Logo -->
+                        <div class="col-6 mb-2">
                             <img t-if="company.logo"
-                                 class="o_company_logo_small"
                                  t-att-src="image_data_uri(company.logo)"
                                  alt="Logo"/>
                         </div>
 
-                        <!-- Right: Company address + VAT (FNI custom) -->
-                        <div class="col-6 text-right fni-header-company-address">
+                        <!-- Company address + VAT -->
+                        <div class="col-6 mb-2 text-end fni-header-company-address">
+                            <div>
+                                <span t-field="company.partner_id"
+                                      t-options="{
+                                          'widget': 'contact',
+                                          'fields': ['address', 'name'],
+                                          'no_marker': True
+                                      }"/>
+                            </div>
 
-                            <!-- Company name -->
-                            <t t-if="company.name">
-                                <h3 class="mt-0">
-                                    <t t-esc="company.name"/>
-                                </h3>
-                            </t>
-
-                            <!-- Company address (standard contact widget) -->
-                            <t t-if="company.partner_id">
-                                <div t-field="company.partner_id"
-                                     t-options='{
-                                         "widget": "contact",
-                                         "fields": ["address"],
-                                         "no_marker": true
-                                     }'/>
-                            </t>
-
-                            <!-- FNI VAT line (migrated from your 17.0 code) -->
+                            <!-- VAT line (company VAT or partner VAT) -->
                             <t t-if="company.vat or company.partner_id.vat">
-                                <div>
-                                    <span t-esc="company.country_id.vat_label or 'VAT'"/>:
-                                    <span t-esc="company.vat or company.partner_id.vat"/>
-                                </div>
+                                <br/>
+                                <span t-esc="company.country_id.vat_label or 'VAT'"/>:
+                                <span t-esc="company.vat or company.partner_id.vat"/>
                             </t>
-
                         </div>
+                    </div>
 
+                    <!-- Optional separator line if you want -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="border-bottom: 1px solid #000;"/>
+                        </div>
                     </div>
                 </div>
-
             </xpath>
 
         </template>
