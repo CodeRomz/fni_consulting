@@ -17,12 +17,6 @@ class AccountAnalyticLine(models.Model):
             _logger.exception("Failed to compute running domain via super().")
             raise
         else:
-            # Keep your custom rules; they are independent from OCA task domain logic
-            # Use expression.AND from odoo.osv to combine domains rather than tools.expression,
-            # which does not expose the expression submodule in Odoo 18.0. See `odoo.osv.expression`
-            # for utilities to safely combine search domains. This prevents AttributeError
-            # on `odoo.tools.expression` while preserving the intent to filter out leave-related
-            # analytic lines.
             return expression.AND([
                 domain,
                 [('holiday_id', '=', False), ('global_leave_id', '=', False)],
