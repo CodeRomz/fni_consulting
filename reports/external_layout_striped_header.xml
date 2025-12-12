@@ -28,7 +28,7 @@
                         </div>
 
                         <!-- RIGHT: Company address + VAT, FNI-style -->
-                        <div class="w-50 ms-3"
+                        <div class="w-50 fni-header-company-address"
                              name="company_address">
                             <ul class="list-unstyled" name="company_address_list">
 
