@@ -13,7 +13,7 @@
         -->
         <record id="action_report_fni_vat_invoice" model="ir.actions.report">
             <!-- Label in the Print dropdown -->
-            <field name="name">Tax Invoice (FAE)</field>
+            <field name="name">Tax Invoice (FNI)</field>
 
             <!-- Technical model name: account.move (Odoo 17 invoices) -->
             <field name="model">account.move</field>
@@ -38,7 +38,7 @@
 
         <record id="action_report_fni_invoice" model="ir.actions.report">
             <!-- Label in the Print dropdown -->
-            <field name="name">Invoice (FAE)</field>
+            <field name="name">Invoice (FNI)</field>
 
             <!-- Technical model name: account.move (Odoo 17 invoices) -->
             <field name="model">account.move</field>
