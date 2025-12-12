@@ -21,13 +21,11 @@
 
         <template id="report_vat_invoice_fni_document">
 
-            <div class="my-2" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
-
             <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
 
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
-
+                    <div class="my-2" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-5">
                         <div class="col-6">
@@ -357,13 +355,12 @@
 
         <template id="report_invoice_fni_document">
 
-            <div class="my-2" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
 
             <t t-set="lang" t-value="o.partner_id.lang or o.company_id.partner_id.lang"/>
 
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
-
+                    <div class="my-2" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-5">
                         <div class="col-6">
