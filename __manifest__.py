@@ -16,6 +16,7 @@
         'views/res_partner_bank.xml',
         'views/res_config_settings.xml',
         'views/hr_timesheet_sheet_readonly.xml',
+        'views/inv_report_override.xml',
         'reports/fni_paperformat.xml',
         'reports/invoice_report_fni_template.xml',
         'reports/survey_report_fni_acknowledgement_template.xml',
