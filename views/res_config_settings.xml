@@ -1,33 +1,38 @@
-<!-- views/res_config_settings.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="fni_res_config_settings_view_form" model="ir.ui.view">
-        <field name="name">res.config.settings.view.form.fni.invoice.report</field>
+    <!-- Inherit the base settings view and insert our own settings app -->
+    <record id="fni_res_config_settings_view_form_invoice" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.fni.invoice.default</field>
         <field name="model">res.config.settings</field>
+        <!-- Use the base settings form as the parent -->
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="priority" eval="16"/>
         <field name="arch" type="xml">
-            <!-- Place the new field in the Accounting settings section -->
-            <xpath expr="//app[@name='account']" position="inside">
+            <!-- Insert our new app at the end of the form -->
+            <xpath expr="//form" position="inside">
+                <!-- The `name` attribute should be unique (module namespace) -->
+                <app name="fni_consulting_invoice"
+                     data-string="Invoice Formats"
+                     string="Invoice Formats">
+                    <!-- Group our fields into a block -->
+                    <block title="FNI Invoice Configuration"
+                           name="fni_invoice_configuration"
+                           help="Configure the default FNI invoice report used for printing, sending and portal downloads.">
 
-                <block title="FNI Settings" name="fni_settings">
-                    <setting>
-                        <div class="row mt16 o_settings_container">
-                    <div class="col-12 col-lg-6 o_setting_box">
-                        <div class="o_setting_left_pane"/>
-                        <div class="o_setting_right_pane">
-                            <label for="fni_default_invoice_report_id"/>
-                            <div class="text-muted">
-                                Choose your FNI invoice report; it will replace Odoo’s
-                                standard invoice report for printing, sending and
-                                portal downloads.
+                        <setting string="Default FNI Invoice Report"
+                                 help="Select which FNI invoice report (VAT/Non‑VAT wrapper) should be used by default.">
+                            <div class="content-group mt16">
+                                <!-- This field is related to res.company.fni_default_invoice_report_id -->
+                                <field name="fni_default_invoice_report_id"
+                                       options="{'no_create_edit': True}"/>
+                                <div class="text-muted">
+                                    This report will be used for printing, sending and portal downloads when set.
+                                </div>
                             </div>
-                            <field name="fni_default_invoice_report_id"/>
-                        </div>
-                    </div>
-                </div>
-                    </setting>
+                        </setting>
 
-                </block>
-
+                    </block>
+                </app>
             </xpath>
         </field>
     </record>
