@@ -1,5 +1,6 @@
 from odoo import models, fields, api, tools, _
 from odoo.exceptions import UserError, ValidationError, RedirectWarning, AccessDenied, AccessError, CacheMiss, MissingError
+from odoo.osv import expression
 import logging
 _logger = logging.getLogger(__name__)
 
