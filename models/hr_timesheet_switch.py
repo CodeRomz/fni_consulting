@@ -1,5 +1,7 @@
-from odoo import api, models, _
-from odoo.exceptions import UserError
+from odoo import models, fields, api, tools, _
+from odoo.exceptions import UserError, ValidationError, RedirectWarning, AccessDenied, AccessError, CacheMiss, MissingError
+import logging
+_logger = logging.getLogger(__name__)
 
 class HrTimesheetSwitch(models.TransientModel):
     _inherit = "hr.timesheet.switch"
