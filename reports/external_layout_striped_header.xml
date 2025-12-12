@@ -15,12 +15,8 @@
             <xpath expr="//div[@name='company_address']" position="attributes">
                 <!-- Align to the right & keep Bootstrap 5 convention -->
                 <attribute name="class"
-                           add="text-end fni-header-company-address"
+                           add="fni-header-company-address"
                            separator=" "/>
-                <!-- Your original visual tweak -->
-                <attribute name="style"
-                           add="padding-left: 500px;"
-                           separator="; "/>
             </xpath>
 
         </template>
