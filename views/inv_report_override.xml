@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Override the HTML preview -->
-        <!-- Match any t tag with a t-call and redirect it to our unified FNI wrapper -->
-        <template id="report_invoice_document_preview"
+        <!-- Override the HTML preview.  Use a unique ID to avoid recursion. -->
+        <template id="fni_report_invoice_document_preview"
                   inherit_id="account.report_invoice_document_preview">
             <xpath expr="//t[@t-call]" position="attributes">
                 <attribute name="t-call">fni_consulting.report_invoice_fni_auto</attribute>
             </xpath>
         </template>
 
-        <!-- Override the base PDF template (with and without payments) -->
-        <template id="account.report_invoice_document"
+        <!-- Override the base PDF templates.  Each override gets a unique ID. -->
+        <template id="fni_report_invoice_document"
                   inherit_id="account.report_invoice_document">
             <xpath expr="//t[@t-call]" position="replace">
                 <t t-call="fni_consulting.report_invoice_fni_auto"/>
             </xpath>
         </template>
 
-        <template id="account.report_invoice_document_without_payment"
+        <template id="fni_report_invoice_document_without_payment"
                   inherit_id="account.report_invoice_document_without_payment">
             <xpath expr="//t[@t-call]" position="replace">
                 <t t-call="fni_consulting.report_invoice_fni_auto"/>
             </xpath>
         </template>
-
     </data>
 </odoo>
