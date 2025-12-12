@@ -1,38 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Inherit the base settings view and insert our own settings app -->
-    <record id="fni_res_config_settings_view_form_invoice" model="ir.ui.view">
-        <field name="name">res.config.settings.view.form.fni.invoice.default</field>
+    <record id="fni_res_config_settings_view_form_invoicing" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.fni.invoice</field>
         <field name="model">res.config.settings</field>
-        <!-- Use the base settings form as the parent -->
+        <!-- Inherit the base settings form -->
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
-        <field name="priority" eval="16"/>
+        <field name="priority" eval="30"/>
         <field name="arch" type="xml">
-            <!-- Insert our new app at the end of the form -->
-            <xpath expr="//form" position="inside">
-                <!-- The `name` attribute should be unique (module namespace) -->
-                <app name="fni_consulting_invoice"
-                     data-string="Invoice Formats"
-                     string="Invoice Formats">
-                    <!-- Group our fields into a block -->
-                    <block title="FNI Invoice Configuration"
-                           name="fni_invoice_configuration"
-                           help="Configure the default FNI invoice report used for printing, sending and portal downloads.">
-
-                        <setting string="Default FNI Invoice Report"
-                                 help="Select which FNI invoice report (VAT/Non‑VAT wrapper) should be used by default.">
-                            <div class="content-group mt16">
-                                <!-- This field is related to res.company.fni_default_invoice_report_id -->
-                                <field name="fni_default_invoice_report_id"
-                                       options="{'no_create_edit': True}"/>
-                                <div class="text-muted">
-                                    This report will be used for printing, sending and portal downloads when set.
-                                </div>
+            <!-- Target the Invoicing app by its name ('account') -->
+            <xpath expr="//app[@name='account']" position="inside">
+                <!-- Add our FNI block inside the existing Invoicing section -->
+                <block title="FNI Invoice Configuration"
+                       name="fni_invoice_configuration"
+                       help="Configure the default FNI invoice report used for printing, sending and portal downloads."
+                       groups="account.group_account_manager">
+                    <setting string="Default FNI Invoice Report"
+                             help="Select which FNI invoice report (VAT/Non‑VAT wrapper) should be used by default.">
+                        <div class="content-group mt16">
+                            <field name="fni_default_invoice_report_id"
+                                   options="{'no_create_edit': True}"/>
+                            <div class="text-muted">
+                                This report will be used for printing, sending and portal downloads when set.
                             </div>
-                        </setting>
-
-                    </block>
-                </app>
+                        </div>
+                    </setting>
+                </block>
             </xpath>
         </field>
     </record>
