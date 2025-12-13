@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.0',
 
     'category': 'Custom',
     'depends': ['hr_timesheet_sheet',
