@@ -13,7 +13,5 @@
                 <t t-call="fni_consulting.report_invoice_fni_auto"/>
             </xpath>
         </template>
-
-
     </data>
 </odoo>
