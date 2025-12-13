@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <template id="fni_report_invoice_document_preview" inherit_id="account.report_invoice_document_preview">
             <xpath expr="//t[@t-call]" position="attributes">
                 <attribute name="t-call">fni_consulting.report_invoice_fni_auto</attribute>
