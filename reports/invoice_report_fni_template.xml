@@ -42,6 +42,7 @@
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
                     <div style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
+
                     <!--CUSTOMER BLOCK-->
                     <div class="row my-5">
                         <div class="col-6">
@@ -67,6 +68,7 @@
                             </t>
                         </div>
                     </div>
+
                     <!--INVOICE NUMBER-->
                     <div class="row mb-4">
                         <h3>
@@ -376,6 +378,7 @@
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
                     <div style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
+
                     <!--CUSTOMER BLOCK-->
                     <div class="row my-5">
                         <div class="col-6">
@@ -401,6 +404,7 @@
                             </t>
                         </div>
                     </div>
+
                     <!--INVOICE NUMBER-->
                     <div class="row mb-4">
                         <h3>
