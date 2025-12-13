@@ -1,29 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Override the HTML preview -->
-        <!--
-            In Odoo 18 the invoice preview template (account.report_invoice_document_preview)
-            does not necessarily call ``account.report_invoice_document`` directly,
-            which makes the previous xpath fail with “cannot be located in parent view”.
-            To robustly replace whatever report body the preview calls, we match
-            the first ``t`` tag that has a ``t-call`` attribute and override its
-            ``t-call`` to point at our unified FNI wrapper.  This avoids hard‑coding
-            the exact template name and continues to work even if Odoo changes
-            the underlying call.
-        -->
-        <!-- Inherit the base preview template with a unique XML ID to avoid
-             recursive inheritance.  Do not reuse the original template's ID. -->
+
         <template id="fni_report_invoice_document_preview" inherit_id="account.report_invoice_document_preview">
             <xpath expr="//t[@t-call]" position="attributes">
                 <attribute name="t-call">fni_consulting.report_invoice_fni_auto</attribute>
             </xpath>
         </template>
-
-        <!-- Override the base PDF templates for invoices.  Each override
-             requires a unique XML ID and references the corresponding base
-             template via ``inherit_id``.  Avoid reusing the original IDs to
-             prevent recursive inheritance errors. -->
         <template id="fni_report_invoice_document"
                   inherit_id="account.report_invoice_document">
             <xpath expr="//t[@t-call]" position="replace">
@@ -31,12 +14,6 @@
             </xpath>
         </template>
 
-        <!-- Note: Odoo 18 no longer defines a separate
-             ``account.report_invoice_document_without_payment`` template.  The
-             “PDF without Payment” option passes a ``no_payment`` context flag
-             to the standard report.  We therefore omit an override for a
-             template that does not exist and rely on our unified wrapper to
-             respect the ``no_payment`` context inside the report itself. -->
 
     </data>
 </odoo>
