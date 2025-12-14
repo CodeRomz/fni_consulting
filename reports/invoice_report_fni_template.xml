@@ -41,7 +41,6 @@
 
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
-                    <div class="mb-5" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
 
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-5">
@@ -377,7 +376,6 @@
 
             <t t-call="web.external_layout" t-lang="lang">
                 <div class="page fn_font">
-                    <div class="mb-5" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"/>
 
                     <!--CUSTOMER BLOCK-->
                     <div class="row mb-5">
