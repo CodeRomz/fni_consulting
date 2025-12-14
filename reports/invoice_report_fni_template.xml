@@ -43,7 +43,7 @@
                 <div class="page fn_font">
 
                     <!--CUSTOMER BLOCK-->
-                    <div class="row mb-5">
+                    <div class="row my-5">
                         <div class="col-6">
                             <span t-field="o.partner_id.name"/>
                             <br/>
@@ -378,7 +378,7 @@
                 <div class="page fn_font">
 
                     <!--CUSTOMER BLOCK-->
-                    <div class="row mb-5">
+                    <div class="row my-5">
                         <div class="col-6">
                             <span t-field="o.partner_id.name"/>
                             <br/>
