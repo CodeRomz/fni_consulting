@@ -7,8 +7,24 @@
                   name="FNI External Layout Striped"
                   inherit_id="web.external_layout_striped">
 
-            <xpath expr="//div[1]" position="replace">
-                <div t-attf-class="o_company_#{company.id}_layout header ">
+            <!-- Target the header container div defined in the base template.
+                 We locate the <div> element whose @t-attf-class attribute
+                 contains 'header'.  This is more robust than selecting the
+                 first div in the template, ensuring our override applies even
+                 if the base template structure changes. -->
+            <xpath expr="//div[@t-attf-class and contains(@t-attf-class, 'header')]" position="replace">
+                <!--
+                    Override the first <div> in the base template (the header container)
+                    and add a bottom border directly on the header element.  A separate
+                    self-closing or empty <div> will not reliably render a border in
+                    QWeb/PDF outputs.  Instead, apply a bottom border via inline
+                    style on the header itself.  The margin-bottom class (mb-5) is
+                    retained to preserve spacing between the header and the document
+                    body.  This approach ensures the border is visible both in the
+                    HTML preview and in the generated PDF.
+                -->
+                <div t-attf-class="o_company_#{company.id}_layout header mb-5"
+                     style="border-bottom: 1px solid rgba(110, 110, 110, 0.20);">
                     <div class="container">
                         <div class="row">
                             <!-- LEFT: Logo-->
@@ -48,7 +64,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-5" style="border-top: 1px solid rgba(110, 110, 110, 0.20);"></div>
             </xpath>
 
         </template>
