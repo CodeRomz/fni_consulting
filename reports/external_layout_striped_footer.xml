@@ -14,9 +14,8 @@
                 <!-- Custom footer without the native striped footer lines -->
                 <div t-attf-class="o_company_#{company.id}_layout footer">
                     <div class="row">
-                        <div class="col-12 text-center" style="font-size: 13px;">
+                        <div class="col-12 text-center" style="font-size: 13px; border-top: 1px solid lightgray;">
                             <t t-if="report_type == 'pdf'">
-                                <div style="border-top: 1px solid lightgray;"/>
                                 <span class="text-muted">
                                     Page:
                                     <span class="page"/>
