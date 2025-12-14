@@ -21,12 +21,11 @@
                     style on the header itself.  The margin-bottom class (mb-5) is
                     retained to preserve spacing between the header and the document
                     body.  This approach ensures the border is visible both in the
-                    HTML preview and in the generated PDF.
+                    HTML preview and in the generated PDF.  rgba(110, 110, 110, 0.20)
                 -->
-                <div t-attf-class="o_company_#{company.id}_layout header mb-5"
-                     style="border-bottom: 1px solid rgba(110, 110, 110, 0.20);">
+                <div t-attf-class="o_company_#{company.id}_layout header mb-5">
                     <div class="container">
-                        <div class="row">
+                        <div class="row" style="border-bottom: 1px solid black;">
                             <!-- LEFT: Logo-->
                             <div class="col-8">
                                 <img t-if="company.logo"
