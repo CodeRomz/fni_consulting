@@ -143,18 +143,18 @@
                                         </t>
                                     </td>
 
-                                    <td>
+                                    <td  style="white-space: nowrap !important;">
                                         <span t-field="line.quantity"/>
                                         <t t-if="line.product_uom_id">
                                             <span t-field="line.product_uom_id.name"/>
                                         </t>
                                     </td>
-                                    <td>
+                                    <td  style="white-space: nowrap !important;">
                                         <span t-field="line.price_unit"
                                               t-options='{"widget": "monetary",
                                                           "display_currency": o.currency_id}'/>
                                     </td>
-                                    <td>
+                                    <td  style="white-space: nowrap !important;">
                                         <!-- Show tax names in a compact way -->
                                         <t t-foreach="line.tax_ids" t-as="tax">
                                             <span t-esc="tax.name"/>
@@ -162,12 +162,12 @@
                                         </t>
                                     </td>
 
-                                    <td>
+                                    <td  style="white-space: nowrap !important;">
                                         <t t-set="vat_amount" t-value="line.price_total - line.price_subtotal"/>
                                         <span t-esc="'%s %s' % ( o.currency_id.symbol or '', '{0:,.2f}'.format(vat_amount) )"/>
                                     </td>
 
-                                    <td>
+                                    <td  style="white-space: nowrap !important;">
                                         <span t-field="line.price_subtotal"
                                               t-options='{"widget": "monetary",
                                                           "display_currency": o.currency_id}'/>
