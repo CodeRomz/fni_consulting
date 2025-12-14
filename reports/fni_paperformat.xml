@@ -20,8 +20,8 @@
             <field name="orientation">Portrait</field>
             <field name="margin_top">1</field>
             <field name="margin_bottom">20</field>
-            <field name="margin_left">10</field>
-            <field name="margin_right">10</field>
+            <field name="margin_left">15</field>
+            <field name="margin_right">15</field>
             <field name="header_line" eval="False"/>
             <field name="dpi">90</field>
         </record>
