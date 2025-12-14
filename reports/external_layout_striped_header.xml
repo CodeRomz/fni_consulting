@@ -10,8 +10,8 @@
             <xpath expr="//div[@t-attf-class and contains(@t-attf-class, 'header')]" position="replace">
 
                 <div t-attf-class="o_company_#{company.id}_layout header mb-5">
-                    <div class="container"  style="border-bottom: 1px solid lightgray;">
-                        <div class="row pb-3">
+                    <div class="container">
+                        <div class="row pb-3" style="border-bottom: 1px solid lightgray;">
                             <!-- LEFT: Logo-->
                             <div class="col-8">
                                 <img t-if="company.logo"
