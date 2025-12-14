@@ -47,7 +47,9 @@
                             </div>
 
                         </div>
-                        <div class="row"><div class="col-12"><span>&nbsp;</span></div></div>
+                        <div class="row">
+                            <div class="col-12 py-2"></div>
+                        </div>
                     </div>
                 </div>
             </xpath>
