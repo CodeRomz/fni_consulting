@@ -9,18 +9,7 @@ class Sheet(models.Model):
     _inherit = "hr_timesheet.sheet"
 
     def _get_timesheet_sheet_lines_domain(self):
-        """
-        Ensure leave/public-holiday timesheet lines with unit_amount=0.0 are still
-        included in the timesheet sheet.
 
-        OCA sheet domain uses strict company_id '='. However, OCA analytic line sheet
-        matching allows company_id False (company_id in [X, False]). That mismatch can
-        cause leave/global leave lines to be linked but later excluded from the sheet.
-
-        Strategy:
-        - Keep the original OCA domain (super) untouched for normal flow.
-        - OR-in a domain for leave/public-holiday lines allowing company_id False.
-        """
         self.ensure_one()
 
         try:
@@ -49,10 +38,7 @@ class Sheet(models.Model):
         return expression.OR([base_domain, leave_domain])
 
     def clean_timesheets(self, timesheets):
-        """
-        Do not merge/delete leave/public-holiday lines during cleanup.
-        Keep base cleanup behavior for regular lines.
-        """
+
         try:
             protected = timesheets.filtered(lambda t: t.holiday_id or t.global_leave_id)
             regular = timesheets - protected
