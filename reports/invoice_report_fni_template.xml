@@ -134,7 +134,7 @@
                                                            t-value="env['account.analytic.account'].browse(int(key_part))"/>
                                                         <t t-if="analytic_account">
                                                             <span t-esc="analytic_account.name"/>
-                                                            <!--(<span t-esc="item[1]"/>%)-->
+                                                            (<span t-esc="item[1]"/>%)
                                                             <br/>
                                                         </t>
                                                     </t>
@@ -467,7 +467,7 @@
                                                            t-value="env['account.analytic.account'].browse(int(key_part))"/>
                                                         <t t-if="analytic_account">
                                                             <span t-esc="analytic_account.name"/>
-                                                            <!--(<span t-esc="item[1]"/>%)-->
+                                                            (<span t-esc="item[1]"/>%)
                                                             <br/>
                                                         </t>
                                                     </t>
