@@ -5,6 +5,7 @@ __pycache__/
 
 # PyCharm
 .idea/
+.idea
 *.iml
 
 # Virtual environments
@@ -12,6 +13,7 @@ venv/
 ENV/
 env/
 .venv/
+.venv
 
 # macOS
 .DS_Store
@@ -25,6 +27,7 @@ ehthumbs.db
 *.pot
 *.mo
 *.sqlite3
+*.sqlite
 *.db
 
 # Python egg metadata
@@ -83,3 +86,12 @@ secrets.env
 # System
 .idea/
 .vscode/
+
+#Other
+AGENTS.md
+package-lock.json
+package.json
+node_modules
+
+PSEUDOCODE.md
+codex_hist.txt
