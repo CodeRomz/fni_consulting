@@ -10,7 +10,22 @@ patch(CalendarCommonPopover.prototype, {
         this.actionService = useService("action");
     },
 
+    get canAddTimesheet() {
+        return this.props.model.resModel === "calendar.event";
+    },
+
+    get hasTimesheetEntry() {
+        if (!this.canAddTimesheet) {
+            return false;
+        }
+        const raw = this.props.record.rawRecord || {};
+        return Boolean(raw.has_timesheet_entry);
+    },
+
     onAddTimesheet() {
+        if (!this.canAddTimesheet || this.hasTimesheetEntry) {
+            return;
+        }
         const record = this.props.record;
         const raw = record.rawRecord || {};
         const description = raw.description || record.title || raw.name || "";

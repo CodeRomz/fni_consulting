@@ -9,6 +9,13 @@ _logger = logging.getLogger(__name__)
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
+    event_id = fields.Many2one(
+        'calendar.event',
+        string='Calendar Event',
+        ondelete='set null',
+        index=True,
+    )
+
     @api.model
     def _running_domain(self):
         try:

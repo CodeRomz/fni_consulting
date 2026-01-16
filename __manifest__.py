@@ -28,6 +28,7 @@
         'views/res_partner_bank.xml',
         'views/hr_timesheet_sheet_readonly.xml',
         'views/inv_report_override.xml',
+        'views/calendar_event_views.xml',
         'wizard/calendar_event_timesheet_wizard.xml',
         'reports/fni_paperformat.xml',
         'reports/invoice_report_fni_template.xml',

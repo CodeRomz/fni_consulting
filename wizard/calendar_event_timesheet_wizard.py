@@ -78,16 +78,47 @@ class CalendarEventTimesheetWizard(models.TransientModel):
         if not self.employee_id:
             raise UserError(_("No employee found for the current user."))
 
+        existing_line = self.env["account.analytic.line"].search(
+            [
+                ("event_id", "=", self.event_id.id),
+                ("employee_id", "=", self.employee_id.id),
+            ],
+            limit=1,
+        )
+        if existing_line:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Timesheet"),
+                    "message": _("This event is already in your timesheet."),
+                    "type": "warning",
+                    "sticky": False,
+                    "next": {"type": "ir.actions.act_window_close"},
+                },
+            }
+
         vals = {
             "name": self.name,
             "project_id": self.project_id.id,
             "task_id": self.task_id.id if self.task_id else False,
             "employee_id": self.employee_id.id,
             "company_id": self.company_id.id,
+            "event_id": self.event_id.id,
             "date_time": self.date_time,
             "date_time_end": self.date_time_end,
             "unit_amount": self.unit_amount,
             "date": fields.Date.context_today(self, self.date_time),
         }
         self.env["account.analytic.line"].create(vals)
-        return {"type": "ir.actions.act_window_close"}
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Timesheet"),
+                "message": _("Added in timesheet."),
+                "type": "success",
+                "sticky": False,
+                "next": {"type": "ir.actions.act_window_close"},
+            },
+        }
