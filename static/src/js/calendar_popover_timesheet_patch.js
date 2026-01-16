@@ -38,13 +38,18 @@ patch(CalendarCommonPopover.prototype, {
             default_company_id: raw.company_id && raw.company_id[0],
         };
 
-        this.actionService.doAction({
-            type: "ir.actions.act_window",
-            name: "Add Event to Timesheet",
-            res_model: "calendar.event.timesheet.wizard",
-            views: [[false, "form"]],
-            target: "new",
-            context,
-        });
+        this.actionService.doAction(
+            {
+                type: "ir.actions.act_window",
+                name: "Add Event to Timesheet",
+                res_model: "calendar.event.timesheet.wizard",
+                views: [[false, "form"]],
+                target: "new",
+                context,
+            },
+            {
+                onClose: () => this.props.close(),
+            }
+        );
     },
 });

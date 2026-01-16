@@ -7,10 +7,10 @@
                t-if="canAddTimesheet"
                t-att-class="hasTimesheetEntry ? 'btn-secondary disabled' : 'btn-primary'"
                t-att-title="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
+               t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
                t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
                t-on-click="onAddTimesheet">
-                <i t-att-class="hasTimesheetEntry ? 'fa fa-check me-1' : 'fa fa-clock-o me-1'"/>
-                <span>Add in Timesheet</span>
+                <i t-att-class="hasTimesheetEntry ? 'fa fa-check' : 'fa fa-clock-o'"/>
             </a>
         </xpath>
     </t>
@@ -22,10 +22,10 @@
                t-if="canAddTimesheet"
                t-att-class="hasTimesheetEntry ? 'btn-secondary disabled' : 'btn-primary'"
                t-att-title="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
+               t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
                t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
                t-on-click="onAddTimesheet">
-                <i t-att-class="hasTimesheetEntry ? 'fa fa-check me-1' : 'fa fa-clock-o me-1'"/>
-                <span>Add in Timesheet</span>
+                <i t-att-class="hasTimesheetEntry ? 'fa fa-check' : 'fa fa-clock-o'"/>
             </a>
         </xpath>
     </t>
@@ -37,10 +37,10 @@
                t-if="canAddTimesheet"
                t-att-class="hasTimesheetEntry ? 'btn-secondary disabled' : 'btn-primary'"
                t-att-title="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
+               t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
                t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
                t-on-click="onAddTimesheet">
-                <i t-att-class="hasTimesheetEntry ? 'fa fa-check me-1' : 'fa fa-clock-o me-1'"/>
-                <span>Add in Timesheet</span>
+                <i t-att-class="hasTimesheetEntry ? 'fa fa-check' : 'fa fa-clock-o'"/>
             </a>
         </xpath>
     </t>
