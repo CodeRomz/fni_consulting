@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
+    <t t-name="fni_consulting.CalendarCommonPopover.footer" t-inherit="web.CalendarCommonPopover.footer" t-inherit-mode="primary">
+        <xpath expr="//t[@t-if='isEventDeletable']" position="after">
+            <a href="#"
+               class="btn btn-secondary o_cw_popover_add_timesheet ms-auto"
+               t-on-click="onAddTimesheet">
+                Add in Timesheet
+            </a>
+        </xpath>
+    </t>
+
     <t t-name="fni_consulting.AttendeeCalendarCommonPopover.footer" t-inherit="calendar.AttendeeCalendarCommonPopover.footer" t-inherit-mode="primary">
         <xpath expr="//t[@t-if='isEventDeletable']" position="after">
+            <a href="#"
+               class="btn btn-secondary o_cw_popover_add_timesheet ms-auto"
+               t-on-click="onAddTimesheet">
+                Add in Timesheet
+            </a>
+        </xpath>
+    </t>
+
+    <t t-name="fni_consulting.TimeOffCalendarCommonPopover.footer" t-inherit="hr_holidays.TimeOffCalendarCommonPopover.footer" t-inherit-mode="primary">
+        <xpath expr="//a[contains(@class, 'o_cw_popover_delete')]" position="after">
             <a href="#"
                class="btn btn-secondary o_cw_popover_add_timesheet ms-auto"
                t-on-click="onAddTimesheet">
