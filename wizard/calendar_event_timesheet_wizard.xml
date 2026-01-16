@@ -5,8 +5,8 @@
         <field name="model">calendar.event.timesheet.wizard</field>
         <field name="arch" type="xml">
             <form string="Add Event to Timesheet">
-                <group col="1">
-                    <field name="event_id" readonly="1"/>
+                <field name="event_id" invisible="1"/>
+                <group>
                     <field name="name"/>
                 </group>
                 <group>
