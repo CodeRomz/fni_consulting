@@ -52,7 +52,7 @@ patch(CalendarCommonPopover.prototype, {
                     this.props.close();
                     this.actionService.doAction({
                         type: "ir.actions.client",
-                        tag: "soft_reload",
+                        tag: "reload",
                     });
                 },
             }

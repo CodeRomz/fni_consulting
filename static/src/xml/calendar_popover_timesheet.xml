@@ -7,11 +7,11 @@
                t-if="canAddTimesheet"
                t-att-class="hasTimesheetEntry ? 'btn-secondary disabled' : 'btn-primary'"
                t-att-title="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
-               t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
-               t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
-               t-on-click="onAddTimesheet">
+                t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
+                t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
+                t-on-click="onAddTimesheet">
                 <i class="fa fa-clock-o"/>
-                <i t-if="hasTimesheetEntry" class="fa fa-check ms-1"/>
+                <i t-if="hasTimesheetEntry" class="fa fa-check ms-1 text-primary"/>
             </a>
         </xpath>
     </t>
@@ -23,11 +23,11 @@
                t-if="canAddTimesheet"
                t-att-class="hasTimesheetEntry ? 'btn-secondary disabled' : 'btn-primary'"
                t-att-title="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
-               t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
-               t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
-               t-on-click="onAddTimesheet">
+                t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
+                t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
+                t-on-click="onAddTimesheet">
                 <i class="fa fa-clock-o"/>
-                <i t-if="hasTimesheetEntry" class="fa fa-check ms-1"/>
+                <i t-if="hasTimesheetEntry" class="fa fa-check ms-1 text-primary"/>
             </a>
         </xpath>
     </t>
@@ -39,11 +39,11 @@
                t-if="canAddTimesheet"
                t-att-class="hasTimesheetEntry ? 'btn-secondary disabled' : 'btn-primary'"
                t-att-title="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
-               t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
-               t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
-               t-on-click="onAddTimesheet">
+                t-att-aria-label="hasTimesheetEntry ? 'Added in timesheet' : 'Add in timesheet'"
+                t-att-aria-disabled="hasTimesheetEntry ? 'true' : undefined"
+                t-on-click="onAddTimesheet">
                 <i class="fa fa-clock-o"/>
-                <i t-if="hasTimesheetEntry" class="fa fa-check ms-1"/>
+                <i t-if="hasTimesheetEntry" class="fa fa-check ms-1 text-primary"/>
             </a>
         </xpath>
     </t>
