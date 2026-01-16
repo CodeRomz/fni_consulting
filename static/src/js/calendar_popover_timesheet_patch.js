@@ -48,7 +48,13 @@ patch(CalendarCommonPopover.prototype, {
                 context,
             },
             {
-                onClose: () => this.props.close(),
+                onClose: () => {
+                    this.props.close();
+                    this.actionService.doAction({
+                        type: "ir.actions.client",
+                        tag: "soft_reload",
+                    });
+                },
             }
         );
     },
