@@ -9,7 +9,9 @@
     'version': '18.0.1.1.0',
 
     'category': 'Custom',
-    'depends': ['hr_timesheet_sheet',
+    'depends': ['calendar',
+                'hr_timesheet',
+                'hr_timesheet_sheet',
                 'project_timesheet_time_control',
                 'hr_holidays',
                 'survey',
