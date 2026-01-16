@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.0.0',
+    'version': '18.0.1.1.0',
 
     'category': 'Custom',
     'depends': ['hr_timesheet_sheet',
@@ -26,6 +26,7 @@
         'views/res_partner_bank.xml',
         'views/hr_timesheet_sheet_readonly.xml',
         'views/inv_report_override.xml',
+        'wizard/calendar_event_timesheet_wizard.xml',
         'reports/fni_paperformat.xml',
         'reports/invoice_report_fni_template.xml',
         'reports/survey_report_fni_acknowledgement_template.xml',
@@ -39,6 +40,8 @@
     'assets': {
         'web.assets_backend': [
             'fni_consulting/static/src/scss/firenor_style_backend.scss',
+            'fni_consulting/static/src/xml/calendar_popover_timesheet.xml',
+            'fni_consulting/static/src/js/calendar_popover_timesheet_patch.js',
         ],
         'web.report_assets_pdf': [
             'fni_consulting/static/src/scss/invoice_report_fni.scss',
