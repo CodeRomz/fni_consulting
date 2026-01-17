@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import html2plaintext
 
 
 class CalendarEventTimesheetWizard(models.TransientModel):
@@ -61,9 +60,6 @@ class CalendarEventTimesheetWizard(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        description = res.get("name")
-        if description:
-            res["name"] = html2plaintext(description)
         if res.get("date_time") and not res.get("date_time_end"):
             start = fields.Datetime.to_datetime(res["date_time"])
             res["date_time_end"] = start + timedelta(hours=1)

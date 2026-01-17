@@ -28,11 +28,10 @@ patch(CalendarCommonPopover.prototype, {
         }
         const record = this.props.record;
         const raw = record.rawRecord || {};
-        const description = raw.description || record.title || raw.name || "";
+        const subject = raw.name || record.title || "";
         const context = {
             default_event_id: record.id,
-            default_name: description,
-            default_description: description,
+            default_name: subject,
             default_date_time: raw.start || record.start,
             default_date_time_end: raw.stop || record.stop,
             default_company_id: raw.company_id && raw.company_id[0],
