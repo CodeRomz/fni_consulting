@@ -61,7 +61,7 @@ class CalendarEventTimesheetWizard(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        description = self.env.context.get("default_description") or res.get("name")
+        description = res.get("name")
         if description:
             res["name"] = html2plaintext(description)
         if res.get("date_time") and not res.get("date_time_end"):
