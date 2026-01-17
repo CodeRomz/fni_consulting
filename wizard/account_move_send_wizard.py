@@ -16,11 +16,11 @@ class AccountMoveSendWizard(models.TransientModel):
         This helper performs two actions:
           1. Assign the configured report to any many2one/many2many fields that
              reference ``ir.actions.report`` on the wizard.
-          2. Render the PDF using the configured report and attach it to the
-             wizard so that the email sent to the customer uses the FNI layout.
+          2. For single-move sends, render the PDF using the configured report
+             and attach it to the wizard so the email uses the FNI layout.
 
-        Rendering the PDF ensures that the attachment will always be the
-        configured report, regardless of how the mail template is defined.
+        For multi-move sends, rely on the base wizard to generate per-move
+        attachments.
         """
         if not moves:
             return
@@ -36,15 +36,17 @@ class AccountMoveSendWizard(models.TransientModel):
                 elif field.type == "many2many":
                     self[field_name] = [(6, 0, [report.id])]
 
+        # Avoid attaching a batch PDF to the first move; let the base wizard
+        # generate per-move attachments for multi-send.
+        if len(moves) != 1:
+            return
         try:
-            # Render the PDF using the configured report.  The method
+            # Render the PDF using the configured report. The method
             # ``_render_qweb_pdf`` returns a tuple (pdf_bytes, file_name).
             pdf_content, pdf_name = report._render_qweb_pdf(moves.ids)
             if not pdf_name:
                 pdf_name = report.name
-            # Create an attachment with the generated PDF.  The attachment
-            # references the first move in the batch; this is consistent with
-            # Odoo's behaviour when emailing invoices.
+            # Create an attachment with the generated PDF.
             attachment = self.env['ir.attachment'].create({
                 'name': pdf_name,
                 'datas': base64.b64encode(pdf_content),
@@ -53,12 +55,12 @@ class AccountMoveSendWizard(models.TransientModel):
                 'mimetype': 'application/pdf',
             })
             # Replace or set the wizard's attachments to ensure only our PDF is
-            # included.  Using (6, 0, ...) resets the m2m field to the given
+            # included. Using (6, 0, ...) resets the m2m field to the given
             # attachment.
             self.attachment_ids = [(6, 0, [attachment.id])]
         except Exception:
             # If rendering fails, log the exception and continue without
-            # attaching our PDF.  This fallbacks to the default behaviour.
+            # attaching our PDF. This falls back to the default behavior.
             _logger.exception("Failed to render or attach FNI invoice PDF in send wizard")
 
     def action_send(self, *args, **kwargs):

@@ -46,17 +46,22 @@ class ResConfigSettings(models.TransientModel):
         the FNI default invoice report (if one is configured) to use this
         paper format.  Wrap updates in try/except to avoid crashing the UI.
         """
-        res = super(ResConfigSettings, self).set_values()
         company = self.company_id
-        paperformat = self.fni_invoice_paperformat_id
+        old_paperformat = company.fni_invoice_paperformat_id
+        res = super(ResConfigSettings, self).set_values()
+        paperformat = company.fni_invoice_paperformat_id
+        report = company.fni_default_invoice_report_id
         try:
-            # Update the company’s default paper format if one is selected
             if paperformat:
                 company.paperformat_id = paperformat
-            # Update the company’s FNI default invoice report (if configured)
-            report = company.fni_default_invoice_report_id
-            if report and paperformat:
-                report.paperformat_id = paperformat
+                if report:
+                    report.paperformat_id = paperformat
+            else:
+                # Clear only if we previously set the same format.
+                if old_paperformat and company.paperformat_id == old_paperformat:
+                    company.paperformat_id = False
+                if report and old_paperformat and report.paperformat_id == old_paperformat:
+                    report.paperformat_id = False
         except Exception:
             _logger.exception(
                 "Failed to apply FNI invoice paper format settings to company or report"

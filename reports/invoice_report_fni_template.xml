@@ -131,7 +131,7 @@
                                                 <t t-foreach="key_parts" t-as="key_part">
                                                     <t t-if="key_part and key_part.isdigit()">
                                                         <t t-set="analytic_account"
-                                                           t-value="env['account.analytic.account'].browse(int(key_part))"/>
+                                                           t-value="o.env['account.analytic.account'].browse(int(key_part))"/>
                                                         <t t-if="analytic_account">
                                                             <span t-esc="analytic_account.name"/>
                                                             (<span t-esc="item[1]"/>%)
@@ -464,7 +464,7 @@
                                                 <t t-foreach="key_parts" t-as="key_part">
                                                     <t t-if="key_part and key_part.isdigit()">
                                                         <t t-set="analytic_account"
-                                                           t-value="env['account.analytic.account'].browse(int(key_part))"/>
+                                                           t-value="o.env['account.analytic.account'].browse(int(key_part))"/>
                                                         <t t-if="analytic_account">
                                                             <span t-esc="analytic_account.name"/>
                                                             (<span t-esc="item[1]"/>%)
