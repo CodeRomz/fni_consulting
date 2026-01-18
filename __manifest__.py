@@ -26,6 +26,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_bank.xml',
+        'views/res_config_settings.xml',
         'views/hr_timesheet_sheet_readonly.xml',
         'views/inv_report_override.xml',
         'views/calendar_event_views.xml',

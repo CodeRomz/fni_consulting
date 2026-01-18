@@ -23,6 +23,9 @@ class AccountMove(models.Model):
         moves = self
         if not moves:
             return True
+        if len(moves.company_id) > 1:
+            super_method = getattr(super(AccountMove, moves), super_method_name, None)
+            return super_method() if super_method else True
         report = moves[0]._fni_get_default_report()
         if report:
             try:
@@ -40,6 +43,3 @@ class AccountMove(models.Model):
     def action_print_pdf(self):
         return self._fni_report_action_or_super("action_print_pdf")
 
-    # Portal / Preview download path (dynamic injection:contentReference[oaicite:1]{index=1})
-    def action_invoice_download_pdf(self):
-        return self._fni_report_action_or_super("action_invoice_download_pdf")

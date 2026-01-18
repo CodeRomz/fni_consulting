@@ -10,6 +10,7 @@ class ResConfigSettings(models.TransientModel):
     fni_default_invoice_report_id = fields.Many2one(
         related="company_id.fni_default_invoice_report_id",
         readonly=False,
+        domain="[('model', '=', 'account.move'), ('report_type', '=', 'qweb-pdf'), ('is_invoice_report', '=', True)]",
         help="Configure which invoice report is used by default.",
     )
 

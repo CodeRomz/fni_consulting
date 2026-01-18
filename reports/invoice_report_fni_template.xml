@@ -357,7 +357,12 @@
                                 <span t-esc="bank.acc_number or ''"/>
                                 <br/>
                                 <strong>IBAN Number :</strong>
-                                <span t-esc="bank.iban or ''"/>
+                                <t t-if="bank.iban">
+                                    <span t-esc="bank.iban"/>
+                                </t>
+                                <t t-elif="bank.acc_type == 'iban'">
+                                    <span t-esc="bank.acc_number"/>
+                                </t>
                                 <br/>
                                 <strong>Swift Code :</strong>
                                 <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>
@@ -678,7 +683,12 @@
                                 <span t-esc="bank.acc_number or ''"/>
                                 <br/>
                                 <strong>IBAN Number :</strong>
-                                <span t-esc="bank.iban or ''"/>
+                                <t t-if="bank.iban">
+                                    <span t-esc="bank.iban"/>
+                                </t>
+                                <t t-elif="bank.acc_type == 'iban'">
+                                    <span t-esc="bank.acc_number"/>
+                                </t>
                                 <br/>
                                 <strong>Swift Code :</strong>
                                 <span t-esc="bank.bank_id and bank.bank_id.bic or ''"/>

@@ -6,6 +6,7 @@
             <field name="name">Invoice (FNI)</field>
             <field name="model">account.move</field>
             <field name="report_type">qweb-pdf</field>
+            <field name="is_invoice_report">True</field>
             <!-- Use the wrapper template created above -->
             <field name="report_name">fni_consulting.report_invoice_fni_auto</field>
             <field name="report_file">fni_consulting.report_invoice_fni_auto</field>

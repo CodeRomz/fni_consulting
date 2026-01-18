@@ -10,7 +10,7 @@ class ResCompany(models.Model):
     fni_default_invoice_report_id = fields.Many2one(
         comodel_name="ir.actions.report",
         string="FNI Default Invoice Report",
-        domain="[('model', '=', 'account.move'), ('report_type', '=', 'qweb-pdf')]",
+        domain="[('model', '=', 'account.move'), ('report_type', '=', 'qweb-pdf'), ('is_invoice_report', '=', True)]",
         help="If set, this report replaces the standard invoice report for printing, sending and downloading.",
     )
 
