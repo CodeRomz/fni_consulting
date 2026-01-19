@@ -18,8 +18,8 @@ class HrTimesheetSwitch(models.TransientModel):
             ('id', 'not in', self.env.context.get('resuming_lines', [])),
             ('project_id', '!=', False),
             ('unit_amount', '=', 0),
-            ('holiday_id', '=', False),        # exclude time-off lines:contentReference[oaicite:2]{index=2}
-            ('global_leave_id', '=', False),   # exclude global leave lines:contentReference[oaicite:3]{index=3}
+            ('holiday_id', '=', False),        # exclude time-off lines
+            ('global_leave_id', '=', False),   # exclude global leave lines
         ])
         if len(running) > 1:
             raise UserError(

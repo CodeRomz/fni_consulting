@@ -47,9 +47,10 @@ class ResConfigSettings(models.TransientModel):
         the FNI default invoice report (if one is configured) to use this
         paper format.  Wrap updates in try/except to avoid crashing the UI.
         """
-        company = self.company_id
+        company = self.company_id.sudo()
         old_paperformat = company.fni_invoice_paperformat_id
         res = super(ResConfigSettings, self).set_values()
+        company = self.company_id.sudo()
         paperformat = company.fni_invoice_paperformat_id
         report = company.fni_default_invoice_report_id
         try:

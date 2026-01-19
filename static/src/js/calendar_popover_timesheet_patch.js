@@ -1,6 +1,8 @@
 /** @odoo-module **/
 
 import { CalendarCommonPopover } from "@web/views/calendar/calendar_common/calendar_common_popover";
+import { onWillStart } from "@odoo/owl";
+import { user } from "@web/core/user";
 import { patch } from "@web/core/utils/patch";
 import { useService } from "@web/core/utils/hooks";
 
@@ -8,10 +10,16 @@ patch(CalendarCommonPopover.prototype, {
     setup() {
         super.setup(...arguments);
         this.actionService = useService("action");
+        this.hasTimesheetAccess = false;
+        onWillStart(async () => {
+            this.hasTimesheetAccess = await user.hasGroup(
+                "hr_timesheet.group_hr_timesheet_user"
+            );
+        });
     },
 
     get canAddTimesheet() {
-        return this.props.model.resModel === "calendar.event";
+        return this.hasTimesheetAccess && this.props.model.resModel === "calendar.event";
     },
 
     get hasTimesheetEntry() {

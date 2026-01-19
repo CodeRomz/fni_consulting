@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_calendar_event_timesheet_wizard,calendar.event.timesheet.wizard,model_calendar_event_timesheet_wizard,base.group_user,1,1,1,0
+access_calendar_event_timesheet_wizard,calendar.event.timesheet.wizard,model_calendar_event_timesheet_wizard,hr_timesheet.group_hr_timesheet_user,1,1,1,0
