@@ -185,14 +185,3 @@ header .o_main_navbar {
     --color: #47a5ae;
     color: var(--color) !important;
 }
-
-
-
-.o_frontend_to_backend_nav::before {
-    border-top: 20px solid #47a5ae !important;
-    border-left: 20px solid #47a5ae !important;
-}
-
-.o_frontend_to_backend_nav .o_frontend_to_backend_apps_btn {
-    background-color: #47a5ae !important;
-}
