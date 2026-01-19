@@ -13,4 +13,14 @@ class AccountMoveSend(models.AbstractModel):
             and report.report_type == "qweb-pdf"
         ):
             return report
+        fallback = self.env.ref(
+            "fni_consulting.action_report_fni_invoice", raise_if_not_found=False
+        )
+        if (
+            fallback
+            and fallback.is_invoice_report
+            and fallback.model == "account.move"
+            and fallback.report_type == "qweb-pdf"
+        ):
+            return fallback
         return super()._get_default_pdf_report_id(move)

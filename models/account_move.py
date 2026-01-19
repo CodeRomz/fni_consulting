@@ -16,6 +16,15 @@ class AccountMove(models.Model):
                 return report
         except Exception:
             _logger.exception("Error resolving FNI default invoice report")
+        fallback = self.env.ref(
+            "fni_consulting.action_report_fni_invoice", raise_if_not_found=False
+        )
+        if (
+            fallback
+            and fallback.model == "account.move"
+            and fallback.report_type == "qweb-pdf"
+        ):
+            return fallback
         return self.env["ir.actions.report"]
 
     def _fni_report_action_or_super(self, super_method_name):

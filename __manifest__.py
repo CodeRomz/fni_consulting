@@ -26,7 +26,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_bank.xml',
-        'views/res_config_settings.xml',
         'views/hr_timesheet_sheet_readonly.xml',
         'views/inv_report_override.xml',
         'views/calendar_event_views.xml',
@@ -38,6 +37,7 @@
         'reports/invoice_report_action.xml',
         'reports/external_layout_striped_header.xml',
         'reports/external_layout_striped_footer.xml',
+        'data/report_layout_defaults.xml',
 
     ],
 
@@ -52,6 +52,8 @@
             'fni_consulting/static/src/scss/fni_style.scss',
         ],
     },
+
+    'post_init_hook': 'post_init_hook',
 
     'installable': True,
     'application': False,

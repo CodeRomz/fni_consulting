@@ -7,6 +7,14 @@ _logger = logging.getLogger(__name__)
 class ResCompany(models.Model):
     _inherit = "res.company"
 
+    external_report_layout_id = fields.Many2one(
+        comodel_name="ir.ui.view",
+        string="Document Template",
+        default=lambda self: self.env.ref(
+            "web.external_layout_striped", raise_if_not_found=False
+        ),
+    )
+
     fni_default_invoice_report_id = fields.Many2one(
         comodel_name="ir.actions.report",
         string="FNI Default Invoice Report",

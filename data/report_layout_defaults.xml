@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="base.main_company" model="res.company">
+            <field name="external_report_layout_id" ref="web.external_layout_striped"/>
+            <field name="fni_default_invoice_report_id" ref="fni_consulting.action_report_fni_invoice"/>
+        </record>
+    </data>
+</odoo>
