@@ -20,13 +20,19 @@
         <tr>
             <td t-att-style="'background-color: %s; color: #FFFFFF; padding: 10px 12px; border-radius: 4px; font-size: 13px;' % accent_color">
                 <strong t-out="reminder_label"/> -
-                <t t-if="ctx.get('is_overdue')">
+                <t t-if="ctx.get('overdue_count', 0) &gt; 1">
+                    Overdue sheets: <t t-out="ctx.get('overdue_count')"/> (oldest overdue by <t t-out="ctx.get('max_days_overdue')"/> days)
+                </t>
+                <t t-elif="ctx.get('is_overdue')">
                     Overdue by <t t-out="ctx.get('days_overdue')"/> days
                 </t>
                 <t t-elif="days_left is not None">
                     <t t-if="days_left == 0">Due today</t>
                     <t t-elif="days_left == 1">Due in 1 day</t>
                     <t t-else="">Due in <t t-out="days_left"/> days</t>
+                </t>
+                <t t-if="ctx.get('is_overdue') and ctx.get('upcoming_count', 0) &gt; 0 and ctx.get('next_due_days') is not None">
+                    - Next due in <t t-out="ctx.get('next_due_days')"/> days
                 </t>
                 <t t-if="deadline_date"> (Deadline: <t t-esc="deadline_date" t-options='{"widget": "date"}'/>)</t>
             </td>

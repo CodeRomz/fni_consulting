@@ -242,6 +242,16 @@ class Sheet(models.Model):
                 if item.get("level")
             )
             is_overdue = trigger_days_left < 0
+            overdue_items = [item for item in display_items if item.get("is_overdue")]
+            overdue_count = len(overdue_items)
+            max_days_overdue = max(
+                (item.get("days_overdue", 0) for item in overdue_items), default=0
+            )
+            upcoming_items = [item for item in display_items if not item.get("is_overdue")]
+            upcoming_count = len(upcoming_items)
+            next_due_days = min(
+                (item.get("days_left") for item in upcoming_items), default=None
+            )
             trigger_deadline = min(
                 item["deadline"]
                 for item in display_items
@@ -259,6 +269,10 @@ class Sheet(models.Model):
                     days_left=trigger_days_left,
                     is_overdue=is_overdue,
                     days_overdue=abs(trigger_days_left) if is_overdue else 0,
+                    overdue_count=overdue_count,
+                    max_days_overdue=max_days_overdue,
+                    upcoming_count=upcoming_count,
+                    next_due_days=next_due_days,
                     email_subject=subject,
                 ).send_mail(
                     employee.id,
