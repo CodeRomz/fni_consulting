@@ -5,7 +5,7 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="hr_timesheet.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='hr_timesheet']//block[@title='Timesheets Control']" position="after">
+            <xpath expr="//app[@name='hr_timesheet']//block[setting[@id='reminder_allow']]" position="after">
                 <block title="Timesheet Sheet Reminders" name="fni_timesheet_sheet_reminders">
                     <setting id="timesheet_sheet_reminder_enabled" company_dependent="1"
                              help="Enable periodic reminder emails for employees who have not submitted their timesheet sheet.">
