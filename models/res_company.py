@@ -49,3 +49,54 @@ class ResCompany(models.Model):
             " use the company default paper format."
         ),
     )
+
+    # -------------------------------------------------------------------------
+    # Timesheet Sheet Reminder Configuration
+    # -------------------------------------------------------------------------
+    timesheet_sheet_reminder_enabled = fields.Boolean(
+        string="Timesheet Sheet Reminders",
+        default=True,
+        help=(
+            "Enable periodic reminder emails for employees who have not yet "
+            "submitted their timesheet sheet."
+        ),
+    )
+    timesheet_sheet_deadline_weekday = fields.Selection(
+        selection=[
+            ("0", "Monday"),
+            ("1", "Tuesday"),
+            ("2", "Wednesday"),
+            ("3", "Thursday"),
+            ("4", "Friday"),
+            ("5", "Saturday"),
+            ("6", "Sunday"),
+        ],
+        string="Timesheet Sheet Deadline Weekday",
+        default="1",
+        help=(
+            "Submission deadline weekday for each timesheet sheet. The system "
+            "uses the next occurrence of this weekday after the sheet end date."
+        ),
+    )
+    timesheet_sheet_reminder_days_info = fields.Integer(
+        string="Info Reminder (days before deadline)",
+        default=4,
+        help=(
+            "Number of days before the deadline to send an informational reminder."
+        ),
+    )
+    timesheet_sheet_reminder_days_warning = fields.Integer(
+        string="Warning Reminder (days before deadline)",
+        default=2,
+        help=(
+            "Number of days before the deadline to send a warning reminder."
+        ),
+    )
+    timesheet_sheet_reminder_days_danger = fields.Integer(
+        string="Final Reminder (days before deadline)",
+        default=0,
+        help=(
+            "Number of days before the deadline to send the final reminder. "
+            "Use 0 to send on the deadline day."
+        ),
+    )

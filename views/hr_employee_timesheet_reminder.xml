@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="hr_employee_view_form_inherit_timesheet_sheet_reminder" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.timesheet.sheet.reminder</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='hr_settings']/group" position="inside">
+                <group string="Timesheet Reminders" name="timesheet_sheet_reminder_group">
+                    <field name="timesheet_sheet_reminder_opt_in"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

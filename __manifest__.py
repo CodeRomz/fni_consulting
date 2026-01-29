@@ -27,6 +27,8 @@
         'security/ir.model.access.csv',
         'views/res_partner_bank.xml',
         'views/hr_timesheet_sheet_readonly.xml',
+        'views/res_config_settings_timesheet_sheet_reminder.xml',
+        'views/hr_employee_timesheet_reminder.xml',
         'views/inv_report_override.xml',
         'views/calendar_event_views.xml',
         'wizard/calendar_event_timesheet_wizard.xml',
@@ -38,6 +40,8 @@
         'reports/external_layout_striped_header.xml',
         'reports/external_layout_striped_footer.xml',
         'data/report_layout_defaults.xml',
+        'data/mail_template_timesheet_sheet_reminder.xml',
+        'data/ir_cron_timesheet_sheet_reminder.xml',
 
     ],
 

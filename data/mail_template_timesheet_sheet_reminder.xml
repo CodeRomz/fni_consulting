@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_template_timesheet_sheet_reminder" model="mail.template">
+            <field name="name">Timesheet Sheet: Pending Submission Digest</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="subject">{{ ctx.get('email_subject', 'Timesheet Sheet Reminder') }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.work_email or object.user_id.email or object.user_id.partner_id.email }}</field>
+            <field name="email_layout_xmlid">mail.mail_notification_light</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+<div>
+    <t t-set="accent_color" t-value="ctx.get('accent_color', '#17a2b8')"/>
+    <t t-set="reminder_label" t-value="ctx.get('reminder_label', 'Reminder')"/>
+    <t t-set="deadline_date" t-value="ctx.get('deadline_date')"/>
+    <t t-set="days_left" t-value="ctx.get('days_left')"/>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 12px;">
+        <tr>
+            <td t-att-style="'background-color: %s; color: #FFFFFF; padding: 10px 12px; border-radius: 4px; font-size: 13px;' % accent_color">
+                <strong t-out="reminder_label"/> -
+                <t t-if="days_left is not None">
+                    <t t-if="days_left == 0">Due today</t>
+                    <t t-elif="days_left == 1">Due in 1 day</t>
+                    <t t-else="">Due in <t t-out="days_left"/> days</t>
+                </t>
+                <t t-if="deadline_date"> (Deadline: <t t-esc="deadline_date" t-options='{"widget": "date"}'/>)</t>
+            </td>
+        </tr>
+    </table>
+
+    <p>Hi <t t-out="object.name or ''"/> ,</p>
+    <p>You have unsubmitted timesheet sheet(s). Please review and submit them before the deadline.</p>
+
+    <ul>
+        <t t-foreach="ctx.get('sheets', [])" t-as="sheet">
+            <li style="margin-bottom: 6px;">
+                <t t-if="sheet.get('url')">
+                    <a t-att-href="sheet.get('url')" style="color: #1f7aec; text-decoration: none;">
+                        <t t-out="sheet.get('name')"/>
+                    </a>
+                </t>
+                <t t-else="">
+                    <t t-out="sheet.get('name')"/>
+                </t>
+                - <t t-esc="sheet.get('date_start')" t-options='{"widget": "date"}'/> to
+                <t t-esc="sheet.get('date_end')" t-options='{"widget": "date"}'/>
+                - Deadline: <t t-esc="sheet.get('deadline')" t-options='{"widget": "date"}'/>
+                <t t-if="sheet.get('days_left') is not None"> (in <t t-out="sheet.get('days_left')"/> days)</t>
+            </li>
+        </t>
+    </ul>
+
+    <p>If you already submitted, please ignore this message.</p>
+</div>
+            </field>
+            <field name="lang">{{ object.user_id.lang or user.lang }}</field>
+        </record>
+    </data>
+</odoo>
