@@ -104,18 +104,33 @@ class Sheet(models.Model):
         }
 
     @api.model
-    def _get_reminder_level_for_days(self, company, days_left):
+    def _get_reminder_level_for_days(self, company, days_left, last_level=None):
         days_by_level = self._get_company_reminder_days(company)
         for level in ("danger", "warning", "info"):
             days = days_by_level.get(level)
             if days is None or days < 0:
                 continue
-            if days_left == days:
+            if days_left <= days:
+                if last_level and _REMINDER_LEVEL_RANK.get(last_level, 0) >= _REMINDER_LEVEL_RANK[level]:
+                    return False
                 return level
         return False
 
     @api.model
+    def _is_overdue_reminder_due(self, sheet, today, deadline):
+        if not deadline or not today or today <= deadline:
+            return False
+        if sheet.reminder_last_date:
+            if (today - sheet.reminder_last_date).days < 7:
+                return False
+        return True
+
+    @api.model
     def _get_reminder_subject(self, days_left):
+        if days_left is None:
+            return _("Timesheet sheets reminder")
+        if days_left < 0:
+            return _("Timesheet sheets overdue by %(days)s days", days=abs(days_left))
         if days_left == 0:
             return _("Timesheet sheets due today")
         if days_left == 1:
@@ -177,7 +192,17 @@ class Sheet(models.Model):
                 if not deadline:
                     continue
                 days_left = (deadline - today).days
-                level = self._get_reminder_level_for_days(sheet.company_id, days_left)
+                is_overdue = days_left < 0
+                days_overdue = abs(days_left) if is_overdue else 0
+
+                if is_overdue:
+                    level = "danger" if self._is_overdue_reminder_due(sheet, today, deadline) else False
+                else:
+                    level = self._get_reminder_level_for_days(
+                        sheet.company_id,
+                        days_left,
+                        sheet.reminder_last_level,
+                    )
 
                 display_items.append(
                     {
@@ -187,6 +212,8 @@ class Sheet(models.Model):
                         "date_end": sheet.date_end,
                         "deadline": deadline,
                         "days_left": days_left,
+                        "is_overdue": is_overdue,
+                        "days_overdue": days_overdue,
                         "level": level,
                         "url": (
                             f"{base_url}/web#id={sheet.id}&model=hr_timesheet.sheet&view_type=form"
@@ -214,6 +241,7 @@ class Sheet(models.Model):
                 for item in display_items
                 if item.get("level")
             )
+            is_overdue = trigger_days_left < 0
             trigger_deadline = min(
                 item["deadline"]
                 for item in display_items
@@ -221,19 +249,28 @@ class Sheet(models.Model):
             )
             subject = self._get_reminder_subject(trigger_days_left)
 
-            template.with_context(
-                sheets=sorted(display_items, key=lambda item: item["deadline"]),
-                reminder_level=overall_level,
-                reminder_label=level_meta[overall_level]["label"],
-                accent_color=level_meta[overall_level]["color"],
-                deadline_date=trigger_deadline,
-                days_left=trigger_days_left,
-                email_subject=subject,
-            ).send_mail(
-                employee.id,
-                force_send=True,
-                email_values={"email_to": email_to},
-            )
+            try:
+                template.with_context(
+                    sheets=sorted(display_items, key=lambda item: item["deadline"]),
+                    reminder_level=overall_level,
+                    reminder_label=_("Overdue") if is_overdue else level_meta[overall_level]["label"],
+                    accent_color=level_meta[overall_level]["color"],
+                    deadline_date=trigger_deadline,
+                    days_left=trigger_days_left,
+                    is_overdue=is_overdue,
+                    days_overdue=abs(trigger_days_left) if is_overdue else 0,
+                    email_subject=subject,
+                ).send_mail(
+                    employee.id,
+                    force_send=True,
+                    email_values={"email_to": email_to},
+                )
+            except Exception:
+                _logger.exception(
+                    "Failed to send timesheet sheet reminder to employee %s",
+                    employee.display_name,
+                )
+                continue
 
             for level, level_sheet in level_sheets.items():
                 if level_sheet:

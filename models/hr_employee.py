@@ -12,3 +12,13 @@ class HrEmployee(models.Model):
             "timesheet sheet is still unsubmitted."
         ),
     )
+
+    def init(self):
+        """Backfill defaults for existing employees on install/upgrade."""
+        self.env.cr.execute(
+            """
+            UPDATE hr_employee
+               SET timesheet_sheet_reminder_opt_in = TRUE
+             WHERE timesheet_sheet_reminder_opt_in IS NULL
+            """
+        )

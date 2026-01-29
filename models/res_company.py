@@ -100,3 +100,41 @@ class ResCompany(models.Model):
             "Use 0 to send on the deadline day."
         ),
     )
+
+    def init(self):
+        """Backfill defaults for existing companies on install/upgrade."""
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_reminder_enabled = TRUE
+             WHERE timesheet_sheet_reminder_enabled IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_deadline_weekday = '1'
+             WHERE timesheet_sheet_deadline_weekday IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_reminder_days_info = 4
+             WHERE timesheet_sheet_reminder_days_info IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_reminder_days_warning = 2
+             WHERE timesheet_sheet_reminder_days_warning IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_reminder_days_danger = 0
+             WHERE timesheet_sheet_reminder_days_danger IS NULL
+            """
+        )

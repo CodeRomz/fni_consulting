@@ -20,7 +20,10 @@
         <tr>
             <td t-att-style="'background-color: %s; color: #FFFFFF; padding: 10px 12px; border-radius: 4px; font-size: 13px;' % accent_color">
                 <strong t-out="reminder_label"/> -
-                <t t-if="days_left is not None">
+                <t t-if="ctx.get('is_overdue')">
+                    Overdue by <t t-out="ctx.get('days_overdue')"/> days
+                </t>
+                <t t-elif="days_left is not None">
                     <t t-if="days_left == 0">Due today</t>
                     <t t-elif="days_left == 1">Due in 1 day</t>
                     <t t-else="">Due in <t t-out="days_left"/> days</t>
@@ -47,7 +50,12 @@
                 - <t t-esc="sheet.get('date_start')" t-options='{"widget": "date"}'/> to
                 <t t-esc="sheet.get('date_end')" t-options='{"widget": "date"}'/>
                 - Deadline: <t t-esc="sheet.get('deadline')" t-options='{"widget": "date"}'/>
-                <t t-if="sheet.get('days_left') is not None"> (in <t t-out="sheet.get('days_left')"/> days)</t>
+                <t t-if="sheet.get('is_overdue')">
+                    (overdue by <t t-out="sheet.get('days_overdue')"/> days)
+                </t>
+                <t t-elif="sheet.get('days_left') is not None">
+                    (in <t t-out="sheet.get('days_left')"/> days)
+                </t>
             </li>
         </t>
     </ul>
