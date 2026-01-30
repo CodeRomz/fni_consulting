@@ -27,6 +27,10 @@
                              help="Send the final reminder this many days before the deadline (0 means on the deadline day).">
                         <field name="timesheet_sheet_reminder_days_danger"/>
                     </setting>
+                    <setting id="timesheet_sheet_overdue_reminder_interval_days" company_dependent="1"
+                             help="Number of days between reminders for overdue timesheet sheets. Set to 0 to disable overdue reminders.">
+                        <field name="timesheet_sheet_overdue_reminder_interval_days"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

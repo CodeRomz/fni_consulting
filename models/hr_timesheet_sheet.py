@@ -104,8 +104,10 @@ class Sheet(models.Model):
         }
 
     @api.model
-    def _get_reminder_level_for_days(self, company, days_left, last_level=None):
-        days_by_level = self._get_company_reminder_days(company)
+    def _get_reminder_level_for_days(
+        self, company, days_left, last_level=None, days_by_level=None
+    ):
+        days_by_level = days_by_level or self._get_company_reminder_days(company)
         for level in ("danger", "warning", "info"):
             days = days_by_level.get(level)
             if days is None or days < 0:
@@ -120,8 +122,11 @@ class Sheet(models.Model):
     def _is_overdue_reminder_due(self, sheet, today, deadline):
         if not deadline or not today or today <= deadline:
             return False
+        interval_days = sheet.company_id.timesheet_sheet_overdue_reminder_interval_days
+        if interval_days is None or interval_days <= 0:
+            return False
         if sheet.reminder_last_date:
-            if (today - sheet.reminder_last_date).days < 7:
+            if (today - sheet.reminder_last_date).days < interval_days:
                 return False
         return True
 
@@ -168,6 +173,8 @@ class Sheet(models.Model):
             sheets_by_employee.setdefault(sheet.employee_id, []).append(sheet)
 
         level_meta = self._get_reminder_level_meta()
+        today_by_tz = {}
+        reminder_days_by_company = {}
         for employee, employee_sheets in sheets_by_employee.items():
             email_to = (
                 employee.work_email
@@ -178,7 +185,11 @@ class Sheet(models.Model):
                 continue
 
             tz = employee.user_id.tz or self.env.user.tz or "UTC"
-            today = fields.Date.context_today(self.with_context(tz=tz))
+            if tz not in today_by_tz:
+                today_by_tz[tz] = fields.Date.context_today(
+                    self.with_context(tz=tz)
+                )
+            today = today_by_tz[tz]
 
             display_items = []
             trigger_levels = []
@@ -188,6 +199,8 @@ class Sheet(models.Model):
                 "danger": self.env["hr_timesheet.sheet"],
             }
             for sheet in employee_sheets:
+                if sheet.date_start and sheet.date_start > today:
+                    continue
                 deadline = sheet._get_sheet_deadline_date()
                 if not deadline:
                     continue
@@ -198,10 +211,16 @@ class Sheet(models.Model):
                 if is_overdue:
                     level = "danger" if self._is_overdue_reminder_due(sheet, today, deadline) else False
                 else:
+                    company_id = sheet.company_id.id
+                    if company_id not in reminder_days_by_company:
+                        reminder_days_by_company[company_id] = self._get_company_reminder_days(
+                            sheet.company_id
+                        )
                     level = self._get_reminder_level_for_days(
                         sheet.company_id,
                         days_left,
                         sheet.reminder_last_level,
+                        reminder_days_by_company[company_id],
                     )
 
                 display_items.append(

@@ -24,3 +24,7 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.timesheet_sheet_reminder_days_danger",
         readonly=False,
     )
+    timesheet_sheet_overdue_reminder_interval_days = fields.Integer(
+        related="company_id.timesheet_sheet_overdue_reminder_interval_days",
+        readonly=False,
+    )

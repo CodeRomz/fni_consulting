@@ -100,6 +100,14 @@ class ResCompany(models.Model):
             "Use 0 to send on the deadline day."
         ),
     )
+    timesheet_sheet_overdue_reminder_interval_days = fields.Integer(
+        string="Overdue Reminder Interval (days)",
+        default=7,
+        help=(
+            "Number of days between reminders for overdue timesheet sheets. "
+            "Set to 0 to disable overdue reminders."
+        ),
+    )
 
     def init(self):
         """Backfill defaults for existing companies on install/upgrade."""
@@ -136,5 +144,12 @@ class ResCompany(models.Model):
             UPDATE res_company
                SET timesheet_sheet_reminder_days_danger = 0
              WHERE timesheet_sheet_reminder_days_danger IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_overdue_reminder_interval_days = 7
+             WHERE timesheet_sheet_overdue_reminder_interval_days IS NULL
             """
         )
