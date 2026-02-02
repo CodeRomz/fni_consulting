@@ -11,4 +11,5 @@ from . import res_config_settings
 
 from . import hr_timesheet_sheet
 from . import hr_employee
+from . import hr_employee_public
 from . import calendar_event
