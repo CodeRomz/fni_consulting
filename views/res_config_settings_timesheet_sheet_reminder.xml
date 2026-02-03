@@ -38,7 +38,7 @@
                     <setting id="timesheet_sheet_weekly_autocreate_weekday" company_dependent="1"
                              help="Weekday when weekly drafts are created. Uses each employee's local timezone.">
                         <field name="timesheet_sheet_weekly_autocreate_weekday"
-                               attrs="{'invisible': [('timesheet_sheet_weekly_autocreate_enabled', '=', False)]}"/>
+                               modifiers="{'invisible': [['timesheet_sheet_weekly_autocreate_enabled', '=', false]]}"/>
                     </setting>
                     <setting id="timesheet_sheet_weekly_autocreate_run" company_dependent="1"
                              help="Run weekly auto-create now for opted-in employees.">
@@ -46,7 +46,7 @@
                                 type="object"
                                 string="Run Weekly Auto-Create Now"
                                 class="btn-primary"
-                                attrs="{'invisible': [('timesheet_sheet_weekly_autocreate_enabled', '=', False)]}"
+                                modifiers="{'invisible': [['timesheet_sheet_weekly_autocreate_enabled', '=', false]]}"
                                 groups="hr.group_hr_manager,hr_timesheet.group_hr_timesheet_approver"/>
                     </setting>
                 </block>
