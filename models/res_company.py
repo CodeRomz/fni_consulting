@@ -109,6 +109,24 @@ class ResCompany(models.Model):
         ),
     )
 
+    timesheet_sheet_weekly_autocreate_enabled = fields.Boolean(
+        string="Weekly Timesheet Auto-Create",
+        default=False,
+        help=(
+            "Create weekly draft timesheet sheets automatically at 1:00 AM in "
+            "each employee's timezone."
+        ),
+    )
+    timesheet_sheet_weekly_autocreate_weekday = fields.Selection(
+        selection=lambda self: self._fields["timesheet_week_start"].selection,
+        string="Timesheet Sheet Auto-Create Weekday",
+        default="0",
+        help=(
+            "Weekday when weekly draft timesheet sheets are created. The system "
+            "uses the employee's local timezone."
+        ),
+    )
+
     def init(self):
         """Backfill defaults for existing companies on install/upgrade."""
         self.env.cr.execute(
@@ -151,5 +169,19 @@ class ResCompany(models.Model):
             UPDATE res_company
                SET timesheet_sheet_overdue_reminder_interval_days = 7
              WHERE timesheet_sheet_overdue_reminder_interval_days IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_weekly_autocreate_enabled = FALSE
+             WHERE timesheet_sheet_weekly_autocreate_enabled IS NULL
+            """
+        )
+        self.env.cr.execute(
+            """
+            UPDATE res_company
+               SET timesheet_sheet_weekly_autocreate_weekday = COALESCE(timesheet_week_start, '0')
+             WHERE timesheet_sheet_weekly_autocreate_weekday IS NULL
             """
         )

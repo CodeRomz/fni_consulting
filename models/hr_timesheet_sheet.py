@@ -313,3 +313,105 @@ class Sheet(models.Model):
                             "reminder_last_level": level,
                         }
                     )
+
+    @api.model
+    def _cron_autocreate_weekly_sheets(self):
+        stats = {"created": 0, "skipped": 0, "errors": 0}
+        manual = bool(self.env.context.get("timesheet_weekly_autocreate_manual"))
+        Company = self.env["res.company"].sudo()
+        companies = Company.search(
+            [
+                ("timesheet_sheet_weekly_autocreate_enabled", "=", True),
+                ("sheet_range", "=", "WEEKLY"),
+            ]
+        )
+        if not companies:
+            return stats
+
+        Employee = self.env["hr.employee"].sudo()
+        Sheet = self.env["hr_timesheet.sheet"].sudo()
+        now_utc = fields.Datetime.now()
+
+        for company in companies:
+            try:
+                company_ctx = dict(
+                    self.env.context, allowed_company_ids=[company.id]
+                )
+                employees = Employee.with_context(company_ctx).search(
+                    [
+                        ("company_id", "=", company.id),
+                        ("active", "=", True),
+                        ("user_id", "!=", False),
+                        ("timesheet_sheet_reminder_opt_in", "=", True),
+                    ]
+                )
+                if not employees:
+                    continue
+
+                employees_by_tz = {}
+                for emp in employees:
+                    tz = (
+                        emp.user_id.tz
+                        or (emp.company_id.partner_id.tz if emp.company_id and emp.company_id.partner_id else None)
+                        or "UTC"
+                    )
+                    employees_by_tz.setdefault(tz, Employee.browse())
+                    employees_by_tz[tz] |= emp
+
+                for tz, employees_tz in employees_by_tz.items():
+                    local_now = fields.Datetime.context_timestamp(
+                        self.with_context(tz=tz), now_utc
+                    )
+                    if not manual:
+                        if local_now.hour != 1:
+                            continue
+                        weekday = (
+                            company.timesheet_sheet_weekly_autocreate_weekday
+                            or company.timesheet_week_start
+                            or "0"
+                        )
+                        if str(local_now.weekday()) != weekday:
+                            continue
+
+                    local_date = local_now.date()
+                    date_start = Sheet._get_period_start(company, local_date)
+                    date_end = Sheet._get_period_end(company, local_date)
+
+                    existing = Sheet.with_context(company_ctx).search(
+                        [
+                            ("company_id", "=", company.id),
+                            ("employee_id", "in", employees_tz.ids),
+                            ("date_start", "<=", date_end),
+                            ("date_end", ">=", date_start),
+                        ]
+                    )
+                    existing_emp_ids = set(existing.mapped("employee_id").ids)
+                    to_create = employees_tz.filtered(
+                        lambda emp: emp.id not in existing_emp_ids
+                    )
+                    stats["skipped"] += len(existing_emp_ids)
+                    if not to_create:
+                        continue
+
+                    vals_list = [
+                        {
+                            "employee_id": emp.id,
+                            "company_id": company.id,
+                            "date_start": date_start,
+                            "date_end": date_end,
+                        }
+                        for emp in to_create
+                    ]
+                    Sheet.with_context(company_ctx).with_company(company).create(
+                        vals_list
+                    )
+                    stats["created"] += len(vals_list)
+            except Exception:
+                stats["errors"] += 1
+                _logger.exception(
+                    "Failed weekly timesheet auto-create for company %s",
+                    company.display_name,
+                )
+                continue
+
+        return stats

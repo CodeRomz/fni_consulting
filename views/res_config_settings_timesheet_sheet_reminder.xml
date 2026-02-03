@@ -31,6 +31,24 @@
                              help="Number of days between reminders for overdue timesheet sheets. Set to 0 to disable overdue reminders.">
                         <field name="timesheet_sheet_overdue_reminder_interval_days"/>
                     </setting>
+                    <setting id="timesheet_sheet_weekly_autocreate_enabled" company_dependent="1"
+                             help="Create weekly draft timesheet sheets automatically at 1:00 AM in each employee's timezone.">
+                        <field name="timesheet_sheet_weekly_autocreate_enabled"/>
+                    </setting>
+                    <setting id="timesheet_sheet_weekly_autocreate_weekday" company_dependent="1"
+                             help="Weekday when weekly drafts are created. Uses each employee's local timezone.">
+                        <field name="timesheet_sheet_weekly_autocreate_weekday"
+                               attrs="{'invisible': [('timesheet_sheet_weekly_autocreate_enabled', '=', False)]}"/>
+                    </setting>
+                    <setting id="timesheet_sheet_weekly_autocreate_run" company_dependent="1"
+                             help="Run weekly auto-create now for opted-in employees.">
+                        <button name="action_run_weekly_autocreate"
+                                type="object"
+                                string="Run Weekly Auto-Create Now"
+                                class="btn-primary"
+                                attrs="{'invisible': [('timesheet_sheet_weekly_autocreate_enabled', '=', False)]}"
+                                groups="hr.group_hr_manager,hr_timesheet.group_hr_timesheet_approver"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

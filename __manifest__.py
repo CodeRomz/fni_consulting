@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.1.0',
+    'version': '18.0.1.3.0',
 
     'category': 'Custom',
     'depends': ['calendar',
@@ -42,6 +42,7 @@
         'data/report_layout_defaults.xml',
         'data/mail_template_timesheet_sheet_reminder.xml',
         'data/ir_cron_timesheet_sheet_reminder.xml',
+        'data/ir_cron_timesheet_sheet_weekly_autocreate.xml',
 
     ],
 
