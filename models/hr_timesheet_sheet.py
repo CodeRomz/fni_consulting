@@ -318,6 +318,12 @@ class Sheet(models.Model):
     def _cron_autocreate_weekly_sheets(self):
         stats = {"created": 0, "skipped": 0, "errors": 0}
         manual = bool(self.env.context.get("timesheet_weekly_autocreate_manual"))
+        mail_context = {
+            "tracking_disable": True,
+            "mail_create_nolog": True,
+            "mail_create_nosubscribe": True,
+            "mail_notrack": True,
+        }
         Company = self.env["res.company"].sudo()
         companies = Company.search(
             [
@@ -331,6 +337,7 @@ class Sheet(models.Model):
         Employee = self.env["hr.employee"].sudo()
         Sheet = self.env["hr_timesheet.sheet"].sudo()
         now_utc = fields.Datetime.now()
+        odoobot_partner = self.env.ref("base.partner_root", raise_if_not_found=False)
 
         for company in companies:
             try:
@@ -402,9 +409,27 @@ class Sheet(models.Model):
                         }
                         for emp in to_create
                     ]
-                    Sheet.with_context(company_ctx).with_company(company).create(
-                        vals_list
+                    created_sheets = (
+                        Sheet.with_context({**company_ctx, **mail_context})
+                        .with_company(company)
+                        .create(vals_list)
                     )
+                    try:
+                        message_values = {
+                            "body": _(
+                                "Timesheet Sheet created automatically by the system."
+                            ),
+                            "subtype_xmlid": "mail.mt_note",
+                            "message_type": "comment",
+                        }
+                        if odoobot_partner:
+                            message_values["author_id"] = odoobot_partner.id
+                        for sheet in created_sheets:
+                            sheet.message_post(**message_values)
+                    except Exception:
+                        _logger.exception(
+                            "Failed to post auto-create message on timesheet sheets."
+                        )
                     stats["created"] += len(vals_list)
             except Exception:
                 stats["errors"] += 1
