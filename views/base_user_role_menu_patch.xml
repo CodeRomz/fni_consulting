@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="base_user_role.menu_action_res_users_role_tree" model="ir.ui.menu">
+        <field name="groups_id" eval="[Command.set([ref('base.group_system')])]"/>
+    </record>
+
+    <record id="base_user_role.action_res_users_role_tree" model="ir.actions.act_window">
+        <field name="groups_id" eval="[Command.set([ref('base.group_system')])]"/>
+    </record>
+</odoo>

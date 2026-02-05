@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.3.0',
+    'version': '18.0.1.4.0',
 
     'category': 'Custom',
     'depends': ['calendar',
@@ -21,6 +21,7 @@
                 'hr_timesheet_time_type',
                 'project_timesheet_holidays',
                 'hr_timesheet_sheet_autodraft',
+                'base_user_role',
                 ],
 
     'data': [
@@ -31,6 +32,10 @@
         'views/hr_employee_timesheet_reminder.xml',
         'views/inv_report_override.xml',
         'views/calendar_event_views.xml',
+        'views/res_users_access_rights_hide.xml',
+        'views/base_user_role_user_form_patch.xml',
+        'views/base_user_role_menu_patch.xml',
+        'views/base_user_role_wizard_patch.xml',
         'wizard/calendar_event_timesheet_wizard.xml',
         'reports/fni_paperformat.xml',
         'reports/invoice_report_fni_template.xml',
