@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.4.0',
+    'version': '18.0.1.5.0',
 
     'category': 'Custom',
     'depends': ['calendar',
@@ -16,6 +16,7 @@
                 'hr_holidays',
                 'survey',
                 'account',
+                'sale_timesheet',
                 'hr_timesheet_task_domain',
                 'hr_timesheet_task_required',
                 'hr_timesheet_time_type',

@@ -14,3 +14,4 @@ from . import hr_employee
 from . import hr_employee_public
 from . import calendar_event
 from . import res_users_role
+from . import project_task
