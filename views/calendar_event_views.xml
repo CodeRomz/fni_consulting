@@ -10,4 +10,23 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_calendar_event_form_fni_visibility" model="ir.ui.view">
+        <field name="name">calendar.event.form.fni.visibility</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='privacy']" position="after">
+                <label for="fni_visibility_mode"/>
+                <field name="fni_visibility_mode" readonly="not user_can_edit"/>
+                <label for="fni_shared_user_ids" invisible="fni_visibility_mode != 'shared'"/>
+                <field
+                    name="fni_shared_user_ids"
+                    widget="many2many_tags"
+                    readonly="not user_can_edit"
+                    invisible="fni_visibility_mode != 'shared'"
+                />
+            </xpath>
+        </field>
+    </record>
 </odoo>

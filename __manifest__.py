@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.5.0',
+    'version': '18.0.1.6.0',
 
     'category': 'Custom',
     'depends': ['calendar',
@@ -27,6 +27,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'security/calendar_event_security.xml',
         'views/res_partner_bank.xml',
         'views/hr_timesheet_sheet_readonly.xml',
         'views/res_config_settings_timesheet_sheet_reminder.xml',
