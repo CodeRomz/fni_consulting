@@ -53,6 +53,23 @@ class CalendarEvent(models.Model):
         if forbidden:
             raise AccessError("Only the event organizer can modify this event.")
 
+    @api.onchange("fni_visibility_mode")
+    def _onchange_fni_visibility_mode(self):
+        if self.fni_visibility_mode != "shared":
+            self.fni_shared_user_ids = [fields.Command.clear()]
+
+    def _fni_prepare_create_vals(self, vals):
+        vals = dict(vals)
+        if vals.get("fni_visibility_mode", "private") != "shared":
+            vals["fni_shared_user_ids"] = [fields.Command.clear()]
+        return vals
+
+    def _fni_prepare_write_vals(self, vals):
+        if vals.get("fni_visibility_mode") and vals["fni_visibility_mode"] != "shared":
+            vals = dict(vals)
+            vals["fni_shared_user_ids"] = [fields.Command.clear()]
+        return vals
+
     @api.depends("partner_ids", "user_id")
     @api.depends_context("uid")
     def _compute_user_can_edit(self):
@@ -90,8 +107,14 @@ class CalendarEvent(models.Model):
         for event in self:
             event.has_timesheet_entry = event.id in event_ids
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        vals_list = [self._fni_prepare_create_vals(vals) for vals in vals_list]
+        return super().create(vals_list)
+
     def write(self, vals):
         self._fni_check_owner_write_access()
+        vals = self._fni_prepare_write_vals(vals)
         return super().write(vals)
 
     def unlink(self):
