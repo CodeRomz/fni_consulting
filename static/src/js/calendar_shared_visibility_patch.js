@@ -1,10 +1,13 @@
 /** @odoo-module **/
 
 import { patch } from "@web/core/utils/patch";
+import { useService } from "@web/core/utils/hooks";
 import { user } from "@web/core/user";
+import { FormViewDialog } from "@web/views/view_dialogs/form_view_dialog";
+import { CalendarListModel } from "@calendar/views/list_view/calendar_list_view";
 import { AttendeeCalendarModel } from "@calendar/views/attendee_calendar/attendee_calendar_model";
 import { AttendeeCalendarCommonPopover } from "@calendar/views/attendee_calendar/common/attendee_calendar_common_popover";
-import { CalendarListModel } from "@calendar/views/list_view/calendar_list_view";
+import { AttendeeCalendarCommonRenderer } from "@calendar/views/attendee_calendar/common/attendee_calendar_common_renderer";
 
 function getPartnerFilterSection(data) {
     return data.filterSections.partner_ids;
@@ -37,6 +40,17 @@ function getSearchReadFields(model) {
 
 function isSharedCalendarRecord(record) {
     return Boolean(record?.rawRecord?.fni_show_on_user_calendar);
+}
+
+function isCurrentUserAttendeeOrOrganizer(record) {
+    const rawRecord = record?.rawRecord;
+    const partnerIds = rawRecord?.partner_ids || [];
+    const organizerPartnerId = rawRecord?.partner_id?.[0];
+    return partnerIds.includes(user.partnerId) || organizerPartnerId === user.partnerId;
+}
+
+function isViewerOnlyCalendarRecord(record) {
+    return isSharedCalendarRecord(record) && !isCurrentUserAttendeeOrOrganizer(record);
 }
 
 patch(AttendeeCalendarModel.prototype, {
@@ -110,6 +124,43 @@ patch(AttendeeCalendarModel.prototype, {
             data.records[nextRecordId] = sharedRecord;
             nextRecordId -= 1;
         }
+    },
+});
+
+patch(AttendeeCalendarCommonRenderer.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.dialog = useService("dialog");
+    },
+
+    _openViewerOnlyRecord(record) {
+        this.dialog.add(FormViewDialog, {
+            resModel: this.props.model.resModel,
+            resId: record.id,
+            viewId: this.props.model.formViewId || false,
+            title: record.title,
+            mode: "readonly",
+            preventCreate: true,
+            preventEdit: true,
+        });
+    },
+
+    onClick(info) {
+        const record = this.props.model.records[info.event.id];
+        if (isViewerOnlyCalendarRecord(record)) {
+            this._openViewerOnlyRecord(record);
+            return;
+        }
+        return super.onClick(info);
+    },
+
+    onDblClick(info) {
+        const record = this.props.model.records[info.event.id];
+        if (isViewerOnlyCalendarRecord(record)) {
+            this._openViewerOnlyRecord(record);
+            return;
+        }
+        return super.onDblClick(info);
     },
 });
 
