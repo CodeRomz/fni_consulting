@@ -1,31 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <function model="ir.model.data" name="write">
-            <function model="ir.model.data" name="search">
-                <value eval="[('module', '=', 'calendar'), ('name', '=', 'calendar_event_rule_employee')]"/>
+        <function model="ir.rule" name="write">
+            <function model="ir.rule" name="search">
+                <value eval="[('id', '=', ref('calendar.calendar_event_rule_employee'))]"/>
             </function>
-            <value eval="{'noupdate': False}"/>
-        </function>
-
-        <record id="calendar.calendar_event_rule_employee" model="ir.rule">
-            <field name="domain_force">
-                ['|', '|', '|',
-                    ('user_id', '=', user.id),
-                    ('partner_ids', 'in', user.partner_id.id),
-                    '&amp;',
-                        ('fni_visibility_mode', '=', 'shared'),
-                        ('fni_shared_user_ids', 'in', user.id),
-                    ('fni_visibility_mode', '=', 'public_internal')
-                ]
-            </field>
-        </record>
-
-        <function model="ir.model.data" name="write">
-            <function model="ir.model.data" name="search">
-                <value eval="[('module', '=', 'calendar'), ('name', '=', 'calendar_event_rule_employee')]"/>
-            </function>
-            <value eval="{'noupdate': True}"/>
+            <value eval="{'domain_force': &quot;['|', '|', '|', ('user_id', '=', user.id), ('partner_ids', 'in', user.partner_id.id), '&amp;', ('fni_visibility_mode', '=', 'shared'), ('fni_shared_user_ids', 'in', user.id), ('fni_visibility_mode', '=', 'public_internal')]&quot;}"/>
         </function>
     </data>
 </odoo>
