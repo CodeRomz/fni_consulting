@@ -29,6 +29,9 @@ class CalendarEvent(models.Model):
         domain=[("share", "=", False)],
         help="Additional internal users who can read this event.",
     )
+    fni_user_is_organizer = fields.Boolean(
+        compute="_compute_fni_user_is_organizer",
+    )
     has_timesheet_entry = fields.Boolean(
         string="Has Timesheet Entry",
         compute="_compute_has_timesheet_entry",
@@ -70,16 +73,16 @@ class CalendarEvent(models.Model):
             vals["fni_shared_user_ids"] = [fields.Command.clear()]
         return vals
 
-    @api.depends("partner_ids", "user_id")
+    @api.depends("user_id")
     @api.depends_context("uid")
-    def _compute_user_can_edit(self):
+    def _compute_fni_user_is_organizer(self):
         is_su = self.env.su
         current_user = self.env.user
         for event in self:
             if event.user_id:
-                event.user_can_edit = is_su or (event.user_id == current_user)
+                event.fni_user_is_organizer = is_su or (event.user_id == current_user)
             else:
-                event.user_can_edit = is_su or (event.create_uid == current_user)
+                event.fni_user_is_organizer = is_su or (event.create_uid == current_user)
 
     @api.depends_context("uid")
     def _compute_has_timesheet_entry(self):

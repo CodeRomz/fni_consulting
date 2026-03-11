@@ -16,14 +16,17 @@
         <field name="model">calendar.event</field>
         <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='privacy']" position="before">
+                <field name="fni_user_is_organizer" invisible="1"/>
+            </xpath>
             <xpath expr="//field[@name='privacy']" position="after">
                 <label for="fni_visibility_mode"/>
-                <field name="fni_visibility_mode" readonly="not user_can_edit"/>
+                <field name="fni_visibility_mode" readonly="not fni_user_is_organizer"/>
                 <label for="fni_shared_user_ids" invisible="fni_visibility_mode != 'shared'"/>
                 <field
                     name="fni_shared_user_ids"
                     widget="many2many_tags"
-                    readonly="not user_can_edit"
+                    readonly="not fni_user_is_organizer"
                     invisible="fni_visibility_mode != 'shared'"
                 />
             </xpath>
