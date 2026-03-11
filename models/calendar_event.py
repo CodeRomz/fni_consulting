@@ -51,9 +51,31 @@ class CalendarEvent(models.Model):
             or (not event.user_id and event.create_uid == current_user)
         )
 
+    def _fni_can_view_private_event_details(self, event, current_user):
+        current_partner = current_user.partner_id
+        return bool(
+            self.env.su
+            or self._fni_is_organizer(event, current_user)
+            or current_partner in event.partner_ids
+            or (
+                event.fni_visibility_mode == "shared"
+                and current_user in event.fni_shared_user_ids
+            )
+            or (
+                event.fni_visibility_mode == "public_internal"
+                and current_user._is_internal()
+            )
+        )
+
     def _fni_forbidden_event_edits(self):
         current_user = self.env.user
         return self.filtered(lambda event: not self._fni_is_organizer(event, current_user))
+
+    def _check_private_event_conditions(self):
+        self.ensure_one()
+        if self._fni_can_view_private_event_details(self, self.env.user):
+            return False
+        return super()._check_private_event_conditions()
 
     def _fni_check_owner_write_access(self):
         if self._fni_bypass_visibility_guards():
@@ -91,11 +113,14 @@ class CalendarEvent(models.Model):
     def _compute_fni_show_on_user_calendar(self):
         current_user = self.env.user
         current_partner = current_user.partner_id
+        is_internal_user = current_user._is_internal()
         for event in self:
             is_organizer = self._fni_is_organizer(event, current_user)
             is_attendee = current_partner in event.partner_ids
             is_shared_viewer = current_user in event.fni_shared_user_ids
-            is_internal_public_viewer = event.fni_visibility_mode == "public_internal"
+            is_internal_public_viewer = (
+                event.fni_visibility_mode == "public_internal" and is_internal_user
+            )
             event.fni_show_on_user_calendar = (
                 not is_organizer
                 and not is_attendee
@@ -108,13 +133,18 @@ class CalendarEvent(models.Model):
         if operator == "!=":
             value = not value
         user = self.env.user
-        candidate_events = self.search([
-            "|",
+        candidate_domain = [
             "&",
-                ("fni_visibility_mode", "=", "shared"),
-                ("fni_shared_user_ids", "in", user.id),
-            ("fni_visibility_mode", "=", "public_internal"),
-        ])
+            ("fni_visibility_mode", "=", "shared"),
+            ("fni_shared_user_ids", "in", user.id),
+        ]
+        if user._is_internal():
+            candidate_domain = [
+                "|",
+                *candidate_domain,
+                ("fni_visibility_mode", "=", "public_internal"),
+            ]
+        candidate_events = self.search(candidate_domain)
         current_partner = user.partner_id
         matched_events = candidate_events.filtered(
             lambda event: not self._fni_is_organizer(event, user) and current_partner not in event.partner_ids
