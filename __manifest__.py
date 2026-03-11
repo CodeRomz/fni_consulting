@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.6.2',
+    'version': '18.0.1.6.3',
 
     'category': 'Custom',
     'depends': ['calendar',
@@ -58,6 +58,7 @@
             'fni_consulting/static/src/scss/firenor_style_backend.scss',
             'fni_consulting/static/src/xml/calendar_popover_timesheet.xml',
             'fni_consulting/static/src/js/calendar_popover_timesheet_patch.js',
+            'fni_consulting/static/src/js/calendar_shared_visibility_patch.js',
         ],
         'web.report_assets_pdf': [
             'fni_consulting/static/src/scss/invoice_report_fni.scss',
@@ -70,5 +71,6 @@
     'installable': True,
     'application': False,
 }
+
 
 

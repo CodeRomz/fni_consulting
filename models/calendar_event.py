@@ -32,6 +32,10 @@ class CalendarEvent(models.Model):
     fni_user_is_organizer = fields.Boolean(
         compute="_compute_fni_user_is_organizer",
     )
+    fni_show_on_user_calendar = fields.Boolean(
+        compute="_compute_fni_show_on_user_calendar",
+        search="_search_fni_show_on_user_calendar",
+    )
     has_timesheet_entry = fields.Boolean(
         string="Has Timesheet Entry",
         compute="_compute_has_timesheet_entry",
@@ -40,14 +44,16 @@ class CalendarEvent(models.Model):
     def _fni_bypass_visibility_guards(self):
         return self.env.su or bool(self.env.context.get("dont_notify"))
 
+    def _fni_is_organizer(self, event, current_user):
+        return bool(
+            self.env.su
+            or (event.user_id and event.user_id == current_user)
+            or (not event.user_id and event.create_uid == current_user)
+        )
+
     def _fni_forbidden_event_edits(self):
         current_user = self.env.user
-        return self.filtered(
-            lambda event: (
-                (event.user_id and event.user_id != current_user)
-                or (not event.user_id and event.create_uid != current_user)
-            )
-        )
+        return self.filtered(lambda event: not self._fni_is_organizer(event, current_user))
 
     def _fni_check_owner_write_access(self):
         if self._fni_bypass_visibility_guards():
@@ -76,13 +82,44 @@ class CalendarEvent(models.Model):
     @api.depends("user_id")
     @api.depends_context("uid")
     def _compute_fni_user_is_organizer(self):
-        is_su = self.env.su
         current_user = self.env.user
         for event in self:
-            if event.user_id:
-                event.fni_user_is_organizer = is_su or (event.user_id == current_user)
-            else:
-                event.fni_user_is_organizer = is_su or (event.create_uid == current_user)
+            event.fni_user_is_organizer = self._fni_is_organizer(event, current_user)
+
+    @api.depends("partner_ids", "user_id", "fni_visibility_mode", "fni_shared_user_ids")
+    @api.depends_context("uid")
+    def _compute_fni_show_on_user_calendar(self):
+        current_user = self.env.user
+        current_partner = current_user.partner_id
+        for event in self:
+            is_organizer = self._fni_is_organizer(event, current_user)
+            is_attendee = current_partner in event.partner_ids
+            is_shared_viewer = current_user in event.fni_shared_user_ids
+            is_internal_public_viewer = event.fni_visibility_mode == "public_internal"
+            event.fni_show_on_user_calendar = (
+                not is_organizer
+                and not is_attendee
+                and (is_shared_viewer or is_internal_public_viewer)
+            )
+
+    def _search_fni_show_on_user_calendar(self, operator, value):
+        if operator not in ("=", "!=") or value not in (True, False):
+            return []
+        if operator == "!=":
+            value = not value
+        user = self.env.user
+        candidate_events = self.search([
+            "|",
+            "&",
+                ("fni_visibility_mode", "=", "shared"),
+                ("fni_shared_user_ids", "in", user.id),
+            ("fni_visibility_mode", "=", "public_internal"),
+        ])
+        current_partner = user.partner_id
+        matched_events = candidate_events.filtered(
+            lambda event: not self._fni_is_organizer(event, user) and current_partner not in event.partner_ids
+        )
+        return [("id", "in" if value else "not in", matched_events.ids)]
 
     @api.depends_context("uid")
     def _compute_has_timesheet_entry(self):
