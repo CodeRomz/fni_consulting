@@ -122,13 +122,15 @@ class ResourceCalendarLeaves(models.Model):
         local_start_date = local_start.date()
         local_stop_date = max(local_stop.date(), local_start_date)
         calendar_label = self.calendar_id.display_name or _('All Working Hours')
+        organizer_user = self.create_uid or self.env.user
+        organizer_partner = organizer_user.partner_id
         vals = {
             'name': self.name or _('Public Holiday'),
             'description': _(
                 'Managed from Time Off > Configuration > Public Holidays.\nWorking Hours: %(calendar)s',
                 calendar=calendar_label,
             ),
-            'user_id': self.create_uid.id or self.env.user.id,
+            'user_id': organizer_user.id,
             'event_tz': self._fni_get_public_holiday_event_timezone(),
             'privacy': 'confidential',
             'show_as': 'busy',
@@ -141,8 +143,7 @@ class ResourceCalendarLeaves(models.Model):
             'stop': datetime.combine(local_stop_date, time(0, 0, 0)),
             'start_date': local_start_date,
             'stop_date': local_stop_date,
-            'partner_ids': [fields.Command.clear()],
-            'attendee_ids': [fields.Command.clear()],
+            'partner_ids': [fields.Command.set(organizer_partner.ids)],
         }
         if 'need_sync_m' in self.env['calendar.event']._fields:
             vals['need_sync_m'] = False

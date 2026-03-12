@@ -144,8 +144,6 @@ class CalendarEvent(models.Model):
 
     def _fni_prepare_public_holiday_mirror_vals(self, vals):
         vals = dict(vals)
-        vals["partner_ids"] = [fields.Command.clear()]
-        vals["attendee_ids"] = [fields.Command.clear()]
         if "need_sync_m" in self._fields:
             vals["need_sync_m"] = False
         return vals
