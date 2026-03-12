@@ -1,6 +1,5 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
-from odoo.osv import expression
 
 
 class CalendarEvent(models.Model):
@@ -143,10 +142,7 @@ class CalendarEvent(models.Model):
         return vals
 
     def _fni_prepare_public_holiday_mirror_vals(self, vals):
-        vals = dict(vals)
-        if "need_sync_m" in self._fields:
-            vals["need_sync_m"] = False
-        return vals
+        return dict(vals)
 
     @api.depends("user_id")
     @api.depends_context("uid")
@@ -232,13 +228,10 @@ class CalendarEvent(models.Model):
             event.user_can_edit = False
 
     def _get_microsoft_sync_domain(self):
-        domain = super()._get_microsoft_sync_domain()
-        return expression.AND([domain, [("fni_public_holiday_id", "=", False)]])
+        return super()._get_microsoft_sync_domain()
 
     def _microsoft_values(self, fields_to_sync, initial_values=None):
         self.ensure_one()
-        if self.fni_public_holiday_id:
-            return {}
         return super()._microsoft_values(fields_to_sync, initial_values=initial_values or {})
 
     def _write_from_microsoft(self, microsoft_event, vals):
@@ -246,7 +239,7 @@ class CalendarEvent(models.Model):
         if public_holiday_events:
             reset_vals = {}
             if "need_sync_m" in public_holiday_events._fields:
-                reset_vals["need_sync_m"] = False
+                reset_vals["need_sync_m"] = True
             if reset_vals:
                 public_holiday_events.with_context(
                     dont_notify=True,
@@ -263,7 +256,7 @@ class CalendarEvent(models.Model):
         if public_holiday_events:
             reset_vals = {}
             if "need_sync_m" in public_holiday_events._fields:
-                reset_vals["need_sync_m"] = False
+                reset_vals["need_sync_m"] = True
             if "microsoft_id" in public_holiday_events._fields:
                 reset_vals["microsoft_id"] = False
             if "ms_universal_event_id" in public_holiday_events._fields:

@@ -68,7 +68,6 @@ class ResourceCalendarLeaves(models.Model):
             **self.env.context,
             'fni_public_holiday_sync': True,
             'calendar_no_videocall': True,
-            'no_calendar_sync': True,
             'mail_create_nolog': True,
             'mail_create_nosubscribe': True,
             'mail_notrack': True,
@@ -145,8 +144,6 @@ class ResourceCalendarLeaves(models.Model):
             'stop_date': local_stop_date,
             'partner_ids': [fields.Command.set(organizer_partner.ids)],
         }
-        if 'need_sync_m' in self.env['calendar.event']._fields:
-            vals['need_sync_m'] = False
         return vals
 
     def _fni_sync_public_holiday_calendar_event(self):
