@@ -1,10 +1,17 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 
 
 class CalendarEvent(models.Model):
     _inherit = "calendar.event"
 
+    fni_public_holiday_id = fields.Many2one(
+        "resource.calendar.leaves",
+        string="Public Holiday Source",
+        copy=False,
+        index=True,
+        readonly=True,
+    )
     fni_visibility_mode = fields.Selection(
         [
             ("private", "Private"),
@@ -41,8 +48,41 @@ class CalendarEvent(models.Model):
         compute="_compute_has_timesheet_entry",
     )
 
+    def _fni_bypass_public_holiday_guards(self):
+        return self.env.su or bool(self.env.context.get("fni_public_holiday_sync"))
+
     def _fni_bypass_visibility_guards(self):
-        return self.env.su or bool(self.env.context.get("dont_notify"))
+        return (
+            self.env.su
+            or bool(self.env.context.get("dont_notify"))
+            or bool(self.env.context.get("fni_public_holiday_sync"))
+        )
+
+    def _fni_check_public_holiday_write_access(self):
+        if self._fni_bypass_public_holiday_guards():
+            return
+        if self.filtered("fni_public_holiday_id"):
+            raise AccessError(
+                _(
+                    "Public holiday calendar events are managed from Time Off > Configuration > Public Holidays."
+                )
+            )
+
+    def _fni_check_public_holiday_assignment_access(self, vals_list=None, vals=None):
+        if self._fni_bypass_public_holiday_guards():
+            return
+        if vals_list is not None and any("fni_public_holiday_id" in entry for entry in vals_list):
+            raise AccessError(
+                _(
+                    "Public holiday calendar events are managed from Time Off > Configuration > Public Holidays."
+                )
+            )
+        if vals is not None and "fni_public_holiday_id" in vals:
+            raise AccessError(
+                _(
+                    "Public holiday calendar events are managed from Time Off > Configuration > Public Holidays."
+                )
+            )
 
     def _fni_is_organizer(self, event, current_user):
         return bool(
@@ -177,16 +217,27 @@ class CalendarEvent(models.Model):
         for event in self:
             event.has_timesheet_entry = event.id in event_ids
 
+    @api.depends("partner_ids", "user_id", "fni_public_holiday_id")
+    @api.depends_context("uid")
+    def _compute_user_can_edit(self):
+        super()._compute_user_can_edit()
+        for event in self.filtered("fni_public_holiday_id"):
+            event.user_can_edit = False
+
     @api.model_create_multi
     def create(self, vals_list):
+        self._fni_check_public_holiday_assignment_access(vals_list=vals_list)
         vals_list = [self._fni_prepare_create_vals(vals) for vals in vals_list]
         return super().create(vals_list)
 
     def write(self, vals):
+        self._fni_check_public_holiday_assignment_access(vals=vals)
+        self._fni_check_public_holiday_write_access()
         self._fni_check_owner_write_access()
         vals = self._fni_prepare_write_vals(vals)
         return super().write(vals)
 
     def unlink(self):
+        self._fni_check_public_holiday_write_access()
         self._fni_check_owner_write_access()
         return super().unlink()
