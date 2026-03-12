@@ -1,4 +1,4 @@
-from datetime import time, timedelta
+from datetime import datetime, time
 
 import pytz
 
@@ -94,24 +94,18 @@ class ResourceCalendarLeaves(models.Model):
         self.ensure_one()
         return self.calendar_id.tz or self.company_id.resource_calendar_id.tz or self.env.user.tz or 'UTC'
 
-    def _fni_get_public_holiday_event_datetimes(self):
+    def _fni_get_public_holiday_local_datetimes(self):
         self.ensure_one()
         event_tz = pytz.timezone(self._fni_get_public_holiday_event_timezone())
-        start_value = UTC.localize(self.date_from).astimezone(event_tz).replace(tzinfo=None)
-        stop_value = UTC.localize(self.date_to).astimezone(event_tz).replace(tzinfo=None)
-        if not self._fni_is_public_holiday_allday(start_value, stop_value):
-            stop_value = start_value + timedelta(hours=self._fni_get_public_holiday_event_duration_hours())
-        return start_value, stop_value
+        local_start = UTC.localize(self.date_from).astimezone(event_tz).replace(tzinfo=None)
+        local_stop = UTC.localize(self.date_to).astimezone(event_tz).replace(tzinfo=None)
+        return local_start, local_stop
 
     def _fni_is_public_holiday_allday(self, start_value, stop_value):
         return (
             start_value.time() == time(0, 0, 0)
             and stop_value.time() == time(23, 59, 59)
         )
-
-    def _fni_get_public_holiday_event_duration_hours(self):
-        self.ensure_one()
-        return round((self.date_to - self.date_from).total_seconds() / 3600, 2)
 
     def _fni_get_linked_public_holiday_events(self):
         event_model = self.env['calendar.event']
@@ -123,20 +117,16 @@ class ResourceCalendarLeaves(models.Model):
 
     def _fni_prepare_public_holiday_calendar_event_vals(self):
         self.ensure_one()
-        start_value, stop_value = self._fni_get_public_holiday_event_datetimes()
-        is_allday = self._fni_is_public_holiday_allday(start_value, stop_value)
+        local_start, local_stop = self._fni_get_public_holiday_local_datetimes()
+        is_allday = self._fni_is_public_holiday_allday(local_start, local_stop)
         calendar_label = self.calendar_id.display_name or _('All Working Hours')
-        return {
+        vals = {
             'name': self.name or _('Public Holiday'),
             'description': _(
                 'Managed from Time Off > Configuration > Public Holidays.\nWorking Hours: %(calendar)s',
                 calendar=calendar_label,
             ),
             'user_id': False,
-            'start': start_value,
-            'stop': stop_value,
-            'duration': 0.0 if is_allday else self._fni_get_public_holiday_event_duration_hours(),
-            'allday': is_allday,
             'event_tz': self._fni_get_public_holiday_event_timezone(),
             'privacy': 'confidential',
             'show_as': 'free',
@@ -145,6 +135,23 @@ class ResourceCalendarLeaves(models.Model):
             'fni_visibility_mode': 'public_internal',
             'fni_public_holiday_id': self.id,
         }
+        if is_allday:
+            local_start_date = local_start.date()
+            local_stop_date = local_stop.date()
+            vals.update({
+                'allday': True,
+                'start': datetime.combine(local_start_date, time(0, 0, 0)),
+                'stop': datetime.combine(local_stop_date, time(0, 0, 0)),
+                'start_date': local_start_date,
+                'stop_date': local_stop_date,
+            })
+        else:
+            vals.update({
+                'allday': False,
+                'start': self.date_from,
+                'stop': self.date_to,
+            })
+        return vals
 
     def _fni_sync_public_holiday_calendar_event(self):
         event_model = self.env['calendar.event'].with_context(self._fni_get_public_holiday_sync_context())
