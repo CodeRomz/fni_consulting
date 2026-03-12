@@ -128,7 +128,7 @@ class ResourceCalendarLeaves(models.Model):
                 'Managed from Time Off > Configuration > Public Holidays.\nWorking Hours: %(calendar)s',
                 calendar=calendar_label,
             ),
-            'user_id': False,
+            'user_id': self.create_uid.id or self.env.user.id,
             'event_tz': self._fni_get_public_holiday_event_timezone(),
             'privacy': 'confidential',
             'show_as': 'busy',
