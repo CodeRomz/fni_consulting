@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
+from odoo.osv import expression
 
 
 class CalendarEvent(models.Model):
@@ -141,6 +142,15 @@ class CalendarEvent(models.Model):
             vals["fni_shared_user_ids"] = [fields.Command.clear()]
         return vals
 
+    def _fni_prepare_public_holiday_mirror_vals(self, vals):
+        vals = dict(vals)
+        vals["user_id"] = False
+        vals["partner_ids"] = [fields.Command.clear()]
+        vals["attendee_ids"] = [fields.Command.clear()]
+        if "need_sync_m" in self._fields:
+            vals["need_sync_m"] = False
+        return vals
+
     @api.depends("user_id")
     @api.depends_context("uid")
     def _compute_fni_user_is_organizer(self):
@@ -224,10 +234,64 @@ class CalendarEvent(models.Model):
         for event in self.filtered("fni_public_holiday_id"):
             event.user_can_edit = False
 
+    def _get_microsoft_sync_domain(self):
+        domain = super()._get_microsoft_sync_domain()
+        return expression.AND([domain, [("fni_public_holiday_id", "=", False)]])
+
+    def _microsoft_values(self, fields_to_sync, initial_values=None):
+        self.ensure_one()
+        if self.fni_public_holiday_id:
+            return {}
+        return super()._microsoft_values(fields_to_sync, initial_values=initial_values or {})
+
+    def _write_from_microsoft(self, microsoft_event, vals):
+        public_holiday_events = self.filtered("fni_public_holiday_id")
+        if public_holiday_events:
+            reset_vals = {}
+            if "need_sync_m" in public_holiday_events._fields:
+                reset_vals["need_sync_m"] = False
+            if reset_vals:
+                public_holiday_events.with_context(
+                    dont_notify=True,
+                    no_calendar_sync=True,
+                    fni_public_holiday_sync=True,
+                ).write(reset_vals)
+        remaining_events = self - public_holiday_events
+        if remaining_events:
+            return super(CalendarEvent, remaining_events)._write_from_microsoft(microsoft_event, vals)
+        return True
+
+    def _cancel_microsoft(self):
+        public_holiday_events = self.filtered("fni_public_holiday_id")
+        if public_holiday_events:
+            reset_vals = {}
+            if "need_sync_m" in public_holiday_events._fields:
+                reset_vals["need_sync_m"] = False
+            if "microsoft_id" in public_holiday_events._fields:
+                reset_vals["microsoft_id"] = False
+            if "ms_universal_event_id" in public_holiday_events._fields:
+                reset_vals["ms_universal_event_id"] = False
+            if reset_vals:
+                public_holiday_events.with_context(
+                    dont_notify=True,
+                    no_calendar_sync=True,
+                    fni_public_holiday_sync=True,
+                ).write(reset_vals)
+        remaining_events = self - public_holiday_events
+        if remaining_events:
+            return super(CalendarEvent, remaining_events)._cancel_microsoft()
+        return True
+
     @api.model_create_multi
     def create(self, vals_list):
         self._fni_check_public_holiday_assignment_access(vals_list=vals_list)
         vals_list = [self._fni_prepare_create_vals(vals) for vals in vals_list]
+        vals_list = [
+            self._fni_prepare_public_holiday_mirror_vals(vals)
+            if vals.get("fni_public_holiday_id")
+            else vals
+            for vals in vals_list
+        ]
         return super().create(vals_list)
 
     def write(self, vals):
@@ -235,6 +299,8 @@ class CalendarEvent(models.Model):
         self._fni_check_public_holiday_write_access()
         self._fni_check_owner_write_access()
         vals = self._fni_prepare_write_vals(vals)
+        if self.filtered("fni_public_holiday_id"):
+            vals = self._fni_prepare_public_holiday_mirror_vals(vals)
         return super().write(vals)
 
     def unlink(self):

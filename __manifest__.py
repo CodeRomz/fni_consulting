@@ -6,10 +6,11 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.7.2',
+    'version': '18.0.1.7.3',
 
     'category': 'Custom',
     'depends': ['calendar',
+                'microsoft_calendar',
                 'hr_timesheet',
                 'hr_timesheet_sheet',
                 'project_timesheet_time_control',

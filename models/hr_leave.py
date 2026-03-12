@@ -68,6 +68,7 @@ class ResourceCalendarLeaves(models.Model):
             **self.env.context,
             'fni_public_holiday_sync': True,
             'calendar_no_videocall': True,
+            'no_calendar_sync': True,
             'mail_create_nolog': True,
             'mail_create_nosubscribe': True,
             'mail_notrack': True,
@@ -92,7 +93,7 @@ class ResourceCalendarLeaves(models.Model):
 
     def _fni_get_public_holiday_event_timezone(self):
         self.ensure_one()
-        return self.calendar_id.tz or self.company_id.resource_calendar_id.tz or self.env.user.tz or 'UTC'
+        return self.calendar_id.tz or self.company_id.resource_calendar_id.tz or 'UTC'
 
     def _fni_get_public_holiday_local_datetimes(self):
         self.ensure_one()
@@ -118,7 +119,8 @@ class ResourceCalendarLeaves(models.Model):
     def _fni_prepare_public_holiday_calendar_event_vals(self):
         self.ensure_one()
         local_start, local_stop = self._fni_get_public_holiday_local_datetimes()
-        is_allday = self._fni_is_public_holiday_allday(local_start, local_stop)
+        local_start_date = local_start.date()
+        local_stop_date = max(local_stop.date(), local_start_date)
         calendar_label = self.calendar_id.display_name or _('All Working Hours')
         vals = {
             'name': self.name or _('Public Holiday'),
@@ -129,28 +131,21 @@ class ResourceCalendarLeaves(models.Model):
             'user_id': False,
             'event_tz': self._fni_get_public_holiday_event_timezone(),
             'privacy': 'confidential',
-            'show_as': 'free',
+            'show_as': 'busy',
             'res_model_id': self.env['ir.model']._get_id('resource.calendar.leaves'),
             'res_id': self.id,
             'fni_visibility_mode': 'public_internal',
             'fni_public_holiday_id': self.id,
+            'allday': True,
+            'start': datetime.combine(local_start_date, time(0, 0, 0)),
+            'stop': datetime.combine(local_stop_date, time(0, 0, 0)),
+            'start_date': local_start_date,
+            'stop_date': local_stop_date,
+            'partner_ids': [fields.Command.clear()],
+            'attendee_ids': [fields.Command.clear()],
         }
-        if is_allday:
-            local_start_date = local_start.date()
-            local_stop_date = local_stop.date()
-            vals.update({
-                'allday': True,
-                'start': datetime.combine(local_start_date, time(0, 0, 0)),
-                'stop': datetime.combine(local_stop_date, time(0, 0, 0)),
-                'start_date': local_start_date,
-                'stop_date': local_stop_date,
-            })
-        else:
-            vals.update({
-                'allday': False,
-                'start': self.date_from,
-                'stop': self.date_to,
-            })
+        if 'need_sync_m' in self.env['calendar.event']._fields:
+            vals['need_sync_m'] = False
         return vals
 
     def _fni_sync_public_holiday_calendar_event(self):
