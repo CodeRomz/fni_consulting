@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import time, timedelta
 
 import pytz
 
@@ -99,6 +99,8 @@ class ResourceCalendarLeaves(models.Model):
         event_tz = pytz.timezone(self._fni_get_public_holiday_event_timezone())
         start_value = UTC.localize(self.date_from).astimezone(event_tz).replace(tzinfo=None)
         stop_value = UTC.localize(self.date_to).astimezone(event_tz).replace(tzinfo=None)
+        if not self._fni_is_public_holiday_allday(start_value, stop_value):
+            stop_value = start_value + timedelta(hours=self._fni_get_public_holiday_event_duration_hours())
         return start_value, stop_value
 
     def _fni_is_public_holiday_allday(self, start_value, stop_value):
@@ -106,6 +108,10 @@ class ResourceCalendarLeaves(models.Model):
             start_value.time() == time(0, 0, 0)
             and stop_value.time() == time(23, 59, 59)
         )
+
+    def _fni_get_public_holiday_event_duration_hours(self):
+        self.ensure_one()
+        return round((self.date_to - self.date_from).total_seconds() / 3600, 2)
 
     def _fni_get_linked_public_holiday_events(self):
         event_model = self.env['calendar.event']
@@ -118,6 +124,7 @@ class ResourceCalendarLeaves(models.Model):
     def _fni_prepare_public_holiday_calendar_event_vals(self):
         self.ensure_one()
         start_value, stop_value = self._fni_get_public_holiday_event_datetimes()
+        is_allday = self._fni_is_public_holiday_allday(start_value, stop_value)
         calendar_label = self.calendar_id.display_name or _('All Working Hours')
         return {
             'name': self.name or _('Public Holiday'),
@@ -128,7 +135,8 @@ class ResourceCalendarLeaves(models.Model):
             'user_id': False,
             'start': start_value,
             'stop': stop_value,
-            'allday': self._fni_is_public_holiday_allday(start_value, stop_value),
+            'duration': 0.0 if is_allday else self._fni_get_public_holiday_event_duration_hours(),
+            'allday': is_allday,
             'event_tz': self._fni_get_public_holiday_event_timezone(),
             'privacy': 'confidential',
             'show_as': 'free',
