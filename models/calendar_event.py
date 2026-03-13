@@ -4,6 +4,8 @@ import pytz
 from odoo import api, fields, models, _, tools
 from odoo.exceptions import AccessError
 from odoo.osv import expression
+from odoo.addons.microsoft_account.models.microsoft_service import TIMEOUT
+from odoo.addons.microsoft_calendar.models.microsoft_sync import after_commit, microsoft_calendar_token
 
 _logger = logging.getLogger(__name__)
 
@@ -216,6 +218,13 @@ class CalendarEvent(models.Model):
             timezone_name = "UTC"
         return timezone_name
 
+    def _fni_get_shadow_sync_user(self):
+        self.ensure_one()
+        shadow_self = self.sudo().exists()
+        if not shadow_self or shadow_self.fni_public_holiday_kind != "shadow" or not shadow_self.fni_public_holiday_id:
+            return self.env["res.users"]
+        return shadow_self.fni_public_holiday_user_id or shadow_self.user_id
+
     @api.depends("user_id")
     @api.depends_context("uid")
     def _compute_fni_user_is_organizer(self):
@@ -312,12 +321,114 @@ class CalendarEvent(models.Model):
             ]
         )
 
+    def _get_event_user_m(self, user_id=None):
+        self.ensure_one()
+        if user_id is None:
+            shadow_sync_user = self._fni_get_shadow_sync_user()
+            if shadow_sync_user:
+                current_user_status = self.env.user._get_microsoft_calendar_token()
+                if (
+                    current_user_status
+                    and self.with_user(shadow_sync_user).sudo()._check_microsoft_sync_status()
+                ):
+                    return self.env["res.users"].browse(shadow_sync_user.id)
+                return self.env.user
+        return super()._get_event_user_m(user_id=user_id)
+
     @api.model
     def _restart_microsoft_sync(self):
         domain = self._get_microsoft_sync_domain()
         self.sudo().with_context(dont_notify=True).search(domain).write({
             "need_sync_m": True,
         })
+
+    @after_commit
+    def _microsoft_insert(self, values, timeout=TIMEOUT):
+        if not values:
+            return
+        shadow_sync_user = self._fni_get_shadow_sync_user()
+        if not shadow_sync_user:
+            microsoft_service = self._get_microsoft_service()
+            sender_user = self._get_event_user_m()
+            with microsoft_calendar_token(sender_user.sudo()) as token:
+                if token:
+                    self._ensure_attendees_have_email()
+                    event_id, uid = microsoft_service.insert(values, token=token, timeout=timeout)
+                    self.with_context(dont_notify=True).write(
+                        {
+                            "microsoft_id": event_id,
+                            "ms_universal_event_id": uid,
+                            "need_sync_m": False,
+                        }
+                    )
+            return
+        protected_self = self.sudo()
+        microsoft_service = protected_self._get_microsoft_service()
+        sender_user = protected_self._get_event_user_m()
+        protected_self._fni_log_public_holiday_sync(
+            "shadow_microsoft_insert",
+            event_id=protected_self.id,
+            holiday_id=protected_self.fni_public_holiday_id.id,
+            target_user_id=shadow_sync_user.id,
+            name=protected_self.name,
+        )
+        with microsoft_calendar_token(sender_user.sudo()) as token:
+            if token:
+                protected_self._ensure_attendees_have_email()
+                event_id, uid = microsoft_service.insert(values, token=token, timeout=timeout)
+                protected_self.with_context(
+                    dont_notify=True,
+                    no_calendar_sync=True,
+                    fni_public_holiday_sync=True,
+                ).write(
+                    {
+                        "microsoft_id": event_id,
+                        "ms_universal_event_id": uid,
+                        "need_sync_m": False,
+                    }
+                )
+
+    @after_commit
+    def _microsoft_patch(self, user_id, event_id, values, timeout=TIMEOUT):
+        shadow_sync_user = self._fni_get_shadow_sync_user()
+        if not shadow_sync_user:
+            microsoft_service = self._get_microsoft_service()
+            sender_user = self._get_event_user_m(user_id=user_id)
+            with microsoft_calendar_token(sender_user.sudo()) as token:
+                if token:
+                    self._ensure_attendees_have_email()
+                    res = microsoft_service.patch(event_id, values, token=token, timeout=timeout)
+                    self.with_context(dont_notify=True).write(
+                        {
+                            "need_sync_m": not res,
+                        }
+                    )
+            return
+        protected_self = self.sudo()
+        microsoft_service = protected_self._get_microsoft_service()
+        sender_user = protected_self._get_event_user_m(user_id=user_id)
+        protected_self._fni_log_public_holiday_sync(
+            "shadow_microsoft_patch",
+            event_id=protected_self.id,
+            holiday_id=protected_self.fni_public_holiday_id.id,
+            target_user_id=shadow_sync_user.id,
+            microsoft_id=event_id,
+            fields_to_sync=sorted(values.keys()),
+            name=protected_self.name,
+        )
+        with microsoft_calendar_token(sender_user.sudo()) as token:
+            if token:
+                protected_self._ensure_attendees_have_email()
+                res = microsoft_service.patch(event_id, values, token=token, timeout=timeout)
+                protected_self.with_context(
+                    dont_notify=True,
+                    no_calendar_sync=True,
+                    fni_public_holiday_sync=True,
+                ).write(
+                    {
+                        "need_sync_m": not res,
+                    }
+                )
 
     def _microsoft_values(self, fields_to_sync, initial_values=None):
         self.ensure_one()
