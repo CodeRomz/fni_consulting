@@ -108,14 +108,38 @@ class ResourceCalendarLeaves(models.Model):
         )
 
     def _fni_get_linked_public_holiday_events(self):
-        event_model = self.env['calendar.event']
-        events = self.mapped('calendar_event_id').exists()
-        missing_source_ids = self.filtered(lambda leave: not leave.calendar_event_id).ids
-        if missing_source_ids:
-            events |= event_model.search([('fni_public_holiday_id', 'in', missing_source_ids)])
-        return events
+        event_model = self.env['calendar.event'].sudo()
+        return (
+            event_model.browse(self.mapped('calendar_event_id').ids)
+            | event_model.search([('fni_public_holiday_id', 'in', self.ids)])
+        ).exists()
 
-    def _fni_prepare_public_holiday_calendar_event_vals(self):
+    def _fni_get_public_holiday_target_users(self):
+        self.ensure_one()
+        employees = self.env['hr.employee']
+        resource_calendars = self._get_resource_calendars()
+        employees_groups = self.env['hr.employee']._read_group(
+            [
+                ('resource_calendar_id', 'in', resource_calendars.ids),
+                ('company_id', '=', self.company_id.id),
+            ],
+            ['resource_calendar_id'],
+            ['id:recordset'],
+        )
+        mapped_employee = {
+            resource_calendar.id: grouped_employees
+            for resource_calendar, grouped_employees in employees_groups
+        }
+        if self.calendar_id:
+            employees |= mapped_employee.get(self.calendar_id.id, self.env['hr.employee'])
+        else:
+            for calendar_id in resource_calendars.ids:
+                employees |= mapped_employee.get(calendar_id, self.env['hr.employee'])
+        return employees.mapped('user_id').filtered(
+            lambda user: user.active and user.partner_id and user._is_internal()
+        )
+
+    def _fni_prepare_public_holiday_display_event_vals(self, target_users):
         self.ensure_one()
         local_start, local_stop = self._fni_get_public_holiday_local_datetimes()
         local_start_date = local_start.date()
@@ -135,32 +159,140 @@ class ResourceCalendarLeaves(models.Model):
             'show_as': 'busy',
             'res_model_id': self.env['ir.model']._get_id('resource.calendar.leaves'),
             'res_id': self.id,
-            'fni_visibility_mode': 'public_internal',
+            'fni_visibility_mode': 'shared',
             'fni_public_holiday_id': self.id,
+            'fni_public_holiday_kind': 'display',
             'allday': True,
             'start': datetime.combine(local_start_date, time(0, 0, 0)),
             'stop': datetime.combine(local_stop_date, time(0, 0, 0)),
             'start_date': local_start_date,
             'stop_date': local_stop_date,
             'partner_ids': [fields.Command.set(organizer_partner.ids)],
+            'fni_shared_user_ids': [fields.Command.set(target_users.ids)],
         }
+        event_model = self.env['calendar.event']
+        if 'need_sync_m' in event_model._fields:
+            vals['need_sync_m'] = False
         return vals
 
+    def _fni_prepare_public_holiday_shadow_event_vals(self, target_user):
+        self.ensure_one()
+        local_start, local_stop = self._fni_get_public_holiday_local_datetimes()
+        local_start_date = local_start.date()
+        local_stop_date = max(local_stop.date(), local_start_date)
+        calendar_label = self.calendar_id.display_name or _('All Working Hours')
+        return {
+            'name': self.name or _('Public Holiday'),
+            'description': _(
+                'Managed from Time Off > Configuration > Public Holidays.\nWorking Hours: %(calendar)s',
+                calendar=calendar_label,
+            ),
+            'user_id': target_user.id,
+            'event_tz': self._fni_get_public_holiday_event_timezone(),
+            'privacy': 'confidential',
+            'show_as': 'busy',
+            'res_model_id': self.env['ir.model']._get_id('resource.calendar.leaves'),
+            'res_id': self.id,
+            'fni_visibility_mode': 'private',
+            'fni_public_holiday_id': self.id,
+            'fni_public_holiday_kind': 'shadow',
+            'fni_public_holiday_user_id': target_user.id,
+            'allday': True,
+            'start': datetime.combine(local_start_date, time(0, 0, 0)),
+            'stop': datetime.combine(local_stop_date, time(0, 0, 0)),
+            'start_date': local_start_date,
+            'stop_date': local_stop_date,
+            'partner_ids': [fields.Command.set(target_user.partner_id.ids)],
+        }
+
+    def _fni_unlink_public_holiday_events(self, events):
+        display_events = events.filtered(lambda event: event.fni_public_holiday_kind != 'shadow')
+        shadow_events = events.filtered(lambda event: event.fni_public_holiday_kind == 'shadow')
+        if display_events:
+            display_events.with_context(self._fni_get_public_holiday_sync_context()).unlink()
+        for event in shadow_events:
+            sync_user = event.fni_public_holiday_user_id or event.user_id or self.env.user
+            event.with_user(sync_user).sudo().with_context(
+                self._fni_get_public_holiday_sync_context()
+            ).unlink()
+
     def _fni_sync_public_holiday_calendar_event(self):
-        event_model = self.env['calendar.event'].with_context(self._fni_get_public_holiday_sync_context())
         for leave in self.filtered(lambda record: not record.resource_id):
-            event = leave._fni_get_linked_public_holiday_events()[:1]
-            vals = leave._fni_prepare_public_holiday_calendar_event_vals()
-            if event:
-                event.write(vals)
+            linked_events = leave._fni_get_linked_public_holiday_events()
+            target_users = leave._fni_get_public_holiday_target_users()
+            shadow_target_users = target_users.filtered(lambda user: user.partner_id.email)
+
+            display_candidates = linked_events.filtered(
+                lambda event: event.fni_public_holiday_kind == 'display'
+            )
+            legacy_candidates = linked_events.filtered(
+                lambda event: not event.fni_public_holiday_kind
+            )
+            display_event = (display_candidates or legacy_candidates)[:1]
+            extra_display_events = (display_candidates - display_event) | (legacy_candidates - display_event)
+            if extra_display_events:
+                leave._fni_unlink_public_holiday_events(extra_display_events)
+
+            display_vals = leave._fni_prepare_public_holiday_display_event_vals(target_users)
+            display_event_model = self.env['calendar.event'].with_context(
+                leave._fni_get_public_holiday_sync_context()
+            )
+            if display_event:
+                display_event.with_context(leave._fni_get_public_holiday_sync_context()).write(display_vals)
             else:
-                event = event_model.create(vals)
-                leave.with_context(fni_public_holiday_sync=True).write({'calendar_event_id': event.id})
+                display_event = display_event_model.create(display_vals)
+            if leave.calendar_event_id != display_event:
+                leave.with_context(fni_public_holiday_sync=True).write(
+                    {'calendar_event_id': display_event.id}
+                )
+
+            shadow_events = linked_events.filtered(
+                lambda event: event.fni_public_holiday_kind == 'shadow'
+            )
+            duplicate_shadow_events = self.env['calendar.event'].sudo()
+            shadow_by_user_id = {}
+            seen_shadow_user_ids = set()
+            for shadow_event in shadow_events.sorted('id'):
+                shadow_user = shadow_event.fni_public_holiday_user_id
+                if not shadow_user:
+                    duplicate_shadow_events |= shadow_event
+                    continue
+                if shadow_user.id in seen_shadow_user_ids:
+                    duplicate_shadow_events |= shadow_event
+                    continue
+                seen_shadow_user_ids.add(shadow_user.id)
+                shadow_by_user_id[shadow_user.id] = shadow_event
+            if duplicate_shadow_events:
+                leave._fni_unlink_public_holiday_events(duplicate_shadow_events)
+                shadow_events -= duplicate_shadow_events
+                shadow_by_user_id = {
+                    event.fni_public_holiday_user_id.id: event
+                    for event in shadow_events
+                    if event.fni_public_holiday_user_id
+                }
+            target_user_ids = set(shadow_target_users.ids)
+            obsolete_shadow_events = shadow_events.filtered(
+                lambda event: event.fni_public_holiday_user_id.id not in target_user_ids
+            )
+            if obsolete_shadow_events:
+                leave._fni_unlink_public_holiday_events(obsolete_shadow_events)
+            for target_user in shadow_target_users:
+                shadow_vals = leave._fni_prepare_public_holiday_shadow_event_vals(target_user)
+                shadow_event = shadow_by_user_id.get(target_user.id)
+                shadow_env = self.env['calendar.event'].with_user(target_user).sudo().with_context(
+                    leave._fni_get_public_holiday_sync_context()
+                )
+                if shadow_event:
+                    shadow_event.with_user(target_user).sudo().with_context(
+                        leave._fni_get_public_holiday_sync_context()
+                    ).write(shadow_vals)
+                else:
+                    shadow_env.create(shadow_vals)
 
     def _fni_remove_public_holiday_calendar_event(self):
         events = self._fni_get_linked_public_holiday_events()
         if events:
-            events.with_context(self._fni_get_public_holiday_sync_context()).unlink()
+            self._fni_unlink_public_holiday_events(events)
 
     def _timesheet_prepare_line_values(
         self, index, employee, work_hours_data, day_date, work_hours_count
@@ -236,5 +368,5 @@ class ResourceCalendarLeaves(models.Model):
         linked_events = public_holidays._fni_get_linked_public_holiday_events()
         result = super().unlink()
         if linked_events:
-            linked_events.with_context(public_holidays._fni_get_public_holiday_sync_context()).unlink()
+            public_holidays._fni_unlink_public_holiday_events(linked_events)
         return result

@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
+from odoo.osv import expression
 
 
 class CalendarEvent(models.Model):
@@ -8,6 +9,23 @@ class CalendarEvent(models.Model):
     fni_public_holiday_id = fields.Many2one(
         "resource.calendar.leaves",
         string="Public Holiday Source",
+        copy=False,
+        index=True,
+        readonly=True,
+    )
+    fni_public_holiday_kind = fields.Selection(
+        [
+            ("display", "Display"),
+            ("shadow", "Shadow"),
+        ],
+        string="Public Holiday Event Kind",
+        copy=False,
+        index=True,
+        readonly=True,
+    )
+    fni_public_holiday_user_id = fields.Many2one(
+        "res.users",
+        string="Public Holiday Target User",
         copy=False,
         index=True,
         readonly=True,
@@ -71,13 +89,18 @@ class CalendarEvent(models.Model):
     def _fni_check_public_holiday_assignment_access(self, vals_list=None, vals=None):
         if self._fni_bypass_public_holiday_guards():
             return
-        if vals_list is not None and any("fni_public_holiday_id" in entry for entry in vals_list):
+        protected_keys = {
+            "fni_public_holiday_id",
+            "fni_public_holiday_kind",
+            "fni_public_holiday_user_id",
+        }
+        if vals_list is not None and any(protected_keys.intersection(entry) for entry in vals_list):
             raise AccessError(
                 _(
                     "Public holiday calendar events are managed from Time Off > Configuration > Public Holidays."
                 )
             )
-        if vals is not None and "fni_public_holiday_id" in vals:
+        if vals is not None and protected_keys.intersection(vals):
             raise AccessError(
                 _(
                     "Public holiday calendar events are managed from Time Off > Configuration > Public Holidays."
@@ -228,14 +251,30 @@ class CalendarEvent(models.Model):
             event.user_can_edit = False
 
     def _get_microsoft_sync_domain(self):
-        return super()._get_microsoft_sync_domain()
+        return expression.AND(
+            [
+                super()._get_microsoft_sync_domain(),
+                [("fni_public_holiday_kind", "!=", "display")],
+            ]
+        )
+
+    @api.model
+    def _restart_microsoft_sync(self):
+        domain = self._get_microsoft_sync_domain()
+        self.sudo().with_context(dont_notify=True).search(domain).write({
+            "need_sync_m": True,
+        })
 
     def _microsoft_values(self, fields_to_sync, initial_values=None):
         self.ensure_one()
+        if self.fni_public_holiday_kind == "display":
+            return {}
         return super()._microsoft_values(fields_to_sync, initial_values=initial_values or {})
 
     def _write_from_microsoft(self, microsoft_event, vals):
-        public_holiday_events = self.filtered("fni_public_holiday_id")
+        public_holiday_events = self.filtered(
+            lambda event: event.fni_public_holiday_id and event.fni_public_holiday_kind == "shadow"
+        )
         if public_holiday_events:
             reset_vals = {}
             if "need_sync_m" in public_holiday_events._fields:
@@ -252,7 +291,9 @@ class CalendarEvent(models.Model):
         return True
 
     def _cancel_microsoft(self):
-        public_holiday_events = self.filtered("fni_public_holiday_id")
+        public_holiday_events = self.filtered(
+            lambda event: event.fni_public_holiday_id and event.fni_public_holiday_kind == "shadow"
+        )
         if public_holiday_events:
             reset_vals = {}
             if "need_sync_m" in public_holiday_events._fields:
