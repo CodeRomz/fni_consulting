@@ -72,6 +72,3 @@
     'installable': True,
     'application': False,
 }
-
-
-
