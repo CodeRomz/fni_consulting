@@ -181,7 +181,7 @@ class ResourceCalendarLeaves(models.Model):
         local_start_date = local_start.date()
         local_stop_date = max(local_stop.date(), local_start_date)
         calendar_label = self.calendar_id.display_name or _('All Working Hours')
-        return {
+        vals = {
             'name': self.name or _('Public Holiday'),
             'description': _(
                 'Managed from Time Off > Configuration > Public Holidays.\nWorking Hours: %(calendar)s',
@@ -204,6 +204,12 @@ class ResourceCalendarLeaves(models.Model):
             'stop_date': local_stop_date,
             'partner_ids': [fields.Command.set(target_user.partner_id.ids)],
         }
+        event_model = self.env['calendar.event']
+        if 'need_sync_m' in event_model._fields:
+            # Shadow events are the Outlook-facing copies; requeue them explicitly
+            # on every source-side sync so Time Off edits propagate reliably.
+            vals['need_sync_m'] = True
+        return vals
 
     def _fni_unlink_public_holiday_events(self, events):
         display_events = events.filtered(lambda event: event.fni_public_holiday_kind != 'shadow')
