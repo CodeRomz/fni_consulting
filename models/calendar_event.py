@@ -279,7 +279,7 @@ class CalendarEvent(models.Model):
                 event.has_timesheet_entry = False
             return
         lines = self.env["account.analytic.line"]
-        if not lines.check_access_rights("read", raise_exception=False):
+        if not lines.has_access("read"):
             for event in self:
                 event.has_timesheet_entry = False
             return
