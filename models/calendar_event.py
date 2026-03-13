@@ -1,3 +1,5 @@
+import pytz
+
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError
 from odoo.osv import expression
@@ -177,6 +179,21 @@ class CalendarEvent(models.Model):
                 vals.pop(field_name, None)
         return vals
 
+    def _fni_get_public_holiday_microsoft_timezone(self):
+        self.ensure_one()
+        timezone_name = (
+            self.fni_public_holiday_user_id.tz
+            or self.user_id.tz
+            or self.fni_public_holiday_id.calendar_id.tz
+            or self.fni_public_holiday_id.company_id.resource_calendar_id.tz
+            or "UTC"
+        )
+        try:
+            pytz.timezone(timezone_name)
+        except Exception:
+            timezone_name = "UTC"
+        return timezone_name
+
     @api.depends("user_id")
     @api.depends_context("uid")
     def _compute_fni_user_is_organizer(self):
@@ -284,7 +301,30 @@ class CalendarEvent(models.Model):
         self.ensure_one()
         if self.fni_public_holiday_kind == "display":
             return {}
-        return super()._microsoft_values(fields_to_sync, initial_values=initial_values or {})
+        values = super()._microsoft_values(fields_to_sync, initial_values=initial_values or {})
+        if (
+            self.fni_public_holiday_kind == "shadow"
+            and self.fni_public_holiday_id
+            and self.allday
+            and any(field_name in fields_to_sync for field_name in ("allday", "start", "date_end", "stop"))
+        ):
+            timezone_name = self._fni_get_public_holiday_microsoft_timezone()
+            start_date = self.start_date
+            stop_date = self.stop_date or start_date
+            values.update(
+                {
+                    "start": {
+                        "dateTime": start_date.isoformat(),
+                        "timeZone": timezone_name,
+                    },
+                    "end": {
+                        "dateTime": fields.Date.add(stop_date, days=1).isoformat(),
+                        "timeZone": timezone_name,
+                    },
+                    "isAllDay": True,
+                }
+            )
+        return values
 
     def _write_from_microsoft(self, microsoft_event, vals):
         public_holiday_events = self.filtered(
