@@ -75,6 +75,25 @@ class ResourceCalendarLeaves(models.Model):
             'tracking_disable': True,
         }
 
+    def _fni_public_holiday_log_enabled(self):
+        return tools.str2bool(
+            self.env['ir.config_parameter'].sudo().get_param(
+                'fni_consulting.public_holiday_sync_log',
+                'False',
+            )
+        )
+
+    def _fni_log_public_holiday_sync(self, message, **details):
+        if not self._fni_public_holiday_log_enabled():
+            return
+        details_text = ", ".join(
+            f"{key}={details[key]!r}" for key in sorted(details)
+        )
+        if details_text:
+            _logger.info("FNI Public Holiday Sync | %s | %s", message, details_text)
+        else:
+            _logger.info("FNI Public Holiday Sync | %s", message)
+
     def _fni_ensure_public_holiday_manager_access(self, vals_list=None, vals=None):
         if self.env.su or self.env.context.get('fni_public_holiday_sync'):
             return
@@ -214,10 +233,23 @@ class ResourceCalendarLeaves(models.Model):
     def _fni_unlink_public_holiday_events(self, events):
         display_events = events.filtered(lambda event: event.fni_public_holiday_kind != 'shadow')
         shadow_events = events.filtered(lambda event: event.fni_public_holiday_kind == 'shadow')
+        self._fni_log_public_holiday_sync(
+            'unlink_generated_events',
+            leave_ids=self.ids,
+            display_event_ids=display_events.ids,
+            shadow_event_ids=shadow_events.ids,
+        )
         if display_events:
             display_events.with_context(self._fni_get_public_holiday_sync_context()).unlink()
         for event in shadow_events:
             sync_user = event.fni_public_holiday_user_id or event.user_id or self.env.user
+            self._fni_log_public_holiday_sync(
+                'unlink_shadow_event',
+                leave_ids=self.ids,
+                event_id=event.id,
+                sync_user_id=sync_user.id,
+                microsoft_id=getattr(event, 'microsoft_id', False),
+            )
             event.with_user(sync_user).sudo().with_context(
                 self._fni_get_public_holiday_sync_context()
             ).unlink()
@@ -227,6 +259,14 @@ class ResourceCalendarLeaves(models.Model):
             linked_events = leave._fni_get_linked_public_holiday_events()
             target_users = leave._fni_get_public_holiday_target_users()
             shadow_target_users = target_users.filtered(lambda user: user.partner_id.email)
+            leave._fni_log_public_holiday_sync(
+                'sync_start',
+                leave_id=leave.id,
+                leave_name=leave.name,
+                linked_event_ids=linked_events.ids,
+                target_user_ids=target_users.ids,
+                shadow_target_user_ids=shadow_target_users.ids,
+            )
 
             display_candidates = linked_events.filtered(
                 lambda event: event.fni_public_holiday_kind == 'display'
@@ -244,9 +284,22 @@ class ResourceCalendarLeaves(models.Model):
                 leave._fni_get_public_holiday_sync_context()
             )
             if display_event:
+                leave._fni_log_public_holiday_sync(
+                    'write_display_event',
+                    leave_id=leave.id,
+                    event_id=display_event.id,
+                    user_id=display_event.user_id.id,
+                    microsoft_id=getattr(display_event, 'microsoft_id', False),
+                )
                 display_event.with_context(leave._fni_get_public_holiday_sync_context()).write(display_vals)
             else:
                 display_event = display_event_model.create(display_vals)
+                leave._fni_log_public_holiday_sync(
+                    'create_display_event',
+                    leave_id=leave.id,
+                    event_id=display_event.id,
+                    user_id=display_event.user_id.id,
+                )
             if leave.calendar_event_id != display_event:
                 leave.with_context(fni_public_holiday_sync=True).write(
                     {'calendar_event_id': display_event.id}
@@ -289,11 +342,31 @@ class ResourceCalendarLeaves(models.Model):
                     leave._fni_get_public_holiday_sync_context()
                 )
                 if shadow_event:
+                    leave._fni_log_public_holiday_sync(
+                        'write_shadow_event',
+                        leave_id=leave.id,
+                        target_user_id=target_user.id,
+                        target_login=target_user.login,
+                        event_id=shadow_event.id,
+                        microsoft_id=getattr(shadow_event, 'microsoft_id', False),
+                        need_sync_m=getattr(shadow_event, 'need_sync_m', False),
+                        shadow_name=shadow_vals.get('name'),
+                    )
                     shadow_event.with_user(target_user).sudo().with_context(
                         leave._fni_get_public_holiday_sync_context()
                     ).write(shadow_vals)
                 else:
-                    shadow_env.create(shadow_vals)
+                    new_shadow_event = shadow_env.create(shadow_vals)
+                    leave._fni_log_public_holiday_sync(
+                        'create_shadow_event',
+                        leave_id=leave.id,
+                        target_user_id=target_user.id,
+                        target_login=target_user.login,
+                        event_id=new_shadow_event.id,
+                        microsoft_id=getattr(new_shadow_event, 'microsoft_id', False),
+                        need_sync_m=getattr(new_shadow_event, 'need_sync_m', False),
+                        shadow_name=shadow_vals.get('name'),
+                    )
 
     def _fni_remove_public_holiday_calendar_event(self):
         events = self._fni_get_linked_public_holiday_events()

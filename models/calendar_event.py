@@ -1,8 +1,11 @@
+import logging
 import pytz
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, tools
 from odoo.exceptions import AccessError
 from odoo.osv import expression
+
+_logger = logging.getLogger(__name__)
 
 
 class CalendarEvent(models.Model):
@@ -179,6 +182,25 @@ class CalendarEvent(models.Model):
                 vals.pop(field_name, None)
         return vals
 
+    def _fni_public_holiday_log_enabled(self):
+        return tools.str2bool(
+            self.env["ir.config_parameter"].sudo().get_param(
+                "fni_consulting.public_holiday_sync_log",
+                "False",
+            )
+        )
+
+    def _fni_log_public_holiday_sync(self, message, **details):
+        if not self._fni_public_holiday_log_enabled():
+            return
+        details_text = ", ".join(
+            f"{key}={details[key]!r}" for key in sorted(details)
+        )
+        if details_text:
+            _logger.info("FNI Public Holiday Sync | %s | %s", message, details_text)
+        else:
+            _logger.info("FNI Public Holiday Sync | %s", message)
+
     def _fni_get_public_holiday_microsoft_timezone(self):
         self.ensure_one()
         timezone_name = (
@@ -311,6 +333,19 @@ class CalendarEvent(models.Model):
             timezone_name = self._fni_get_public_holiday_microsoft_timezone()
             start_date = self.start_date
             stop_date = self.stop_date or start_date
+            self._fni_log_public_holiday_sync(
+                "shadow_export_payload",
+                event_id=self.id,
+                holiday_id=self.fni_public_holiday_id.id,
+                target_user_id=(self.fni_public_holiday_user_id or self.user_id).id,
+                microsoft_id=getattr(self, "microsoft_id", False),
+                need_sync_m=getattr(self, "need_sync_m", False),
+                timezone_name=timezone_name,
+                start_date=start_date,
+                stop_date=stop_date,
+                fields_to_sync=sorted(fields_to_sync),
+                name=self.name,
+            )
             values.update(
                 {
                     "start": {
@@ -331,6 +366,16 @@ class CalendarEvent(models.Model):
             lambda event: event.fni_public_holiday_id and event.fni_public_holiday_kind == "shadow"
         )
         if public_holiday_events:
+            for event in public_holiday_events:
+                event._fni_log_public_holiday_sync(
+                    "ignore_inbound_microsoft_update",
+                    event_id=event.id,
+                    holiday_id=event.fni_public_holiday_id.id,
+                    target_user_id=(event.fni_public_holiday_user_id or event.user_id).id,
+                    microsoft_id=getattr(event, "microsoft_id", False),
+                    incoming_name=vals.get("name"),
+                    incoming_vals=sorted(vals.keys()),
+                )
             reset_vals = {}
             if "need_sync_m" in public_holiday_events._fields:
                 reset_vals["need_sync_m"] = True
@@ -350,6 +395,14 @@ class CalendarEvent(models.Model):
             lambda event: event.fni_public_holiday_id and event.fni_public_holiday_kind == "shadow"
         )
         if public_holiday_events:
+            for event in public_holiday_events:
+                event._fni_log_public_holiday_sync(
+                    "ignore_inbound_microsoft_cancel",
+                    event_id=event.id,
+                    holiday_id=event.fni_public_holiday_id.id,
+                    target_user_id=(event.fni_public_holiday_user_id or event.user_id).id,
+                    microsoft_id=getattr(event, "microsoft_id", False),
+                )
             reset_vals = {}
             if "need_sync_m" in public_holiday_events._fields:
                 reset_vals["need_sync_m"] = True
