@@ -54,6 +54,10 @@ class CalendarEvent(models.Model):
         domain=[("share", "=", False)],
         help="Additional internal users who can read this event.",
     )
+    fni_shared_partner_ids = fields.Many2many(
+        "res.partner",
+        compute="_compute_fni_shared_partner_ids",
+    )
     fni_user_is_organizer = fields.Boolean(
         compute="_compute_fni_user_is_organizer",
     )
@@ -165,7 +169,13 @@ class CalendarEvent(models.Model):
         return vals
 
     def _fni_prepare_public_holiday_mirror_vals(self, vals):
-        return dict(vals)
+        vals = dict(vals)
+        # Public-holiday mirrors are plain events; recurrence-only fields trigger
+        # core calendar recurrence validation on write.
+        if vals.get("fni_public_holiday_id") and not vals.get("recurrency"):
+            for field_name in self._get_recurrent_fields():
+                vals.pop(field_name, None)
+        return vals
 
     @api.depends("user_id")
     @api.depends_context("uid")
@@ -173,6 +183,11 @@ class CalendarEvent(models.Model):
         current_user = self.env.user
         for event in self:
             event.fni_user_is_organizer = self._fni_is_organizer(event, current_user)
+
+    @api.depends("fni_shared_user_ids.partner_id")
+    def _compute_fni_shared_partner_ids(self):
+        for event in self:
+            event.fni_shared_partner_ids = event.fni_shared_user_ids.partner_id
 
     @api.depends("partner_ids", "user_id", "fni_visibility_mode", "fni_shared_user_ids")
     @api.depends_context("uid")

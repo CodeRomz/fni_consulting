@@ -8,6 +8,8 @@
             <xpath expr="//calendar" position="inside">
                 <field name="has_timesheet_entry" invisible="1"/>
                 <field name="fni_show_on_user_calendar" invisible="1"/>
+                <field name="fni_visibility_mode" invisible="1"/>
+                <field name="fni_shared_partner_ids" invisible="1"/>
             </xpath>
         </field>
     </record>

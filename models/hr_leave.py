@@ -116,12 +116,11 @@ class ResourceCalendarLeaves(models.Model):
 
     def _fni_get_public_holiday_target_users(self):
         self.ensure_one()
-        employees = self.env['hr.employee']
         resource_calendars = self._get_resource_calendars()
         employees_groups = self.env['hr.employee']._read_group(
             [
                 ('resource_calendar_id', 'in', resource_calendars.ids),
-                ('company_id', '=', self.company_id.id),
+                ('company_id', 'in', self.env.companies.ids),
             ],
             ['resource_calendar_id'],
             ['id:recordset'],
@@ -130,6 +129,7 @@ class ResourceCalendarLeaves(models.Model):
             resource_calendar.id: grouped_employees
             for resource_calendar, grouped_employees in employees_groups
         }
+        employees = self.env['hr.employee']
         if self.calendar_id:
             employees |= mapped_employee.get(self.calendar_id.id, self.env['hr.employee'])
         else:

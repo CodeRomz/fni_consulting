@@ -17,8 +17,10 @@ function isAllFilterActive(section) {
     return Boolean(section?.filters.find((filter) => filter.type === "all")?.active);
 }
 
-function isCurrentUserFilterActive(section) {
-    return Boolean(section?.filters.find((filter) => filter.type === "user")?.active);
+function getActivePartnerIds(section) {
+    return section?.filters
+        ?.filter((filter) => filter.type !== "all" && filter.value && filter.active)
+        .map((filter) => filter.value) || [];
 }
 
 function getNextVirtualRecordId(records) {
@@ -53,18 +55,51 @@ function isViewerOnlyCalendarRecord(record) {
     return isSharedCalendarRecord(record) && !isCurrentUserAttendeeOrOrganizer(record);
 }
 
+function getSelectedSharedPartnerIds(record, activePartnerIds) {
+    const rawRecord = record?.rawRecord;
+    const sharedPartnerIds = rawRecord?.fni_shared_partner_ids || [];
+    const attendeePartnerIds = rawRecord?.partner_ids || [];
+    const organizerPartnerId = rawRecord?.partner_id?.[0];
+    return activePartnerIds.filter((partnerId) => {
+        if (partnerId === organizerPartnerId || attendeePartnerIds.includes(partnerId)) {
+            return false;
+        }
+        if (rawRecord?.fni_visibility_mode === "public_internal") {
+            return true;
+        }
+        return sharedPartnerIds.includes(partnerId);
+    });
+}
+
+function getSharedVisibilityDomain(selectedPartnerIds) {
+    if (!selectedPartnerIds.length) {
+        return [];
+    }
+    return [
+        "|",
+        ["fni_visibility_mode", "=", "public_internal"],
+        "&",
+        ["fni_visibility_mode", "=", "shared"],
+        ["fni_shared_user_ids.partner_id", "in", selectedPartnerIds],
+    ];
+}
+
 patch(AttendeeCalendarModel.prototype, {
     async fetchRecords(data) {
         const records = await super.fetchRecords(data);
         const partnerSection = getPartnerFilterSection(data);
-        if (!partnerSection || isAllFilterActive(partnerSection) || !isCurrentUserFilterActive(partnerSection)) {
+        if (!partnerSection || isAllFilterActive(partnerSection)) {
+            return records;
+        }
+        const activePartnerIds = getActivePartnerIds(partnerSection);
+        if (!activePartnerIds.length) {
             return records;
         }
         const extraDomain = [
             ...this.meta.domain,
             ...this.computeRangeDomain(data),
             ...stripPartnerFilterDomain(this.computeFiltersDomain(data)),
-            ["fni_show_on_user_calendar", "=", true],
+            ...getSharedVisibilityDomain(activePartnerIds),
         ];
         const extraRecords = await this.orm.searchRead(
             this.meta.resModel,
@@ -97,32 +132,36 @@ patch(AttendeeCalendarModel.prototype, {
             }
             return;
         }
-        if (!isCurrentUserFilterActive(partnerSection)) {
+        const activePartnerIds = getActivePartnerIds(partnerSection);
+        if (!activePartnerIds.length) {
             return;
         }
-        const currentPartnerId = user.partnerId;
-        const existingRecordIds = new Set(
+        const existingRecordKeys = new Set(
             Object.values(data.records)
-                .filter((record) => record.attendeeId === currentPartnerId)
-                .map((record) => record.id)
+                .filter((record) => activePartnerIds.includes(record.attendeeId))
+                .map((record) => `${record.id}:${record.attendeeId}`)
         );
         let nextRecordId = getNextVirtualRecordId(data.records);
         for (const record of Object.values(originalRecords)) {
-            if (!record.rawRecord.fni_show_on_user_calendar || existingRecordIds.has(record.id)) {
-                continue;
+            for (const partnerId of getSelectedSharedPartnerIds(record, activePartnerIds)) {
+                const recordKey = `${record.id}:${partnerId}`;
+                if (existingRecordKeys.has(recordKey)) {
+                    continue;
+                }
+                const sharedRecord = {
+                    ...record,
+                    attendeeId: partnerId,
+                    colorIndex: partnerId,
+                    attendeeStatus: "needsAction",
+                    isAlone: false,
+                    isCurrentPartner: partnerId === user.partnerId,
+                    calendarAttendeeId: false,
+                };
+                sharedRecord._recordId = nextRecordId;
+                data.records[nextRecordId] = sharedRecord;
+                existingRecordKeys.add(recordKey);
+                nextRecordId -= 1;
             }
-            const sharedRecord = {
-                ...record,
-                attendeeId: currentPartnerId,
-                colorIndex: currentPartnerId,
-                attendeeStatus: "needsAction",
-                isAlone: false,
-                isCurrentPartner: false,
-                calendarAttendeeId: false,
-            };
-            sharedRecord._recordId = nextRecordId;
-            data.records[nextRecordId] = sharedRecord;
-            nextRecordId -= 1;
         }
     },
 });
@@ -191,14 +230,12 @@ patch(CalendarListModel.prototype, {
                 [[user.userId], filters.user]
             );
             if (!filters.all) {
-                if (filters.user) {
+                if (selectedPartnerIds.length) {
                     params.domain = [
                         "|",
                         ["partner_ids", "in", selectedPartnerIds],
-                        ["fni_show_on_user_calendar", "=", true],
+                        ...getSharedVisibilityDomain(selectedPartnerIds),
                     ];
-                } else {
-                    params.domain.push(["partner_ids", "in", selectedPartnerIds]);
                 }
             }
         }
