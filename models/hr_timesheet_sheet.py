@@ -28,7 +28,7 @@ class Sheet(models.Model):
         return tools.str2bool(
             self.env["ir.config_parameter"].sudo().get_param(
                 _TIMESHEET_SHEET_DEBUG_PARAM,
-                "True",
+                "False",
             )
         )
 
