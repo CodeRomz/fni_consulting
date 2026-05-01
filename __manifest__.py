@@ -6,7 +6,7 @@
     'author': 'CodeRomz',
     'website': "https://github.com/CodeRomz",
     'license': 'LGPL-3',
-    'version': '18.0.1.8.8',
+    'version': '18.0.1.8.9',
 
     'category': 'Custom',
     'depends': ['calendar',

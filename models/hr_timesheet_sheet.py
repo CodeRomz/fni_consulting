@@ -5,6 +5,9 @@ from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
 import logging
 _logger = logging.getLogger(__name__)
 
+_TIMESHEET_SHEET_DEBUG_PARAM = "fni_consulting.timesheet_sheet_debug_log"
+_TIMESHEET_SHEET_DEBUG_ID_LIMIT = 80
+
 _DEADLINE_WEEKDAY_MAP = {
     "0": MO,
     "1": TU,
@@ -19,6 +22,121 @@ _REMINDER_LEVEL_RANK = {"info": 1, "warning": 2, "danger": 3}
 
 class Sheet(models.Model):
     _inherit = "hr_timesheet.sheet"
+
+    @api.model
+    def _fni_timesheet_sheet_debug_enabled(self):
+        return tools.str2bool(
+            self.env["ir.config_parameter"].sudo().get_param(
+                _TIMESHEET_SHEET_DEBUG_PARAM,
+                "False",
+            )
+        )
+
+    @api.model
+    def _fni_debug_limited_ids(self, records):
+        ids = records.ids
+        return ids[:_TIMESHEET_SHEET_DEBUG_ID_LIMIT]
+
+    @api.model
+    def _fni_debug_safe_vals(self, vals):
+        safe_keys = {
+            "state",
+            "date_start",
+            "date_end",
+            "employee_id",
+            "company_id",
+            "project_id",
+            "reviewer_id",
+            "add_line_project_id",
+            "add_line_task_id",
+        }
+        return {
+            key: value if key in safe_keys else "<present>"
+            for key, value in (vals or {}).items()
+        }
+
+    def _fni_debug_line_snapshot(self, lines):
+        self.ensure_one()
+        lines = lines.sudo().exists()
+        unlinked_lines = lines.filtered(lambda line: not line.sheet_id)
+        linked_current_lines = lines.filtered(lambda line: line.sheet_id == self)
+        linked_other_lines = lines - unlinked_lines - linked_current_lines
+        invoiced_lines = lines.filtered("timesheet_invoice_id")
+
+        invoice_states = {}
+        for line in invoiced_lines:
+            state = line.timesheet_invoice_id.state or "unknown"
+            invoice_states[state] = invoice_states.get(state, 0) + 1
+
+        date_counts = {}
+        for line in lines:
+            date_key = fields.Date.to_string(line.date) if line.date else "no_date"
+            date_counts[date_key] = date_counts.get(date_key, 0) + 1
+
+        return {
+            "matched_line_count": len(lines),
+            "matched_line_ids": self._fni_debug_limited_ids(lines),
+            "date_counts": date_counts,
+            "project_ids": sorted(set(lines.project_id.ids)),
+            "task_ids": sorted(set(lines.task_id.ids)),
+            "unlinked_line_count": len(unlinked_lines),
+            "unlinked_line_ids": self._fni_debug_limited_ids(unlinked_lines),
+            "linked_current_line_count": len(linked_current_lines),
+            "linked_current_line_ids": self._fni_debug_limited_ids(linked_current_lines),
+            "linked_other_line_count": len(linked_other_lines),
+            "linked_other_line_ids": self._fni_debug_limited_ids(linked_other_lines),
+            "linked_other_sheet_ids": sorted(set(linked_other_lines.sheet_id.ids)),
+            "invoiced_line_count": len(invoiced_lines),
+            "invoiced_line_ids": self._fni_debug_limited_ids(invoiced_lines),
+            "invoice_states": invoice_states,
+        }
+
+    def _fni_debug_sheet_snapshot(self):
+        self.ensure_one()
+        snapshot = {
+            "sheet_id": self.id,
+            "state": self.state,
+            "employee_id": self.employee_id.id,
+            "user_id": self.user_id.id,
+            "company_id": self.company_id.id,
+            "date_start": fields.Date.to_string(self.date_start) if self.date_start else False,
+            "date_end": fields.Date.to_string(self.date_end) if self.date_end else False,
+            "review_policy": self.review_policy,
+            "current_timesheet_count": len(self.timesheet_ids),
+            "current_timesheet_ids": self._fni_debug_limited_ids(self.timesheet_ids),
+        }
+        if "project_id" in self._fields:
+            snapshot["project_id"] = self.project_id.id
+        return snapshot
+
+    def _fni_log_timesheet_sheet_debug(self, message, **details):
+        if not self._fni_timesheet_sheet_debug_enabled():
+            return
+        details_text = ", ".join(
+            "%s=%r" % (key, details[key]) for key in sorted(details)
+        )
+        _logger.info("FNI Timesheet Sheet Debug | %s | %s", message, details_text)
+
+    def _fni_log_sheet_flow(self, message, include_domain=False, extra=None):
+        if not self._fni_timesheet_sheet_debug_enabled():
+            return
+        for sheet in self:
+            try:
+                details = sheet._fni_debug_sheet_snapshot()
+                if extra:
+                    details.update(extra)
+                if include_domain:
+                    domain = sheet._get_timesheet_sheet_lines_domain()
+                    lines = self.env["account.analytic.line"].sudo().search(domain)
+                    details["domain"] = domain
+                    details.update(sheet._fni_debug_line_snapshot(lines))
+                sheet._fni_log_timesheet_sheet_debug(message, **details)
+            except Exception:
+                _logger.exception(
+                    "FNI Timesheet Sheet Debug | %s_failed | sheet_id=%r",
+                    message,
+                    sheet.id,
+                )
 
     reminder_last_date = fields.Date(
         string="Last Reminder Date",
@@ -66,6 +184,52 @@ class Sheet(models.Model):
         ]
 
         return expression.OR([base_domain, leave_domain])
+
+    def _compute_timesheet_ids(self):
+        self._fni_log_sheet_flow("compute_timesheet_ids_before", include_domain=True)
+        result = super()._compute_timesheet_ids()
+        self._fni_log_sheet_flow("compute_timesheet_ids_after", include_domain=True)
+        return result
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if self._fni_timesheet_sheet_debug_enabled():
+            safe_vals_list = [self._fni_debug_safe_vals(vals) for vals in vals_list]
+            self._fni_log_timesheet_sheet_debug(
+                "create_before",
+                vals_list=safe_vals_list,
+            )
+        sheets = super().create(vals_list)
+        sheets._fni_log_sheet_flow("create_after", include_domain=True)
+        return sheets
+
+    def write(self, vals):
+        extra = {
+            "vals": self._fni_debug_safe_vals(vals),
+            "vals_keys": sorted((vals or {}).keys()),
+        }
+        self._fni_log_sheet_flow("write_before", include_domain=True, extra=extra)
+        result = super().write(vals)
+        self._fni_log_sheet_flow("write_after", include_domain=True, extra=extra)
+        return result
+
+    def action_timesheet_draft(self):
+        self._fni_log_sheet_flow("action_timesheet_draft_before", include_domain=True)
+        result = super().action_timesheet_draft()
+        self._fni_log_sheet_flow("action_timesheet_draft_after", include_domain=True)
+        return result
+
+    def action_timesheet_refuse(self):
+        self._fni_log_sheet_flow("action_timesheet_refuse_before", include_domain=True)
+        result = super().action_timesheet_refuse()
+        self._fni_log_sheet_flow("action_timesheet_refuse_after", include_domain=True)
+        return result
+
+    def action_timesheet_confirm(self):
+        self._fni_log_sheet_flow("action_timesheet_confirm_before", include_domain=True)
+        result = super().action_timesheet_confirm()
+        self._fni_log_sheet_flow("action_timesheet_confirm_after", include_domain=True)
+        return result
 
     def clean_timesheets(self, timesheets):
 
