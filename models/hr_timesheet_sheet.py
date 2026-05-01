@@ -191,6 +191,13 @@ class Sheet(models.Model):
         self._fni_log_sheet_flow("compute_timesheet_ids_after", include_domain=True)
         return result
 
+    def _fni_populate_timesheet_ids_after_create(self):
+        sheets = self.filtered(
+            lambda sheet: sheet.state in ("new", "draft") and not sheet.timesheet_ids
+        )
+        if sheets:
+            sheets._compute_timesheet_ids()
+
     @api.model_create_multi
     def create(self, vals_list):
         if self._fni_timesheet_sheet_debug_enabled():
@@ -200,6 +207,7 @@ class Sheet(models.Model):
                 vals_list=safe_vals_list,
             )
         sheets = super().create(vals_list)
+        sheets._fni_populate_timesheet_ids_after_create()
         sheets._fni_log_sheet_flow("create_after", include_domain=True)
         return sheets
 
